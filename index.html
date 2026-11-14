@@ -1478,7 +1478,7 @@ document.addEventListener("change",async e=>{
 });
 /* ---- clans ---- */
 const cblank=()=>({id:"",name:"",tag:"",color:CLAN_C,descr:"",owner:"",place:"",closed:false,ap:"",ac:""});
-let cdraft=cblank(),cmsg="";
+let cdraft=cblank(),cmsg="",cedraft={id:"",name:"",tag:"",color:CLAN_C,descr:"",pick:""};
 async function clanRpc(fn,args){
   const r=await sb.rpc(fn,args);
   if(r.error){alert(r.error.message);return false}
@@ -1493,9 +1493,11 @@ function openClan(id){
 function renderClanPage(){
   const box=$("#clan_box"),c=clanById(openClanId);
   if(!c){if(loaded)go("home");return}
-  const ae=document.activeElement;if(ae&&ae.id==="cplace")return;
+  const ae=document.activeElement;if(ae&&box.contains(ae)&&/^(INPUT|SELECT|TEXTAREA)$/.test(ae.tagName))return;
+  if(cedraft.id!==c.id)cedraft={id:c.id,name:c.name,tag:c.tag,color:clanCol(c),descr:c.descr||"",pick:""};
   ranked();
   const m=clanMembers(c).sort(cmSort),top=m[0],n=m.filter(onB).length;
+  m.sort((a,b)=>(c.owner===b.id)-(c.owner===a.id));
   const meP=profiles.find(p=>p.id===uid),inClan=!!clanMem[uid],mine=clanMem[uid]===c.id,pend=myApps().find(a=>a.clan_id===c.id);
   const apps=canDecide(c)?appsFor(c):[],own=c.owner?profiles.find(p=>p.id===c.owner):null;
   const canRem=p=>canDecide(c)&&(c.owner!==p.id||can("clans"));
@@ -1520,6 +1522,13 @@ function renderClanPage(){
   <div class="tile"><span>Strongest member</span><b class="sm">${top?esc(top.name):"—"}</b><em>${top?esc(gl(top))+(onB(top)?" · #"+top.rank:""):"Nobody yet"}</em></div></div>
   ${can("clans")?`<div class="cplace"><label>Placement</label><input id="cplace" type="number" min="1" max="999" value="${c.place||""}" placeholder="#"><button class="solid" data-cplace="${esc(c.id)}">Set</button><button class="ghost" data-cplace="${esc(c.id)}" data-clear="1">Clear</button></div>`:""}
   ${(btns||note)?`<div class="acts" style="margin:18px 0 0">${btns}${note?`<span class="sub" style="margin:0;align-self:center">${note}</span>`:""}</div>`:""}
+  ${canDecide(c)?`<div class="rbox" style="margin-top:22px"><div class="sl">Manage clan</div>
+    <div class="cform"><div><label>Name</label><input data-ce="name" maxlength="24" value="${esc(cedraft.name)}" autocomplete="off"></div>
+    <div><label>Tag (up to 4 letters)</label><input data-ce="tag" maxlength="4" value="${esc(cedraft.tag)}" autocomplete="off"></div>
+    <div><label>Colour</label><input type="color" class="rcol" data-ce="color" value="${esc(clanCol({color:cedraft.color}))}"></div>
+    <div class="cwide"><label>Description</label><input data-ce="descr" maxlength="160" value="${esc(cedraft.descr)}" autocomplete="off"></div></div>
+    <div class="acts"><button class="solid" data-cesave="${esc(c.id)}">Save changes</button></div>
+    <div class="cform" style="grid-template-columns:1fr auto;align-items:end;margin-top:18px"><div><label>Add a member</label><select data-ce="pick"><option value="">— Pick a player —</option>${profiles.filter(p=>!clanMem[p.id]&&!p.banned).sort(byName).map(p=>`<option value="${esc(p.id)}" ${p.id===cedraft.pick?"selected":""}>${esc(p.name)} (@${esc(p.roblox)})</option>`).join("")}</select></div><button class="solid" data-ceadd="${esc(c.id)}">Add</button></div></div>`:""}
   ${apps.length?`<div class="sl" style="margin:26px 0 6px">Applications · ${apps.length}</div>${apps.map(arow).join("")}`:""}
   <div class="sl" style="margin:26px 0 6px">Members · ${m.length}</div>
   <div>${m.map(mrow).join("")||`<div class="empty">No members yet.</div>`}</div>`;
@@ -1574,6 +1583,12 @@ document.addEventListener("click",async e=>{
   if(t.closest&&t.closest("a[href]"))return;
   const ctg=t.closest("[data-clan]");if(ctg)return openClan(ctg.dataset.clan);
   const cap=t.closest("[data-capply]");if(cap){await clanRpc("clan_apply",{cid:cap.dataset.capply});return}
+  const ces=t.closest("[data-cesave]");
+  if(ces){const d=cedraft,cn=clanById(ces.dataset.cesave);if(!cn||!canDecide(cn))return;
+    if(await clanRpc("clan_edit",{cid:cn.id,nm:(d.name||"").trim(),tg:(d.tag||"").trim().toUpperCase(),col:d.color,ds:(d.descr||"").trim()})){logEvent("clan edited","general",null,d.name,"["+(d.tag||"").toUpperCase()+"]");cedraft={id:"",name:"",tag:"",color:CLAN_C,descr:"",pick:""};render()}return}
+  const cea=t.closest("[data-ceadd]");
+  if(cea){const cn=clanById(cea.dataset.ceadd),pid=cedraft.pick;if(!cn||!canDecide(cn))return;if(!pid)return alert("Pick a player first.");
+    const q=profiles.find(x=>x.id===pid);if(await clanRpc("clan_add_member",{cid:cn.id,target:pid})){logEvent("clan member added","general",pid,q?q.name:"",cn.name);cedraft.pick="";render()}return}
   const cpl=t.closest("[data-cplace]");
   if(cpl){if(!can("clans"))return;const v=cpl.dataset.clear?null:parseInt(($("#cplace")||{}).value,10);if(v!==null&&!(v>=1&&v<=999))return alert("Enter a placement from 1 to 999.");
     const cn=clanById(cpl.dataset.cplace);if(await clanRpc("clan_set_place",{cid:cpl.dataset.cplace,pl:v}))logEvent("clan placement","general",null,cn?cn.name:"",v==null?"cleared":"#"+v);return}
@@ -1674,7 +1689,7 @@ document.addEventListener("click",async e=>{
 });
 $("#q").addEventListener("input",render);$("#pq").addEventListener("input",render);$("#hq").addEventListener("input",render);$("#lq").addEventListener("input",render);$("#lf").addEventListener("change",render);$("#cq").addEventListener("input",render);
 document.addEventListener("keydown",e=>{if(e.key==="Escape")tryClose();if(e.key==="Enter"&&e.target.matches&&e.target.matches(".cont")){pf=e.target.dataset.pr;render()}});
-document.addEventListener("input",e=>{if(e.target&&e.target.id==="annTa")annDraft=e.target.value;const cf=e.target&&e.target.dataset&&e.target.dataset.cf;if(cf)cdraft[cf]=e.target.type==="checkbox"?e.target.checked:e.target.value});
+document.addEventListener("input",e=>{if(e.target&&e.target.id==="annTa")annDraft=e.target.value;const cf=e.target&&e.target.dataset&&e.target.dataset.cf;if(cf)cdraft[cf]=e.target.type==="checkbox"?e.target.checked:e.target.value;const ce=e.target&&e.target.dataset&&e.target.dataset.ce;if(ce)cedraft[ce]=e.target.value});
 document.addEventListener("change",e=>{const t=e.target;if(!t)return;
   if(t.id==="hsort")render();
   if(t.id==="evd"){evDays=+t.value||30;render()}
