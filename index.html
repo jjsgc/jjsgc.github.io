@@ -375,6 +375,15 @@ body.gated .wrap{visibility:hidden}
 .lead .lead-a b{font-family:inherit;font-weight:inherit;letter-spacing:inherit}
 .lead .lead-a em{font-style:normal;font-weight:800}
 .lead .lead-b{display:block;margin-top:6px;font-size:11px;font-weight:600;letter-spacing:.04em}
+
+/* ---- tweaks: plain steps, normal fonts, role colours ---- */
+.step::before,.step:hover::before{display:none!important}
+.step .n{border:1px solid #666;font:700 18px var(--sans);background:transparent}
+.side .big{font:800 44px var(--sans)}
+.av{background:#000}
+.rchip.col{border-color:var(--rcol);color:var(--rcol)}
+.rchip.col.on{background:var(--rcol);color:#000;border-color:var(--rcol)}
+.rrow .rcol{width:34px;height:28px;padding:0;border:1px solid var(--line);background:none;border-radius:6px;cursor:pointer;flex:none}
 </style>
 </head>
 <body>
@@ -391,7 +400,7 @@ body.gated .wrap{visibility:hidden}
 <div class="ann" id="ann" hidden></div>
 
 <section class="hero view" id="v_home">
-  <p class="lead"><span class="lead-a">Hosted site by <b>JJSGC</b> for people to inspire <em>climbing the ladder</em> and getting better at the competitive scene.</span> <span class="lead-b">Have a blast people.</span></p>
+  <p class="lead"><span class="lead-a">Official <b>JJSGC</b> main general competitive leaderboard</span></p>
   <div class="sub"><b id="cnt">0</b> registered people · Hosted by Kyoumiv &amp; Tooj</div>
   <div class="cta"><button class="solid" data-go="board">Enter the list</button><button data-go="players">See all players</button></div>
   <div class="cloud" id="cloud"><i></i><span>Connecting…</span></div>
@@ -399,11 +408,11 @@ body.gated .wrap{visibility:hidden}
 
   <div class="how"><div class="sl">How to get on the leaderboard</div>
     <div class="path">
-      <div class="step" style="--i:0"><div class="n">I</div><div><h4>Enter the gate</h4><p>Continue with <b>Discord</b>, then enter your <b>Roblox username</b> and <b>region</b>.</p></div></div>
-      <div class="step" style="--i:1"><div class="n">II</div><div><h4>Entry validations</h4><p>You must be at least <b>Grade 1 · Mid</b>, anywhere up to <b>Special Grade</b>, to be listed.</p>
+      <div class="step" style="--i:0"><div class="n">1</div><div><h4>Enter the gate</h4><p>Continue with <b>Discord</b>, then enter your <b>Roblox username</b> and <b>region</b>.</p></div></div>
+      <div class="step" style="--i:1"><div class="n">2</div><div><h4>Entry validations</h4><p>You must be at least <b>Grade 1 · Mid</b>, anywhere up to <b>Special Grade</b>, to be listed.</p>
         <div class="climb"><span>Grade 1 Mid</span><i>›</i><span>Grade 1 High</span><i>›</i><span>Special Grade 1</span><i>›</i><span>Special Grade</span></div></div></div>
-      <div class="step" style="--i:2"><div class="n">III</div><div><h4>Evaluation &amp; regrade</h4><p>You must be <b>evaluated every grade reset</b> to stay on the leaderboard.</p></div></div>
-      <div class="step" style="--i:3"><div class="n">IV</div><div><h4>Something off?</h4><p>If anything is wrong (grade, name, region), <b>message the hosts</b> on Discord.</p></div></div>
+      <div class="step" style="--i:2"><div class="n">3</div><div><h4>Evaluation &amp; regrade</h4><p>You must be <b>evaluated every grade reset</b> to stay on the leaderboard.</p></div></div>
+      <div class="step" style="--i:3"><div class="n">4</div><div><h4>Something off?</h4><p>If anything is wrong (grade, name, region), <b>message the hosts</b> on Discord.</p></div></div>
     </div></div>
 
   <div class="log" id="logbox">
@@ -507,9 +516,11 @@ const NONE="None";
 const score=p=>{const gi=GKEYS.indexOf(p.grade||"G1");if(gi<0)return -10;if(p.grade==="SG")return gi*9;const si=SUBS.indexOf(p.sub);if(si<0)return gi*9-1;const ss=SSUBS.indexOf(p.subsub);return gi*9+si*3+(ss<0?-.5:ss)};
 const PERMS={roblox:"Edit Roblox names",ban:"Ban / unban players",grades:"Edit grades & board",reorder:"Reorder leaderboard",changelog:"Edit change log",logs:"View activity log",placements:"View placement history",stats:"View stats",export:"Export data (CSV)",fights:"Edit fight notes & cooldowns"};
 const STAFFP=["roblox","ban","grades","reorder","logs","placements","stats","export","fights"];
-let roleDefs={};
+let roleDefs={},roleColors={};
+const roleCol=r=>/^#[0-9a-f]{6}$/i.test(roleColors[r]||"")?roleColors[r]:"";
+const nmCol=p=>{for(const r of (p.roles||[])){const c=roleCol(r);if(c)return c}return""};
 const roleTip=r=>(roleDefs[r]||[]).map(k=>PERMS[k]).filter(Boolean).join(" · ");
-const badge=r=>`<span class="host" title="${esc(roleTip(r))}">${esc(r)}</span>`;
+const badge=r=>{const c=roleCol(r);return `<span class="host" title="${esc(roleTip(r))}"${c?` style="color:${c};border-color:${c}"`:""}>${esc(r)}</span>`};
 const myRoles=()=>{const p=profiles.find(p=>p.id===uid);return p&&!p.banned?p.roles:[]};
 const can=k=>isOwner||(!!uid&&myRoles().some(r=>(roleDefs[r]||[]).includes(k)));
 const staff=()=>isOwner||STAFFP.some(k=>can(k));
@@ -517,7 +528,8 @@ const staff=()=>isOwner||STAFFP.some(k=>can(k));
 const HOST_IDS=["1213453133175324784","523755389544693791",...((window.JJSGC_CONFIG||{}).hostIds||[])].map(String);
 const HOST_NAMES=["toojways","kyoum1i",...((window.JJSGC_CONFIG||{}).hostNames||[])].map(x=>String(x).toLowerCase());
 const isHost=p=>(!!p.discord&&HOST_IDS.includes(String(p.discord)))||(!!p.roblox&&HOST_NAMES.includes(String(p.roblox).toLowerCase()))||(p.roles||[]).some(r=>/^hosts?$/i.test(r))||(p.id===uid&&isOwner);
-const nmx=p=>`<span class="${isHost(p)?"flash":""}">${esc(p.name)}</span>`;
+const nmx=p=>{const c=nmCol(p);return `<span class="${isHost(p)&&!c?"flash":""}"${c?` style="color:${c};-webkit-text-fill-color:${c}"`:""}>${esc(p.name)}</span>`};
+const banTag=p=>p.banned?'<span class="host bn">Banned</span>':"";
 const tags=p=>(p.banned?'<span class="host bn">Banned</span>':"")+(isHost(p)?'<span class="host hostflash">Host</span>':"")+p.roles.filter(r=>!/^hosts?$/i.test(r)).map(badge).join("");
 /* rank badge: #1 yellow, #2 white, fading to pure black at #20+ */
 const rkStyle=r=>{
@@ -645,7 +657,7 @@ function syncOwnName(){const p=profiles.find(x=>x.id===uid);if(p&&me&&me.name&&m
 const gl=p=>p.ranked?gtxt(p.grade,p.sub,p.subsub):"No grade";
 const $=s=>document.querySelector(s);
 const esc=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
-const av=p=>`<div class="av">${esc((p.name||"?")[0].toUpperCase())}${p.avatar?`<img src="${esc(p.avatar)}" alt="" referrerpolicy="no-referrer" onerror="this.remove()">`:""}</div>`;
+const av=p=>`<div class="av">${p.avatar?`<img src="${esc(p.avatar)}" alt="" referrerpolicy="no-referrer" onerror="this.remove()">`:""}</div>`;
 const CFG=window.JJSGC_CONFIG||{},t0=Date.now();
 let pg="home",regN=null,sb=null,uid=null,me=null,isOwner=false,profiles=[],filter="ALL",demo=true,reason="Connecting…",editId=null,lock=false,skipped=false,loaded=false,syncedFor=null;
 
@@ -671,12 +683,12 @@ function setCloud(){
 }
 function renderAuth(){
   $("#authbox").innerHTML=uid&&me
-    ?`<button class="chip" id="meBtn">${av({name:me.name,avatar:(profiles.find(x=>x.id===uid)||{}).avatar||me.avatar})}<span class="${isOwner?"flash":""}">${esc(me.name)}</span>${isOwner?`<span class="host hostflash">Host</span>`:""}${myRoles().map(badge).join("")}</button><button class="ghost" id="logout">Sign out</button>`
+    ?`<button class="chip" id="meBtn">${av({name:me.name,avatar:(profiles.find(x=>x.id===uid)||{}).avatar||me.avatar})}${nmx({name:me.name,roles:myRoles(),id:uid})}${isOwner?`<span class="host hostflash">Host</span>`:""}${myRoles().map(badge).join("")}</button><button class="ghost" id="logout">Sign out</button>`
     :`<button class="solid" id="login">Continue with Discord</button>`;
   if($("#login"))$("#login").disabled=!sb;
 }
 function row(p,i,rk){const on=p.ranked&&!p.banned;
-  return `<div class="lrow ${on&&rk<=3?"t3":""}" data-id="${esc(p.id)}"><span class="lrk">${on?rk:"—"}</span><div class="l">${av(p)}<div style="min-width:0"><div class="nm">${nmx(p)}${tags(p)}</div><div class="pt">${on?esc(gl(p)):"Not competitive"} · ${rbA(p)}</div></div></div>${rbPic(p)}<span class="lrg">${p.region}</span></div>`;
+  return `<div class="lrow ${on&&rk<=3?"t3":""}" data-id="${esc(p.id)}"><span class="lrk">${on?rk:"—"}</span><div class="l">${av(p)}<div style="min-width:0"><div class="nm">${nmx(p)}${banTag(p)}</div><div class="pt">${on?esc(gl(p)):"Not competitive"} · ${rbA(p)}</div></div></div>${rbPic(p)}<span class="lrg">${p.region}</span></div>`;
 }
 function hrow(p,i){
   return `<div class="card hrow" data-id="${esc(p.id)}" style="--i:${Math.min(i||0,14)}"><div class="l">${av(p)}<div style="min-width:0"><div class="nm">${nmx(p)}${tags(p)}</div><div class="pt">${esc(gl(p))} · ${rbA(p)} · ${p.region}${p.ranked?" · on board":""} · ${esc(p.discord)} · joined ${ago(p.created)}</div></div></div>
@@ -852,7 +864,7 @@ function renderLbTools(board){
   el.innerHTML=`<button class="solid" id="ordSave" ${dirty?"":"disabled"}>Save order</button><button class="ghost" id="ordDiscard">Cancel</button><button class="ghost" id="ordAuto" ${manual||dirty?"":"disabled"}>Back to automatic</button><span class="sub" style="margin:0 0 0 6px">Drag rows or use the arrows, then save.</span><span class="err" style="margin:0">${esc(ordMsg)}</span>`;
   $("#lbcols").hidden=true;$("#head").textContent="";
   $("#list").innerHTML=orderDraft.map((id,k)=>{const p=byId[id];if(!p)return"";
-    return `<div class="lrow edit ${k<3?"t3":""}" draggable="true" data-ord="${esc(id)}"><span class="ogrip">⋮⋮</span><span class="lrk">${k+1}</span><div class="l">${av(p)}<div style="min-width:0"><div class="nm">${nmx(p)}${tags(p)}</div><div class="pt">${esc(gl(p))} · @${esc(p.roblox)}</div></div></div>${ordBtns(id,k,orderDraft.length)}</div>`}).join("")||`<div class="empty">No competitive players yet.</div>`;
+    return `<div class="lrow edit ${k<3?"t3":""}" draggable="true" data-ord="${esc(id)}"><span class="ogrip">⋮⋮</span><span class="lrk">${k+1}</span><div class="l">${av(p)}<div style="min-width:0"><div class="nm">${nmx(p)}${banTag(p)}</div><div class="pt">${esc(gl(p))} · @${esc(p.roblox)}</div></div></div>${ordBtns(id,k,orderDraft.length)}</div>`}).join("")||`<div class="empty">No competitive players yet.</div>`;
 }
 function moveOrd(id,to){const k=orderDraft.indexOf(id);if(k<0)return;orderDraft.splice(k,1);orderDraft.splice(Math.max(0,Math.min(orderDraft.length,to)),0,id)}
 async function saveOrder(ids){
@@ -1264,7 +1276,7 @@ function editor(p,isNew){
   <div class="chk"><input type="checkbox" id="f_k" ${p.ranked?"checked":""}><span>On the competitive board</span></div>`:""}
   ${ob?`<div class="chk"><input type="checkbox" id="f_b" ${p.banned?"checked":""}><span>Banned</span></div>
   <label>Ban reason</label><input id="f_br" maxlength="80" value="${esc(p.reason||"")}">`:""}
-  ${orl?`<label>Special roles</label><div class="rchips" id="f_rl">${all.map(n=>`<button type="button" class="rchip ${(p.roles||[]).includes(n)?"on":""}" data-role="${esc(n)}">${esc(n)}</button>`).join("")||`<span class="sub">No roles yet — create them in the Panel.</span>`}</div>`:""}`;
+  ${orl?`<label>Special roles</label><div class="rchips" id="f_rl">${all.map(n=>`<button type="button" class="rchip ${roleCol(n)?"col ":""}${(p.roles||[]).includes(n)?"on":""}"${roleCol(n)?` style="--rcol:${roleCol(n)}"`:""} data-role="${esc(n)}">${esc(n)}</button>`).join("")||`<span class="sub">No roles yet — create them in the Panel.</span>`}</div>`:""}`;
 }
 function view(p){
   editId=p.id;const self=(p.id===uid&&!p.banned)||isOwner,canEdit=self||can("grades")||can("ban");
@@ -1350,6 +1362,7 @@ async function loadProfiles(){
   demo=false;reason="";
   rolesOk=!rr.error;
   if(!rr.error)roleDefs=Object.fromEntries(rr.data.map(r=>[r.name,(r.perms||"").split(",").map(x=>x.trim()).filter(x=>PERMS[x])]));
+  if(!rr.error)roleColors=Object.fromEntries(rr.data.map(r=>[r.name,((r.perms||"").split(",").map(x=>x.trim()).find(x=>x.startsWith("c="))||"").slice(2)]));
   regN=(!rc.error&&typeof rc.data==="number")?rc.data:null;
   profiles=data.filter(p=>REG[p.region]||p.region===NONE).map(p=>({id:p.user_id,name:p.name,roblox:p.roblox,region:p.region,grade:p.grade,sub:(SUBS.includes(p.sub)||p.sub===NONE)?p.sub:"Low",subsub:(SSUBS.includes(p.subsub)||p.subsub===NONE)?p.subsub:"Weak",ranked:!!p.ranked,banned:!!p.banned,reason:p.ban_reason||"",roles:(p.roles||"").split(",").map(x=>x.trim()).filter(Boolean),discord:p.discord_id||"",avatar:p.custom_avatar||p.avatar_url,custom:p.custom_avatar||"",created:Date.parse(p.created_at)||0,pos:(p.board_pos==null?null:+p.board_pos)}));
   loaded=true;
@@ -1398,13 +1411,18 @@ document.addEventListener("change",e=>{if(e.target&&e.target.id==="avfile"){cons
 function renderRoles(){
   $("#rbox").hidden=!isOwner;if(!isOwner)return;
   const names=[...new Set([...Object.keys(roleDefs),...profiles.flatMap(p=>p.roles)])].sort();
-  $("#rlist").innerHTML=names.length?names.map(n=>`<div class="rrow"><span class="host">${esc(n)}</span><span class="sub" style="margin:0;flex:none">${profiles.filter(p=>p.roles.includes(n)).length} member(s)</span><div class="perms">${Object.entries(PERMS).map(([k,l])=>`<label><input type="checkbox" data-rp="${esc(n)}" data-k="${k}" ${(roleDefs[n]||[]).includes(k)?"checked":""}>${l}</label>`).join("")}</div>${n in roleDefs?`<button class="ghost" data-rdel="${esc(n)}">Remove</button>`:""}</div>`).join(""):`<div class="sub">No roles yet. Add one below.</div>`;
+  $("#rlist").innerHTML=names.length?names.map(n=>`<div class="rrow">${badge(n)}<input type="color" class="rcol" data-rcol="${esc(n)}" value="${roleCol(n)||"#8f86d6"}" title="Role colour">${roleCol(n)?`<button class="ghost" data-rcreset="${esc(n)}">Reset colour</button>`:""}<span class="sub" style="margin:0;flex:none">${profiles.filter(p=>p.roles.includes(n)).length} member(s)</span><div class="perms">${Object.entries(PERMS).map(([k,l])=>`<label><input type="checkbox" data-rp="${esc(n)}" data-k="${k}" ${(roleDefs[n]||[]).includes(k)?"checked":""}>${l}</label>`).join("")}</div>${n in roleDefs?`<button class="ghost" data-rdel="${esc(n)}">Remove</button>`:""}</div>`).join(""):`<div class="sub">No roles yet. Add one below.</div>`;
 }
-async function saveRole(name,perms){
-  const r=await sb.from("roles").upsert({name,perms:perms.join(",")});
+async function saveRole(name,perms,color){
+  if(color===undefined)color=roleColors[name]||"";
+  const r=await sb.from("roles").upsert({name,perms:[...perms,...(color?["c="+color]:[])].join(",")});
   if(r.error){$("#rerr").textContent="Couldn’t save role: "+r.error.message+" (run roles.sql in Supabase first)";return false}
-  $("#rerr").textContent="";roleDefs[name]=perms;logEvent("role saved","general",null,name,perms.map(k=>PERMS[k]).join(", ")||"no permissions");return true;
+  $("#rerr").textContent="";roleDefs[name]=perms;roleColors[name]=color;logEvent("role saved","general",null,name,perms.map(k=>PERMS[k]).join(", ")||"no permissions");return true;
 }
+document.addEventListener("change",async e=>{
+  const ci=e.target.closest&&e.target.closest("[data-rcol]");
+  if(ci&&isOwner){const n=ci.dataset.rcol;if(await saveRole(n,roleDefs[n]||[],ci.value))logEvent("role colour","general",null,n,ci.value);renderAuth();render();return}
+});
 document.addEventListener("change",async e=>{
   const c=e.target.closest&&e.target.closest("[data-rp]");if(!c||!isOwner)return;
   const n=c.dataset.rp,s=new Set(roleDefs[n]||[]);c.checked?s.add(c.dataset.k):s.delete(c.dataset.k);
@@ -1468,10 +1486,12 @@ document.addEventListener("click",async e=>{
     const n=$("#rn").value.trim().replace(/,/g,"").slice(0,20);
     if(!n||!isOwner)return;if(n in roleDefs){$("#rerr").textContent="That role already exists.";return}
     if(await saveRole(n,[])){$("#rn").value="";render()}return}
+  const rcr=t.closest("[data-rcreset]");
+  if(rcr){if(!isOwner)return;const n=rcr.dataset.rcreset;if(await saveRole(n,roleDefs[n]||[],""))logEvent("role colour","general",null,n,"reset");renderAuth();render();return}
   const rd=t.closest("[data-rdel]");
   if(rd){if(!isOwner||!confirm("Remove the role \u201c"+rd.dataset.rdel+"\u201d and its permissions?"))return;
     const x=await sb.from("roles").delete().eq("name",rd.dataset.rdel);
-    if(x.error)$("#rerr").textContent="Couldn\u2019t remove: "+x.error.message;else{logEvent("role removed","general",null,rd.dataset.rdel,"");delete roleDefs[rd.dataset.rdel];renderAuth();render()}return}
+    if(x.error)$("#rerr").textContent="Couldn\u2019t remove: "+x.error.message;else{logEvent("role removed","general",null,rd.dataset.rdel,"");delete roleDefs[rd.dataset.rdel];delete roleColors[rd.dataset.rdel];renderAuth();render()}return}
   const rn=t.closest("[data-rbn]");
   if(rn){const p=profiles.find(x=>x.id===rn.dataset.rbn);if(!p||!can("roblox"))return;
     const v=prompt("New Roblox username for "+p.name,p.roblox);if(v===null)return;
