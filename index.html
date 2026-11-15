@@ -468,8 +468,10 @@ header{justify-content:flex-start}
 @keyframes dpulse{0%,100%{filter:drop-shadow(0 0 3px rgba(var(--g1),.55)) drop-shadow(0 0 9px rgba(var(--g2),.35))}50%{filter:drop-shadow(0 0 7px rgba(var(--g1),.95)) drop-shadow(0 0 18px rgba(var(--g2),.65))}}
 @keyframes twk{0%,100%{opacity:0;transform:scale(.2) rotate(0deg)}50%{opacity:1;transform:scale(1) rotate(45deg)}}
 .hex.dia{--g1:200,244,255;--g2:70,150,255;animation:dpulse 2.4s ease-in-out infinite}
+@keyframes gpulse{0%,100%{filter:drop-shadow(0 0 4px rgba(255,236,150,.9)) drop-shadow(0 0 15px rgba(255,170,60,.65))}33%{filter:drop-shadow(0 0 6px rgba(255,150,220,.95)) drop-shadow(0 0 22px rgba(190,100,255,.7))}66%{filter:drop-shadow(0 0 6px rgba(140,230,255,.95)) drop-shadow(0 0 22px rgba(60,160,255,.7))}}
+.hex.god{animation:gpulse 3.6s linear infinite}
 .dsp{transform-box:fill-box;transform-origin:center;opacity:0;animation:twk 2.2s ease-in-out infinite}
-@media (prefers-reduced-motion:reduce){.hex.dia,.dsp{animation:none}}
+@media (prefers-reduced-motion:reduce){.hex.dia,.hex.god,.dsp{animation:none}}
 .bgrid{grid-template-columns:repeat(auto-fill,minmax(128px,1fr))}
 .bgc{cursor:pointer;padding:16px 8px 12px}.bgc:hover{border-color:#777;transform:translateY(-2px)}
 .bgc b{margin-top:9px}.bgc em{color:var(--dim)}
@@ -1814,24 +1816,31 @@ function renderClansPanel(){
 let bdefs=[],bawards=[],bgOk=true,pex={},pexOk=true,profId=null,profBack="board";
 const BCOL="#b9a8ff";
 /* tier metals: bronze, silver, gold, platinum, diamond (+ pink, same effects as diamond) */
-const METAL=["Bronze","Silver","Gold","Platinum","Diamond","Pink"];
-const PAL=[["#e0a46a","#7d4f24"],["#eef0f4","#848d9d"],["#ffe27a","#c07f0c"],["#c9f2e8","#3f9c8c"],["#8fdcff","#2a78d1"],["#ffb3dc","#d6338f"]];
+const METAL=["Bronze","Silver","Gold","Platinum","Diamond","Pink","GODLY"],MORDER=[0,1,2,3,4,6,5];
+const PAL=[["#e0a46a","#7d4f24"],["#eef0f4","#848d9d"],["#ffe27a","#c07f0c"],["#c9f2e8","#3f9c8c"],["#8fdcff","#2a78d1"],["#ffb3dc","#d6338f"],["#fff1a8","#ff9a1f"]];
 let hid=0;
 const EMO=/\p{Extended_Pictographic}/u,h2c=h=>[1,3,5].map(i=>parseInt(h.substr(i,2),16));
 function hex(glyph,pi,sz,lock){
-  const id="hx"+(hid++),k=Math.max(0,Math.min(5,pi|0)),pal=PAL[k],a=pal[0],b=pal[1],g=String(glyph||""),n=[...g].length,emo=EMO.test(g),dia=k>=4&&!lock;
+  const id="hx"+(hid++),k=Math.max(0,Math.min(6,pi|0)),pal=PAL[k],a=pal[0],b=pal[1],g=String(glyph||""),n=[...g].length,emo=EMO.test(g),dia=(k===4||k===5)&&!lock,god=k===6&&!lock;
   const fs=n>=4?15:n===3?22:n===2?30:38;
-  let defs="",fa="";
+  let defs="",fa="",back="";
   if(emo){/* emoji are re-coloured to the tier's metal (light/dark duotone) */
     const L=h2c(a).map(v=>Math.min(1,(v/255)*.85+.15)),D=h2c(b).map(v=>v/255*.9),W=[.2126,.7152,.0722],row=c=>W.map(x=>(x*(L[c]-D[c])).toFixed(4)).join(" ")+" 0 "+D[c].toFixed(4);
     defs+=`<filter id="${id}f" color-interpolation-filters="sRGB"><feColorMatrix type="matrix" values="${row(0)} ${row(1)} ${row(2)} 0 0 0 1 0"/></filter>`;fa=` filter="url(#${id}f)"`}
   const rgb=h2c(a).join(","),gl=Math.max(3,Math.round(sz*.09)),st=lock?"":` style="filter:drop-shadow(0 0 ${gl}px rgba(${rgb},.6))${k===5?";--g1:255,170,215;--g2:255,70,160":""}"`;
   let fx="";
-  if(dia){
-    defs+=`<clipPath id="${id}c"><polygon points="50,3 91,26.5 91,73.5 50,97 9,73.5 9,26.5"/></clipPath><linearGradient id="${id}s" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#fff" stop-opacity="0"/><stop offset=".5" stop-color="#fff" stop-opacity=".7"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></linearGradient>`;
-    const star=(x,y,d,z)=>`<g transform="translate(${x},${y}) scale(${z})"><path class="dsp" style="animation-delay:${d}s" d="M0,-6 L1.6,-1.6 L6,0 L1.6,1.6 L0,6 L-1.6,1.6 L-6,0 L-1.6,-1.6Z" fill="#fff"/></g>`;
-    fx=`<g clip-path="url(#${id}c)"><rect x="-40" y="-10" width="24" height="120" fill="url(#${id}s)" transform="skewX(-20)"><animate attributeName="x" values="-40;140" dur="2.8s" repeatCount="indefinite"/></rect></g>`+star(88,20,0,1.3)+star(10,66,.8,1)+star(70,95,1.5,1.1)+star(26,10,2,.8)}
-  return `<svg class="hex${lock?" lk":""}${dia?" dia":""}" width="${sz}" height="${sz}" viewBox="0 0 100 100" aria-hidden="true"${st}><defs><linearGradient id="${id}" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="${a}">${dia?`<animate attributeName="stop-color" values="${a};#ffffff;${a}" dur="3s" repeatCount="indefinite"/>`:""}</stop><stop offset="1" stop-color="${b}"/></linearGradient>${defs}</defs><polygon points="50,3 91,26.5 91,73.5 50,97 9,73.5 9,26.5" fill="url(#${id})"/><polygon points="50,11 84,30.5 84,69.5 50,89 16,69.5 16,30.5" fill="#15151c"/><polygon points="50,11 84,30.5 84,69.5 50,89 16,69.5 16,30.5" fill="none" stroke="${a}" stroke-opacity=".4"/><text x="50" y="${(50+fs*0.34).toFixed(1)}" text-anchor="middle" font-size="${fs}" font-weight="800" fill="${a}"${fa} font-family="Archivo,system-ui,sans-serif">${esc(g)}</text>${fx}</svg>`;
+  const star=(x,y,d,z)=>`<g transform="translate(${x},${y}) scale(${z})"><path class="dsp" style="animation-delay:${d}s" d="M0,-6 L1.6,-1.6 L6,0 L1.6,1.6 L0,6 L-1.6,1.6 L-6,0 L-1.6,-1.6Z" fill="#fff"/></g>`;
+  if(dia||god){
+    defs+=`<clipPath id="${id}c"><polygon points="50,3 91,26.5 91,73.5 50,97 9,73.5 9,26.5"/></clipPath><linearGradient id="${id}s" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#fff" stop-opacity="0"/><stop offset=".5" stop-color="#fff" stop-opacity="${god?.9:.7}"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></linearGradient>`;
+    fx=`<g clip-path="url(#${id}c)"><rect x="-40" y="-10" width="${god?30:24}" height="120" fill="url(#${id}s)" transform="skewX(-20)"><animate attributeName="x" values="-40;140" dur="${god?1.9:2.8}s" repeatCount="indefinite"/></rect></g>`+star(88,20,0,1.3)+star(10,66,.8,1)+star(70,95,1.5,1.1)+star(26,10,2,.8)}
+  if(god){
+    /* GODLY: rainbow foil sweep, rotating light rays, colour-shifting rim, extra sparkles */
+    defs+=`<linearGradient id="${id}w" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#ff6ad5" stop-opacity="0"/><stop offset=".25" stop-color="#ff6ad5" stop-opacity=".5"/><stop offset=".5" stop-color="#fff176" stop-opacity=".55"/><stop offset=".75" stop-color="#4dd8ff" stop-opacity=".5"/><stop offset="1" stop-color="#4dd8ff" stop-opacity="0"/></linearGradient><radialGradient id="${id}r" gradientUnits="userSpaceOnUse" cx="50" cy="50" r="62"><stop offset=".6" stop-color="#fff6c0" stop-opacity=".85"/><stop offset="1" stop-color="#fff6c0" stop-opacity="0"/></radialGradient>`;
+    let rays="";for(let i=0;i<8;i++)rays+=`<polygon points="50,50 43,-12 57,-12" fill="url(#${id}r)" transform="rotate(${i*45} 50 50)"/>`;
+    back=`<g opacity=".85">${rays}<animateTransform attributeName="transform" type="rotate" from="0 50 50" to="360 50 50" dur="9s" repeatCount="indefinite"/></g>`;
+    fx+=`<g clip-path="url(#${id}c)"><rect x="-50" y="-10" width="34" height="120" fill="url(#${id}w)" transform="skewX(-20)"><animate attributeName="x" values="-50;150" dur="3.2s" begin="-1s" repeatCount="indefinite"/></rect></g>`+star(50,2,.3,1.2)+star(94,50,1.1,1)+star(50,98,1.8,1.2)+star(6,40,.6,.9)+star(80,80,2.3,.8)+star(20,86,1.4,.8)}
+  const c0=god?`<animate attributeName="stop-color" values="#fff1a8;#ffb3f0;#a8e8ff;#b8ffd0;#fff1a8" dur="4s" repeatCount="indefinite"/>`:dia?`<animate attributeName="stop-color" values="${a};#ffffff;${a}" dur="3s" repeatCount="indefinite"/>`:"",c1=god?`<animate attributeName="stop-color" values="#ff9a1f;#c34bff;#2a8dff;#1fcf7a;#ff9a1f" dur="4s" repeatCount="indefinite"/>`:"";
+  return `<svg class="hex${lock?" lk":""}${dia?" dia":""}${god?" god":""}" width="${sz}" height="${sz}" viewBox="0 0 100 100" aria-hidden="true"${st}><defs><linearGradient id="${id}" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="${a}">${c0}</stop><stop offset="1" stop-color="${b}">${c1}</stop></linearGradient>${defs}</defs>${back}<polygon points="50,3 91,26.5 91,73.5 50,97 9,73.5 9,26.5" fill="url(#${id})"/><polygon points="50,11 84,30.5 84,69.5 50,89 16,69.5 16,30.5" fill="#15151c"/><polygon points="50,11 84,30.5 84,69.5 50,89 16,69.5 16,30.5" fill="none" stroke="${a}" stroke-opacity=".4"/><text x="50" y="${(50+fs*0.34).toFixed(1)}" text-anchor="middle" font-size="${fs}" font-weight="800" fill="${a}"${fa} font-family="Archivo,system-ui,sans-serif">${esc(g)}</text>${fx}</svg>`;
 }
 const rk5=n=>!n||n>10?0:n===1?5:n===2?4:n<=3?3:n<=5?2:1;
 const bestPlace=p=>{const a=[clanOf(p.id),sideOf(p.id)].filter(c=>c&&c.place).map(c=>+c.place);return a.length?Math.min(...a):0};
@@ -1844,7 +1853,7 @@ const AUTO=[
 const palFor=(i,n)=>n===1?2:Math.round(i*4/(n-1));
 /* tiers are stored as JSON in badge_defs.tiers: [{m:metal 0-4,n:name,d:description,g:symbol}] (old comma lists still read) */
 const parseTiers=s=>{s=String(s||"").trim();let a=[];
-  if(s[0]==="["){try{a=JSON.parse(s).map(t=>({m:Math.max(0,Math.min(5,(+t.m)|0)),n:String(t.n||"").slice(0,18),d:String(t.d||"").slice(0,60),g:String(t.g||"").slice(0,4)}))}catch(_){a=[]}}
+  if(s[0]==="["){try{a=JSON.parse(s).map(t=>({m:Math.max(0,Math.min(6,(+t.m)|0)),n:String(t.n||"").slice(0,18),d:String(t.d||"").slice(0,60),g:String(t.g||"").slice(0,4)}))}catch(_){a=[]}}
   else a=s.split(",").map(x=>x.trim()).filter(Boolean).map((x,i,r)=>({m:palFor(i,r.length),n:x,d:"",g:""}));
   a=a.slice(0,5).map(t=>({m:t.m,n:t.n||METAL[t.m],d:t.d,g:t.g}));
   return a.length?a:[{m:0,n:METAL[0],d:"",g:""}]};
@@ -1990,7 +1999,7 @@ function wtiers(){
   return wk.tiers.map((t,i)=>`<div style="border:1px solid #2a2a33;border-radius:12px;padding:12px;margin-top:10px">
    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px"><b style="font-size:12px;letter-spacing:.08em">TIER ${i+1}</b>${wk.tiers.length>1?`<button type="button" class="ghost danger" style="padding:4px 10px" data-wtdel="${i}">Remove</button>`:""}</div>
    <div style="display:grid;grid-template-columns:1fr 1.4fr .7fr;gap:8px">
-    <div><label>Metal</label><select data-wt="${i}:m">${METAL.map((x,j)=>`<option value="${j}" ${j===t.m?"selected":""}>${x}</option>`).join("")}</select></div>
+    <div><label>Metal</label><select data-wt="${i}:m">${MORDER.map(j=>`<option value="${j}" ${j===t.m?"selected":""}>${METAL[j]}</option>`).join("")}</select></div>
     <div><label>Name</label><input data-wt="${i}:n" maxlength="18" value="${esc(t.n)}" placeholder="${METAL[t.m]}" autocomplete="off"></div>
     <div><label>Symbol</label><input data-wt="${i}:g" maxlength="4" value="${esc(t.g)}" placeholder="${esc(wk.ic||"🏅")}" autocomplete="off"></div></div>
    <div style="margin-top:8px"><label>Description for this tier</label><input data-wt="${i}:d" maxlength="60" value="${esc(t.d)}" placeholder="How to reach this tier" autocomplete="off"></div></div>`).join("")}
