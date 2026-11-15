@@ -423,6 +423,46 @@ body.gated .wrap{visibility:hidden}
 .cav{width:42px;height:42px;border-radius:50%;flex:none;font:800 13px var(--sans);letter-spacing:.04em;display:grid;place-items:center;border-width:2px;border-style:solid}
 .cav.big{width:72px;height:72px;font-size:20px}
 .avrow .cav.big{width:72px;height:72px;font-size:20px}
+/* clan picture replaces the tag text instead of sitting on top of it */
+.cav{position:relative;overflow:hidden;background:#000;flex:none;aspect-ratio:1}
+.cav>img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;border-radius:50%}
+.cav>img~span{display:none}
+.cav>span{position:relative;z-index:1}
+/* rank circles stay perfectly round whatever the number */
+.lrk,.ork,.lrow.t3 .lrk{width:30px;min-width:30px;height:30px;padding:0;flex:none;aspect-ratio:1;overflow:hidden;white-space:nowrap;line-height:1;font-size:15px}
+.lrk.d2,.ork.d2{font-size:13px}
+.lrk.d3,.ork.d3{font-size:10px;letter-spacing:-.04em}
+/* header: Discord button parted away on the far right */
+header{justify-content:flex-start}
+.dcbtn{margin-left:auto;display:inline-flex;align-items:center;gap:9px;background:#5865f2;color:#fff;font:700 14px var(--sans);padding:10px 18px;border-radius:999px;text-decoration:none;white-space:nowrap;transition:.15s}
+.dcbtn:hover{background:#4752c4;color:#fff}
+.dcbtn svg{width:20px;height:20px;fill:currentColor;flex:none}
+@media(max-width:700px){.dcbtn{margin-left:0}}
+/* profile page */
+.pf-card{border:1px solid var(--line);border-radius:16px;overflow:hidden;background:var(--panel)}
+.pf-ban{position:relative;height:210px;background-size:cover;background-position:center;background-color:#0b0b12}
+.pf-c1,.pf-c2{position:absolute;font:700 11px var(--sans);padding:4px 10px;border-radius:999px;background:rgba(0,0,0,.62);color:#fff}
+.pf-c1{left:12px;top:10px}.pf-c2{right:12px;bottom:10px}
+.pf-head{display:flex;gap:20px;padding:0 24px 22px;align-items:flex-start;flex-wrap:wrap}
+.pf-avc{margin-top:-46px;flex:none;text-align:center;position:relative}
+.pf-avc .av{width:96px;height:96px;border-radius:20px;border:3px solid var(--panel);font-size:40px}
+.pf-rank{margin:6px auto 0;padding:5px 12px;border:1px solid var(--line);border-radius:10px;background:var(--row)}
+.pf-rank b{display:block;font:800 16px var(--sans)}.pf-rank span{display:block;font-size:9px;letter-spacing:.25em;color:var(--dim)}
+.pf-info{flex:1;min-width:200px;padding-top:14px}
+.pf-name{font:800 30px var(--sans);line-height:1.2;word-break:break-word}
+.pf-bio{margin-top:8px;color:#cfcfd6;font-size:14px;line-height:1.55;white-space:pre-wrap;word-break:break-word}.pf-bio.dim{color:var(--dim)}
+.pf-act{align-self:flex-end;display:flex;gap:8px;flex-wrap:wrap}
+.pf-h{margin:30px 0 12px;font:800 19px var(--sans)}
+.pbar{height:8px;border-radius:8px;background:#1a1a20;overflow:hidden}.pbar i{display:block;height:100%;background:linear-gradient(90deg,#777,#fff);border-radius:8px;transition:width .5s}
+.pf-tiles{grid-template-columns:repeat(auto-fit,minmax(150px,1fr));margin-top:14px}
+.bgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(118px,1fr));gap:10px}
+.bgc{background:var(--row);border:1px solid var(--line);border-radius:14px;padding:14px 8px 12px;text-align:center;transition:.15s}
+.bgc:hover{border-color:#555}
+.bic{width:54px;height:54px;margin:0 auto 8px;border-radius:50%;display:grid;place-items:center;font-size:26px;line-height:1;border:2px solid var(--bc,#888);background:color-mix(in srgb,var(--bc,#888) 16%,transparent)}
+.bgc b{display:block;font-size:12.5px}
+.bgc span{display:block;color:var(--dim);font-size:10.5px;margin-top:3px;line-height:1.35}
+.bgc em{display:block;margin-top:7px;font-style:normal;font-size:9px;letter-spacing:.22em;text-transform:uppercase;color:var(--bc,var(--dim))}
+.bgc.lock{opacity:.38;filter:grayscale(1)}.bgc.lock em{color:var(--dim)}
 </style>
 </head>
 <body>
@@ -434,6 +474,7 @@ body.gated .wrap{visibility:hidden}
   <div class="logo" data-go="home" role="button" tabindex="0" title="Home" aria-label="JJSGC home">✦ JJSGC<small>COMPETITIVE</small></div>
   <nav id="nav"></nav>
   <div id="authbox" style="display:flex;gap:8px;flex-wrap:wrap;align-items:center"></div>
+  <a class="dcbtn" id="dcbtn" href="https://discord.com" target="_blank" rel="noopener noreferrer"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20.317 4.3698a19.7913 19.7913 0 00-4.8851-1.5152.0741.0741 0 00-.0785.0371c-.211.3753-.4447.8648-.6083 1.2495-1.8447-.2762-3.68-.2762-5.4868 0-.1636-.3933-.4058-.8742-.6177-1.2495a.077.077 0 00-.0785-.037 19.7363 19.7363 0 00-4.8852 1.515.0699.0699 0 00-.0321.0277C.5334 9.0458-.319 13.5799.0992 18.0578a.0824.0824 0 00.0312.0561c2.0528 1.5076 4.0413 2.4228 5.9929 3.0294a.0777.0777 0 00.0842-.0276c.4616-.6304.8731-1.2952 1.226-1.9942a.076.076 0 00-.0416-.1057c-.6528-.2476-1.2743-.5495-1.8722-.8923a.077.077 0 01-.0076-.1277c.1258-.0943.2517-.1923.3718-.2914a.0743.0743 0 01.0776-.0105c3.9278 1.7933 8.18 1.7933 12.0614 0a.0739.0739 0 01.0785.0095c.1202.099.246.1981.3728.2924a.077.077 0 01-.0066.1276 12.2986 12.2986 0 01-1.873.8914.0766.0766 0 00-.0407.1067c.3604.698.7719 1.3628 1.225 1.9932a.076.076 0 00.0842.0286c1.961-.6067 3.9495-1.5219 6.0023-3.0294a.077.077 0 00.0313-.0552c.5004-5.177-.8382-9.6739-3.5485-13.6604a.061.061 0 00-.0312-.0286zM8.02 15.3312c-1.1825 0-2.1569-1.0857-2.1569-2.419 0-1.3332.9555-2.4189 2.157-2.4189 1.2108 0 2.1757 1.0952 2.1568 2.419 0 1.3332-.9555 2.4189-2.1569 2.4189zm7.9748 0c-1.1825 0-2.1569-1.0857-2.1569-2.419 0-1.3332.9554-2.4189 2.1569-2.4189 1.2108 0 2.1757 1.0952 2.1568 2.419 0 1.3332-.946 2.4189-2.1568 2.4189Z"/></svg>Official Discord</a>
 </header>
 <div class="note" id="note" hidden style="margin-top:16px"></div>
 <div class="ann" id="ann" hidden></div>
@@ -506,6 +547,8 @@ body.gated .wrap{visibility:hidden}
   <div id="clan_box"></div>
 </section>
 
+<section class="view" id="v_profile" hidden style="margin-top:26px"><div id="prof_box"></div></section>
+
 <section class="view" id="v_host" hidden style="margin-top:26px">
   <div style="margin-bottom:12px;display:flex;justify-content:space-between;align-items:flex-end;gap:10px;flex-wrap:wrap"><div><h2 id="hh">Panel</h2><div class="sub" id="hstat"></div></div><button class="ghost" id="cmdBtn">Quick search · Ctrl K</button></div>
   <div class="tabs" id="htabs" style="flex-wrap:wrap;margin-bottom:16px"></div>
@@ -540,6 +583,7 @@ body.gated .wrap{visibility:hidden}
   <div id="hp_order" hidden><div id="ordbox"></div></div>
   <div id="hp_fights" hidden><div id="fbox"></div></div>
   <div id="hp_clans" hidden><div id="cbox"></div></div>
+  <div id="hp_badges" hidden><div id="wbox"></div></div>
   <div id="hp_home" hidden><div id="hmbox"></div></div>
   <div id="hp_export" hidden>
     <div class="rbox"><div class="sl" style="margin-bottom:10px">Export</div>
@@ -561,24 +605,28 @@ const GRADES={G1:"Grade 1",SG1:"Special Grade 1",SG:"Special Grade"},GKEYS=["G1"
 const SUBS=["Low","Mid","High"],SSUBS=["Weak","Stable","Strong"];
 const NONE="None";
 const score=p=>{const gi=GKEYS.indexOf(p.grade||"G1");if(gi<0)return -10;if(p.grade==="SG")return gi*9;const si=SUBS.indexOf(p.sub);if(si<0)return gi*9-1;const ss=SSUBS.indexOf(p.subsub);return gi*9+si*3+(ss<0?-.5:ss)};
-const PERMS={roblox:"Edit Roblox names",ban:"Ban / unban players",grades:"Edit grades & board",reorder:"Reorder leaderboard",changelog:"Edit change log",logs:"View activity log",placements:"View placement history",stats:"View stats",export:"Export data (CSV)",fights:"Edit fight notes & cooldowns",clans:"Manage clans"};
-const STAFFP=["roblox","ban","grades","reorder","logs","placements","stats","export","fights","clans"];
+const PERMS={roblox:"Edit Roblox names",ban:"Ban / unban players",grades:"Edit grades & board",reorder:"Reorder leaderboard",changelog:"Edit change log",logs:"View activity log",placements:"View placement history",stats:"View stats",export:"Export data (CSV)",fights:"Edit fight notes & cooldowns",clans:"Manage clans",badges:"Manage badges"};
+const STAFFP=["roblox","ban","grades","reorder","logs","placements","stats","export","fights","clans","badges"];
 let roleDefs={},roleColors={};
 const roleCol=r=>/^#[0-9a-f]{6}$/i.test(roleColors[r]||"")?roleColors[r]:"";
 let clans=[],clanMem={},clanApps=[],clansOk=true,openClanId=null;
 const CLAN_C="#b9a8ff";
 const clanById=id=>clans.find(c=>c.id===id);
 const clanOf=id=>clanById(clanMem[id]);
+let sideMem={},sideOk=true;
+const sideOf=id=>clanById(sideMem[id]);
+const dg=n=>{const l=String(n==null?"":n).length;return l>=3?" d3":l===2?" d2":""};
 const clanCol=c=>/^#[0-9a-f]{6}$/i.test((c&&c.color)||"")?c.color:CLAN_C;
 const ctag=c=>`<b class="ctag" data-clan="${esc(c.id)}" title="${esc(c.name)}" style="color:${clanCol(c)}">[${esc(c.tag)}]</b>`;
-const clanMembers=c=>profiles.filter(p=>clanMem[p.id]===c.id);
+const clanMembers=c=>profiles.filter(p=>clanMem[p.id]===c.id||sideMem[p.id]===c.id);
 const cmSort=(a,b)=>(a.banned-b.banned)||(onB(b)-onB(a))||(onB(a)&&onB(b)?a.rank-b.rank:0)||score(b)-score(a)||String(a.name).localeCompare(String(b.name));
+const memSort=c=>(a,b)=>((c.owner===b.id)-(c.owner===a.id))||cmSort(a,b);
 const appsFor=c=>clanApps.filter(a=>a.clan_id===c.id);
 const canDecide=c=>!!uid&&(can("clans")||c.owner===uid);
 const myApps=()=>clanApps.filter(a=>a.user_id===uid);
 const byName=(a,b)=>String(a.name).localeCompare(String(b.name));
 let clanBack="board",cavMsg="";
-const cav=(c,cls)=>{const col=clanCol(c);return `<div class="av cav${cls?" "+cls:""}" style="border-color:${col};color:${col}"><span>${esc((c.tag||"").slice(0,3))}</span>${c.avatar?`<img src="${esc(c.avatar)}" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.remove()">`:""}</div>`};
+const cav=(c,cls)=>{const col=clanCol(c);return `<div class="av cav${cls?" "+cls:""}" style="border-color:${col};color:${col}">${c.avatar?`<img src="${esc(c.avatar)}" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.remove()">`:""}<span>${esc((c.tag||"").slice(0,3))}</span></div>`};
 const BADGE_OWNER="523755389544693791";
 let badges=[],badgeGrants=[],badgesOk=true,manageOpen=false,bd={name:"",pm:"",pb:""};
 const isS3=c=>!!c&&String(c.tag||"").toUpperCase()==="S3";
@@ -595,7 +643,7 @@ const staff=()=>isOwner||STAFFP.some(k=>can(k));
 const HOST_IDS=["1213453133175324784","523755389544693791",...((window.JJSGC_CONFIG||{}).hostIds||[])].map(String);
 const HOST_NAMES=["toojways","kyoum1i",...((window.JJSGC_CONFIG||{}).hostNames||[])].map(x=>String(x).toLowerCase());
 const isHost=p=>(!!p.discord&&HOST_IDS.includes(String(p.discord)))||(!!p.roblox&&HOST_NAMES.includes(String(p.roblox).toLowerCase()))||(p.roles||[]).some(r=>/^hosts?$/i.test(r))||(p.id===uid&&isOwner);
-const nmx=(p,noClan)=>{const c=nmCol(p),cl=noClan?null:clanOf(p.id);return (cl?ctag(cl):"")+`<span class="${isHost(p)&&!c?"flash":""}"${c?` style="color:${c};-webkit-text-fill-color:${c}"`:""}>${esc(p.name)}</span>`};
+const nmx=(p,noClan)=>{const c=nmCol(p),cl=noClan?null:clanOf(p.id),sd=noClan?null:sideOf(p.id);return (cl?ctag(cl):"")+(sd?ctag(sd):"")+`<span class="${isHost(p)&&!c?"flash":""}"${c?` style="color:${c};-webkit-text-fill-color:${c}"`:""}>${esc(p.name)}</span>`};
 const banTag=p=>p.banned?'<span class="host bn">Banned</span>':"";
 const tags=p=>(p.banned?'<span class="host bn">Banned</span>':"")+(isHost(p)?'<span class="host hostflash">Host</span>':"")+p.roles.filter(r=>!/^hosts?$/i.test(r)).map(badge).join("");
 /* rank badge: #1 yellow, #2 white, fading to pure black at #20+ */
@@ -755,7 +803,7 @@ function renderAuth(){
   if($("#login"))$("#login").disabled=!sb;
 }
 function row(p,i,rk){const on=p.ranked&&!p.banned;
-  return `<div class="lrow ${on&&rk<=3?"t3":""}" data-id="${esc(p.id)}"><span class="lrk">${on?rk:"—"}</span><div class="l">${av(p)}<div style="min-width:0"><div class="nm">${nmx(p)}${banTag(p)}</div><div class="pt">${on?esc(gl(p)):"Not competitive"} · ${rbA(p)}</div></div></div>${rbPic(p)}<span class="lrg">${p.region}</span></div>`;
+  return `<div class="lrow ${on&&rk<=3?"t3":""}" data-id="${esc(p.id)}"><span class="lrk${on?dg(rk):""}">${on?rk:"—"}</span><div class="l">${av(p)}<div style="min-width:0"><div class="nm">${nmx(p)}${banTag(p)}</div><div class="pt">${on?esc(gl(p)):"Not competitive"} · ${rbA(p)}</div></div></div>${rbPic(p)}<span class="lrg">${p.region}</span></div>`;
 }
 function hrow(p,i){
   return `<div class="card hrow" data-id="${esc(p.id)}" style="--i:${Math.min(i||0,14)}"><div class="l">${av(p)}<div style="min-width:0"><div class="nm">${nmx(p)}${tags(p)}</div><div class="pt">${esc(gl(p))} · ${rbA(p)} · ${p.region}${p.ranked?" · on board":""} · ${esc(p.discord)} · joined ${ago(p.created)}</div></div></div>
@@ -765,7 +813,7 @@ function go(v){
   if(v==="myclan"){const mc=uid&&clanMem[uid];if(mc){clanBack=pg==="clan"?clanBack:pg;openClanId=mc;v="clan"}else v="home"}
   if(v==="host"&&!staff())v="home";pg=v;
   const show=v==="board"?"list":v;
-  ["home","list","players","clans","clan","host"].forEach(k=>{const el=$("#v_"+k),on=k===show;el.hidden=!on;if(on){el.classList.remove("view");void el.offsetWidth;el.classList.add("view")}});
+  ["home","list","players","clans","clan","host","profile"].forEach(k=>{const el=$("#v_"+k),on=k===show;el.hidden=!on;if(on){el.classList.remove("view");void el.offsetWidth;el.classList.add("view")}});
     if(v==="host")loadAudit();render();window.scrollTo(0,0);
 }
 function render(){
@@ -792,6 +840,7 @@ function render(){
   }
   if(pg==="players")renderPlayers(board);
   if(pg==="clan")renderClanPage();
+  if(pg==="profile")renderProfilePage();
   if(pg==="clans")renderClansList();
   renderLog();setCloud();
 }
@@ -840,7 +889,7 @@ const hSort=(a,b)=>{const m=$("#hsort").value;
   if(m==="name")return String(a.name).localeCompare(String(b.name));
   return b.created-a.created};
 const fmt=t=>new Date(t).toLocaleString([],{dateStyle:"medium",timeStyle:"short"});
-const HT=[["over","Overview",()=>true],["players","Players",()=>true],["order","Order",()=>can("reorder")],["tools","Tools",()=>true],["access","Access",()=>isOwner],["roles","Roles",()=>isOwner],["clans","Clans",()=>can("clans")],["home","Home page",()=>isOwner],["logs","Activity log",()=>can("logs")],["place","Placements",()=>can("placements")],["stats","Stats",()=>can("stats")],["export","Export",()=>can("export")],["fights","Fight notes",()=>can("fights")]];
+const HT=[["over","Overview",()=>true],["players","Players",()=>true],["order","Order",()=>can("reorder")],["tools","Tools",()=>true],["access","Access",()=>isOwner],["roles","Roles",()=>isOwner],["clans","Clans",()=>can("clans")],["badges","Badge workshop",()=>can("badges")],["home","Home page",()=>isOwner],["logs","Activity log",()=>can("logs")],["place","Placements",()=>can("placements")],["stats","Stats",()=>can("stats")],["export","Export",()=>can("export")],["fights","Fight notes",()=>can("fights")]];
 function logEvent(action,kind,tid,tname,detail){
   if(!sb||!uid)return;
   sb.from("audit_log").insert({actor:uid,actor_name:(me&&me.name)||"?",action:String(action).slice(0,60),kind,target:tid||null,target_name:String(tname||"").slice(0,60),detail:String(detail||"").slice(0,300)})
@@ -857,7 +906,7 @@ function renderHost(board){
   if(!tabs.some(t=>t[0]===hostTab))hostTab="over";
   $("#hh").textContent="Panel";
   $("#htabs").innerHTML=tabs.map(t=>`<button class="tab ${t[0]===hostTab?"on":""}" data-ht="${t[0]}">${t[1]}</button>`).join("");
-  ["over","players","order","tools","access","roles","clans","home","logs","place","stats","export","fights"].forEach(k=>{$("#hp_"+k).hidden=k!==hostTab});
+  ["over","players","order","tools","access","roles","clans","badges","home","logs","place","stats","export","fights"].forEach(k=>{$("#hp_"+k).hidden=k!==hostTab});
   if(hostTab==="over")renderOverview(board);
   if(hostTab==="roles")renderRoles();
   if(hostTab==="logs")renderAuditList("#llist","#lcount",$("#lq").value,false,$("#lf").value);
@@ -869,6 +918,7 @@ function renderHost(board){
   if(hostTab==="export")$("#exL").disabled=!can("logs");
   if(hostTab==="fights")renderFights();
   if(hostTab==="clans")renderClansPanel();
+  if(hostTab==="badges")renderWorkshop();
   if(hostTab==="home")renderHomeEditor();
   document.querySelectorAll("[data-own]").forEach(x=>x.hidden=!isOwner);
 }
@@ -937,7 +987,7 @@ function renderLbTools(board){
   el.innerHTML=`<button class="solid" id="ordSave" ${dirty?"":"disabled"}>Save order</button><button class="ghost" id="ordDiscard">Cancel</button><button class="ghost" id="ordAuto" ${manual||dirty?"":"disabled"}>Back to automatic</button><span class="sub" style="margin:0 0 0 6px">Drag rows or use the arrows, then save.</span><span class="err" style="margin:0">${esc(ordMsg)}</span>`;
   $("#lbcols").hidden=true;$("#head").textContent="";
   $("#list").innerHTML=orderDraft.map((id,k)=>{const p=byId[id];if(!p)return"";
-    return `<div class="lrow edit ${k<3?"t3":""}" draggable="true" data-ord="${esc(id)}"><span class="ogrip">⋮⋮</span><span class="lrk">${k+1}</span><div class="l">${av(p)}<div style="min-width:0"><div class="nm">${nmx(p)}${banTag(p)}</div><div class="pt">${esc(gl(p))} · @${esc(p.roblox)}</div></div></div>${ordBtns(id,k,orderDraft.length)}</div>`}).join("")||`<div class="empty">No competitive players yet.</div>`;
+    return `<div class="lrow edit ${k<3?"t3":""}" draggable="true" data-ord="${esc(id)}"><span class="ogrip">⋮⋮</span><span class="lrk${dg(k+1)}">${k+1}</span><div class="l">${av(p)}<div style="min-width:0"><div class="nm">${nmx(p)}${banTag(p)}</div><div class="pt">${esc(gl(p))} · @${esc(p.roblox)}</div></div></div>${ordBtns(id,k,orderDraft.length)}</div>`}).join("")||`<div class="empty">No competitive players yet.</div>`;
 }
 function moveOrd(id,to){const k=orderDraft.indexOf(id);if(k<0)return;orderDraft.splice(k,1);orderDraft.splice(Math.max(0,Math.min(orderDraft.length,to)),0,id)}
 async function saveOrder(ids){
@@ -952,7 +1002,7 @@ function renderOrder(board){
   const ids=syncDraft(board);
   const byId=Object.fromEntries(profiles.map(p=>[p.id,p])),dirty=orderDraft.join()!==ids.join(),manual=board.some(p=>p.pos!=null);
   const rows=orderDraft.map((id,k)=>{const p=byId[id];if(!p)return"";const last=k===orderDraft.length-1;
-    return `<div class="orow" draggable="true" data-ord="${esc(id)}"><span class="ogrip">⋮⋮</span><span class="ork">${k+1}</span>${av(p)}<div style="min-width:0;flex:1"><div class="nm" style="font-size:15px">${esc(p.name)}</div><div class="pt">${esc(gl(p))} · ${p.region}</div></div><div class="obtn"><button class="ghost" data-mv="${esc(id)}" data-to="0" title="Move to top" ${k===0?"disabled":""}>⤒</button><button class="ghost" data-mv="${esc(id)}" data-to="${k-1}" ${k===0?"disabled":""}>▲</button><button class="ghost" data-mv="${esc(id)}" data-to="${k+1}" ${last?"disabled":""}>▼</button></div></div>`}).join("");
+    return `<div class="orow" draggable="true" data-ord="${esc(id)}"><span class="ogrip">⋮⋮</span><span class="ork${dg(k+1)}">${k+1}</span>${av(p)}<div style="min-width:0;flex:1"><div class="nm" style="font-size:15px">${esc(p.name)}</div><div class="pt">${esc(gl(p))} · ${p.region}</div></div><div class="obtn"><button class="ghost" data-mv="${esc(id)}" data-to="0" title="Move to top" ${k===0?"disabled":""}>⤒</button><button class="ghost" data-mv="${esc(id)}" data-to="${k-1}" ${k===0?"disabled":""}>▲</button><button class="ghost" data-mv="${esc(id)}" data-to="${k+1}" ${last?"disabled":""}>▼</button></div></div>`}).join("");
   $("#ordbox").innerHTML=`<div class="rbox"><div class="sl">Leaderboard order</div>
     <div class="sub">Drag rows or use the arrows, then save. ${manual?"The board is currently in a <b>manual</b> order.":"The board currently follows <b>grades</b> automatically."} Players without a manual spot slot in by grade.</div>
     <div class="acts" style="margin-top:12px"><button class="solid" id="ordSave" ${dirty?"":"disabled"}>Save order</button><button class="ghost" id="ordDiscard" ${dirty?"":"disabled"}>Discard changes</button><button class="ghost" id="ordAuto" ${manual||dirty?"":"disabled"}>Back to automatic</button></div>
@@ -1209,7 +1259,7 @@ function cmdBuild(){
   const q=$("#cmdq").value.trim().toLowerCase();
   const pages=[["home","Home"],["board","Leaderboard"],["players","Players"],["clans","Clans"]].map(([k,l])=>({t:"Go to "+l,s:"Page",f:()=>go(k)}));
   if(staff())HT.filter(t=>t[2]()).forEach(t=>pages.push({t:"Panel · "+t[1],s:"Panel",f:()=>{hostTab=t[0];go("host")}}));
-  const pl=q?profiles.filter(p=>(p.name+" "+p.roblox+" "+p.discord).toLowerCase().includes(q)).slice(0,8).map(p=>({t:p.name,s:"@"+p.roblox+" · "+p.region+(onB(p)?" · #"+p.rank:""),f:()=>{ranked();view(p)}})):[];
+  const pl=q?profiles.filter(p=>(p.name+" "+p.roblox+" "+p.discord).toLowerCase().includes(q)).slice(0,8).map(p=>({t:p.name,s:"@"+p.roblox+" · "+p.region+(onB(p)?" · #"+p.rank:""),f:()=>{ranked();openProfile(p.id)}})):[];
   cmdItems=pl.concat(pages.filter(i=>!q||i.t.toLowerCase().includes(q))).slice(0,10);
   if(cmdSel>=cmdItems.length)cmdSel=0;
   $("#cmdl").innerHTML=cmdItems.length?cmdItems.map((i,n)=>`<div class="ci ${n===cmdSel?"on":""}" data-ci="${n}"><b>${esc(i.t)}</b><span>${esc(i.s)}</span></div>`).join(""):`<div class="ci"><span>Nothing found</span></div>`;
@@ -1306,6 +1356,7 @@ const HOME_DEF={
     {t:"Something off?",b:"If anything is wrong (grade, name, region), **message the hosts** on Discord.",c:""}],
   clanTitle:"Clans",
   clanBody:"**How to join** \u2014 Open a clan\u2019s page (click the clan tag next to any member\u2019s name) and press **Apply to join**. The clan owner or a host accepts or declines your application. You can only be in one clan at a time, and some clans don\u2019t take applications.\n\n**How it\u2019s displayed** \u2014 Clan members get their clan tag in bold, in the clan\u2019s colour, in front of their name, like [TAG] Name. Every clan has its own page with its members, its strongest player and its placement.\n\n**Top clans** \u2014 Clans are also part of the general competitive scene: the hosts rank the top clans, and a clan\u2019s placement shows on its page.",
+  discord:"",
   credit:"Yes, this side was in fact been build foundationally by me, but ai had to carry the rest :sob:"
 };
 let homeSaved={},hcDraft=null,hcMsg="",hcBad=false,homeKey="";
@@ -1331,6 +1382,7 @@ function renderHome(){
   $("#h_ct").textContent=h.clanTitle;$("#h_cb").innerHTML=rich(h.clanBody);
   $("#clanbox").hidden=!(h.clanTitle.trim()||h.clanBody.trim());
   $("#h_credit").textContent=h.credit;$("#h_credit").hidden=!h.credit.trim();
+  {const dl=(h.discord||"").trim()||(CFG.discordUrl||"").trim()||"https://discord.com",a=$("#dcbtn");if(a)a.href=/^https?:\/\//i.test(dl)?dl:"https://discord.com"}
 }
 function hcSet(path,v){
   if(!hcDraft)return;const a=path.split(".");
@@ -1349,7 +1401,7 @@ function renderHomeEditor(){
     <div class="rbox"><div class="sl">Top of the page</div>
       ${inp("lead","Intro line",d.lead)}${inp("sub","Member count line (\u201c{count}\u201d becomes the live number)",d.sub)}
       <div class="cform" style="margin-top:0"><div>${inp("cta1","Button 1",d.cta1,40)}</div><div>${inp("cta2","Button 2",d.cta2,40)}</div></div>
-      ${inp("credit","Footer credit line",d.credit)}</div>
+      ${inp("credit","Footer credit line",d.credit)}${inp("discord","Official Discord invite link (button in the top bar)",d.discord,200)}</div>
     <div class="rbox"><div class="sl">Clans box</div>
       ${inp("clanTitle","Title",d.clanTitle,60)}${ta("clanBody","Text (blank line = new paragraph; leave title and text empty to hide the box)",d.clanBody,1500,12)}</div>
   </div><div class="col">
@@ -1441,7 +1493,7 @@ function view(p){
   editId=p.id;const self=(p.id===uid&&!p.banned)||isOwner,canEdit=self||can("grades")||can("ban");
   openModal(`<div style="display:flex;gap:14px;align-items:center"><span id="avtop">${av(p)}</span><div><h3>${nmx(p)}</h3><div class="sub">${rbA(p)} ↗</div></div>${rbPic(p).replace("rbpic","rbpic big")}</div>
   ${self?"":`<span class="badge">◈ Roblox name is self-reported</span>`}
-  <div class="kv"><span>Status</span><span>${p.banned?"Banned"+(p.reason?" — "+esc(p.reason):""):p.ranked?"Competitive #"+p.rank:"Not competitive"}</span><span>Grade</span><span>${p.ranked?esc(gl(p)):"—"}</span><span>Region</span><span>${REG[p.region]||"None"}</span>${clansOk?`<span>Clan</span><span>${clanOf(p.id)?ctag(clanOf(p.id))+esc(clanOf(p.id).name):"—"}</span>`:""}<span>Roles</span><span>${p.roles.length?`<span class="rchips">${p.roles.map(badge).join("")}</span>`:"—"}</span></div>
+  <div class="kv"><span>Status</span><span>${p.banned?"Banned"+(p.reason?" — "+esc(p.reason):""):p.ranked?"Competitive #"+p.rank:"Not competitive"}</span><span>Grade</span><span>${p.ranked?esc(gl(p)):"—"}</span><span>Region</span><span>${REG[p.region]||"None"}</span>${clansOk?`<span>Clan</span><span>${clanOf(p.id)?ctag(clanOf(p.id))+esc(clanOf(p.id).name)+(sideOf(p.id)?" · "+ctag(sideOf(p.id))+esc(sideOf(p.id).name):""):"—"}</span>`:""}<span>Roles</span><span>${p.roles.length?`<span class="rchips">${p.roles.map(badge).join("")}</span>`:"—"}</span></div>
   ${can("clans")&&clansOk?clanBox(p):""}
   ${canEdit?editor(p,false):""}<div class="err" id="err"></div>
   <div class="acts">${canEdit?`<button class="solid" id="save">Save</button>`:""}${isOwner?`<button class="ghost" id="del">Remove</button>`:""}<button class="ghost" id="x">Close</button></div>`);
@@ -1517,13 +1569,15 @@ async function loadProfiles(){
   const {data,error}=await sb.from("profiles").select("*");
   if(my!==loadSeq)return;
   if(error){demo=true;reason="Couldn’t load profiles: "+error.message;render();return}
-  const [rr,rc,cl,cm,ca,bgr,bgg]=await Promise.all([sb.from("roles").select("name,perms"),sb.rpc("registered_count"),sb.from("clans").select("*"),sb.from("clan_members").select("*"),sb.from("clan_apps").select("*"),sb.from("s3_badges").select("*"),sb.from("s3_badge_grants").select("*")]);
+  const [rr,rc,cl,cm,ca,bgr,bgg,cs,bdf,baw,px]=await Promise.all([sb.from("roles").select("name,perms"),sb.rpc("registered_count"),sb.from("clans").select("*"),sb.from("clan_members").select("*"),sb.from("clan_apps").select("*"),sb.from("s3_badges").select("*"),sb.from("s3_badge_grants").select("*"),sb.from("clan_side").select("*"),sb.from("badge_defs").select("*"),sb.from("badge_awards").select("*"),sb.from("profile_extra").select("*")]);
   if(my!==loadSeq)return;
   demo=false;reason="";
   rolesOk=!rr.error;
   if(!rr.error)roleDefs=Object.fromEntries(rr.data.map(r=>[r.name,(r.perms||"").split(",").map(x=>x.trim()).filter(x=>PERMS[x])]));
   if(!rr.error)roleColors=Object.fromEntries(rr.data.map(r=>[r.name,((r.perms||"").split(",").map(x=>x.trim()).find(x=>x.startsWith("c="))||"").slice(2)]));
   clansOk=!cl.error&&!cm.error;
+  sideOk=!cs.error;sideMem=sideOk?Object.fromEntries((cs.data||[]).map(m=>[m.user_id,m.clan_id])):{};
+  bgOk=!bdf.error&&!baw.error;bdefs=bgOk?(bdf.data||[]):[];bawards=bgOk?(baw.data||[]):[];pexOk=!px.error;pex=pexOk?Object.fromEntries((px.data||[]).map(r=>[r.user_id,r])):{};
   badgesOk=!bgr.error&&!bgg.error;badges=badgesOk?(bgr.data||[]).slice().sort((a,b)=>String(a.created_at).localeCompare(String(b.created_at))):[];badgeGrants=badgesOk?(bgg.data||[]):[];
   if(clansOk){clans=cl.data||[];clanMem=Object.fromEntries((cm.data||[]).map(m=>[m.user_id,m.clan_id]));clanApps=ca.error?[]:(ca.data||[])}else{clans=[];clanMem={};clanApps=[]}
   regN=(!rc.error&&typeof rc.data==="number")?rc.data:null;
@@ -1644,7 +1698,7 @@ function renderClansList(){
   const R=clans.filter(c=>!c.place).sort((a,b)=>(clanMembers(b).length-clanMembers(a).length)||byName(a,b)).filter(f);
   $("#clcount").textContent=`${P.length+R.length} clan${P.length+R.length===1?"":"s"}`;
   const row=c=>{const own=c.owner?profiles.find(p=>p.id===c.owner):null;
-    return `<div class="lrow cl" data-clan="${esc(c.id)}"><span class="lrk"${c.place?` style="${rkStyle(+c.place)}"`:""}>${c.place?esc(c.place):"—"}</span><div class="l">${cav(c)}<div style="min-width:0"><div class="nm">${ctag(c)}${esc(c.name)}</div><div class="pt">Leader: ${own?nmx(own,1):"—"}${c.descr?" · "+esc(c.descr):""}</div></div></div><span class="lrg">${clanMembers(c).length}</span></div>`};
+    return `<div class="lrow cl" data-clan="${esc(c.id)}"><span class="lrk${c.place?dg(c.place):""}"${c.place?` style="${rkStyle(+c.place)}"`:""}>${c.place?esc(c.place):"—"}</span><div class="l">${cav(c)}<div style="min-width:0"><div class="nm">${ctag(c)}${esc(c.name)}</div><div class="pt">Leader: ${own?nmx(own,1):"—"}${c.descr?" · "+esc(c.descr):""}</div></div></div><span class="lrg">${clanMembers(c).length}</span></div>`};
   box.innerHTML=(P.length||R.length)?P.map(row).join("")+(P.length&&R.length?`<div class="sl" style="margin:20px 0 6px 8px">Not placed yet</div>`:"")+R.map(row).join(""):`<div class="empty">${q?"No clans found.":"No clans yet."}</div>`;
 }
 function renderClanPage(){
@@ -1654,11 +1708,11 @@ function renderClanPage(){
   if(cedraft.id!==c.id){manageOpen=false;cedraft={id:c.id,name:c.name,tag:c.tag,color:clanCol(c),descr:c.descr||"",pick:""}}
   ranked();
   const m=clanMembers(c).sort(cmSort),top=m[0],n=m.filter(onB).length;
-  m.sort((a,b)=>(c.owner===b.id)-(c.owner===a.id));
-  const meP=profiles.find(p=>p.id===uid),inClan=!!clanMem[uid],mine=clanMem[uid]===c.id,pend=myApps().find(a=>a.clan_id===c.id);
+  m.sort(memSort(c));
+  const meP=profiles.find(p=>p.id===uid),inClan=!!clanMem[uid],mine=clanMem[uid]===c.id,pend=myApps().find(a=>a.clan_id===c.id),sideMine=sideMem[uid]===c.id,s3m=sideOk&&!!clanMem[uid]&&isS3(clanById(clanMem[uid])),canSide=s3m&&!sideMem[uid]&&!isS3(c)&&!mine;
   const apps=canDecide(c)?appsFor(c):[],own=c.owner?profiles.find(p=>p.id===c.owner):null;
   const canRem=p=>canDecide(c)&&(c.owner!==p.id||can("clans"));
-  const mrow=p=>`<div class="cmrow" data-id="${esc(p.id)}">${av(p)}<div style="min-width:0;flex:1"><div class="nm">${nmx(p,1)}${c.owner===p.id?'<span class="host">Leader</span>':""}${banTag(p)}${isS3(c)?bdgHtml(p.id):""}</div><div class="pt">${esc(gl(p))}${onB(p)?" · #"+p.rank:""} · @${esc(p.roblox)}</div></div>${canRem(p)?`<button class="ghost" data-crem="${esc(p.id)}">Remove</button>`:""}</div>`;
+  const mrow=p=>`<div class="cmrow" data-id="${esc(p.id)}">${av(p)}<div style="min-width:0;flex:1"><div class="nm">${nmx(p,1)}${c.owner===p.id?'<span class="host">Leader</span>':""}${sideMem[p.id]===c.id&&clanOf(p.id)?`<span class="host">Main: ${esc(clanOf(p.id).tag)}</span>`:""}${banTag(p)}${isS3(c)?bdgHtml(p.id):""}</div><div class="pt">${esc(gl(p))}${onB(p)?" · #"+p.rank:""} · @${esc(p.roblox)}</div></div>${canRem(p)?`<button class="ghost" ${sideMem[p.id]===c.id?"data-srem":"data-crem"}="${esc(p.id)}">Remove</button>`:""}</div>`;
   const arow=a=>{const p=profiles.find(x=>x.id===a.user_id);return `<div class="cmrow" data-id="${esc(a.user_id)}">${p?av(p):""}<div style="min-width:0;flex:1"><div class="nm">${p?nmx(p,1):"Unknown player"}</div><div class="pt">${p?esc(gl(p)):""}</div></div><button class="solid" data-cacc="${esc(a.id)}">Accept</button><button class="ghost" data-cdec="${esc(a.id)}">Decline</button></div>`};
   const bm=isS3(c)&&canBadge()?`<div class="rbox" style="margin-top:22px"><div class="sl">S3 badges</div>${badgesOk?`<div class="cform" style="grid-template-columns:1fr auto;align-items:end"><div><label>New badge name</label><input data-bd="name" maxlength="20" value="${esc(bd.name)}" placeholder="e.g. Founder" autocomplete="off"></div><button class="solid" data-bdnew="1">Create badge</button></div>
     <div class="cform" style="grid-template-columns:1fr 1fr auto;align-items:end;margin-top:12px"><div><label>Member</label><select data-bd="pm"><option value="">\u2014 Pick a member \u2014</option>${m.map(p=>`<option value="${esc(p.id)}" ${p.id===bd.pm?"selected":""}>${esc(p.name)}</option>`).join("")}</select></div><div><label>Badge</label><select data-bd="pb"><option value="">\u2014 Pick a badge \u2014</option>${badges.map(b=>`<option value="${esc(b.id)}" ${b.id===bd.pb?"selected":""}>${esc(b.name)}</option>`).join("")}</select></div><button class="solid" data-bdgive="1">Give</button></div>
@@ -1668,12 +1722,13 @@ function renderClanPage(){
   if(isS3(c)&&!mine)note="rich";
   else if(!uid)note="Sign in with Discord to apply.";
   else if(!mine&&pend)note="Your application is waiting for the owner or a host.";
-  else if(!mine&&inClan)note="You’re already in a clan.";
+  else if(!mine&&!sideMine&&inClan&&!canSide)note=s3m&&sideMem[uid]?"You already have a second clan.":"You’re already in a clan.";
   else if(!mine&&c.closed)note="This clan isn’t accepting applications.";
   else if(!mine&&(!meP||meP.banned))note="Finish registering on the site to apply.";
   const btns=(uid&&mine&&c.owner!==uid?`<button class="ghost danger" data-cleave="1">Leave clan</button>`:"")
+    +(uid&&sideMine&&c.owner!==uid?`<button class="ghost danger" data-sleave="1">Leave clan</button>`:"")
     +(uid&&!mine&&pend?`<button class="ghost" data-ccancel="${esc(c.id)}">Cancel application</button>`:"")
-    +(uid&&!mine&&!pend&&!c.closed&&!inClan&&!isS3(c)&&meP&&!meP.banned?`<button class="solid" data-capply="${esc(c.id)}">Apply to join</button>`:"")
+    +(uid&&!mine&&!sideMine&&!pend&&!c.closed&&(!inClan||canSide)&&!isS3(c)&&meP&&!meP.banned?`<button class="solid" data-capply="${esc(c.id)}">Apply to join</button>`:"")
     +(canDecide(c)?`<button class="ghost" data-cmanage="1">${manageOpen?"Hide manage":"Manage clan"}</button>`:"")
     +(can("clans")?`<button class="ghost" data-cedit="${esc(c.id)}">Edit in panel</button>`:"");
   box.innerHTML=`<button class="ghost" data-go="${esc(clanBack||"board")}">← Back</button>
@@ -1699,7 +1754,7 @@ function renderClanPage(){
   <div class="sl" style="margin:26px 0 6px">Members · ${m.length}</div>
   <div>${m.map(mrow).join("")||`<div class="empty">No members yet.</div>`}</div>`;
 }
-const clanBox=p=>{const cur=clanMem[p.id]||"";return `<div class="cform" style="margin-top:18px;grid-template-columns:1fr auto;align-items:end"><div><label>Clan</label><select id="pf_clan"><option value="">— No clan —</option>${clans.slice().sort(byName).map(c=>`<option value="${esc(c.id)}" ${c.id===cur?"selected":""}>[${esc(c.tag)}] ${esc(c.name)}</option>`).join("")}</select></div><button class="solid" data-pclan="${esc(p.id)}">Set clan</button></div>`};
+const clanBox=p=>{const cur=clanMem[p.id]||"",s3p=sideOk&&!!cur&&isS3(clanById(cur)),sc=sideMem[p.id]||"",sbox=s3p?`<div class="cform" style="margin-top:12px;grid-template-columns:1fr auto;align-items:end"><div><label>Second clan (S3 members only)</label><select id="pf_side"><option value="">— None —</option>${clans.filter(c=>!isS3(c)).sort(byName).map(c=>`<option value="${esc(c.id)}" ${c.id===sc?"selected":""}>[${esc(c.tag)}] ${esc(c.name)}</option>`).join("")}</select></div><button class="solid" data-pside="${esc(p.id)}">Set</button></div>`:"";return `<div class="cform" style="margin-top:18px;grid-template-columns:1fr auto;align-items:end"><div><label>Clan</label><select id="pf_clan"><option value="">— No clan —</option>${clans.slice().sort(byName).map(c=>`<option value="${esc(c.id)}" ${c.id===cur?"selected":""}>[${esc(c.tag)}] ${esc(c.name)}</option>`).join("")}</select></div><button class="solid" data-pclan="${esc(p.id)}">Set clan</button></div>`+sbox};
 function renderClansPanel(){
   const box=$("#cbox"),ae=document.activeElement;
   if(ae&&box.contains(ae)&&/^(INPUT|TEXTAREA|SELECT)$/.test(ae.tagName))return;
@@ -1724,12 +1779,182 @@ function renderClansPanel(){
     <div class="cform"><div><label>Player</label><select data-cf="ap">${popt(d.ap,"— Pick a player —")}</select></div>
     <div><label>Clan</label><select data-cf="ac">${copt}</select></div></div>
     <div class="acts"><button class="solid" id="cAssign">Apply</button></div>
-    <div class="sub" style="margin-top:10px">A player can only be in one clan. Choosing “No clan” takes them out of theirs. Their name then shows the clan tag in bold everywhere.</div></div>
+    <div class="sub" style="margin-top:10px">A player can only be in one clan, except Sanctuary 3 (S3) members: they keep S3 and get the chosen clan as a second one. Choosing “No clan” takes them out of theirs. Their name then shows the clan tag in bold everywhere.</div></div>
   <div class="rbox"><div class="sl">Pending applications · ${apps.length}</div>
     ${apps.map(a=>{const q=profiles.find(x=>x.id===a.user_id),c=clanById(a.clan_id);return `<div class="rrow"><span>${q?nmx(q,1):"?"} → ${ctag(c)}${esc(c.name)}</span><span class="sub" style="margin:0;flex:1">${esc(a.message||"")}</span><div class="obtn"><button class="solid" data-cacc="${esc(a.id)}">Accept</button><button class="ghost" data-cdec="${esc(a.id)}">Decline</button></div></div>`}).join("")||`<div class="sub">None right now.</div>`}</div>
   <div class="rbox"><div class="sl">Clans · ${clans.length}</div>
     ${ord.map(c=>{const ow=profiles.find(q=>q.id===c.owner);return `<div class="rrow"><span>${ctag(c)}<b>${esc(c.name)}</b></span><span class="sub" style="margin:0;flex:1">${clanMembers(c).length} member(s)${c.place?" · placement #"+c.place:""}${c.closed?" · closed":""}${ow?" · owner "+esc(ow.name):""}</span><div class="obtn"><button class="ghost" data-clan="${esc(c.id)}">View</button><button class="ghost" data-cedit="${esc(c.id)}">Edit</button><button class="ghost danger" data-cdel="${esc(c.id)}">Delete</button></div></div>`}).join("")||`<div class="sub">No clans yet.</div>`}</div>`;
 }
+/* ---- profile page + badges ---- */
+let bdefs=[],bawards=[],bgOk=true,pex={},pexOk=true,profId=null,profBack="board";
+const BCOL="#b9a8ff";
+const bcol=c=>/^#[0-9a-f]{6}$/i.test(c||"")?c:BCOL;
+const AUTO=[
+ {id:"a_reg",n:"Registered",i:"✦",c:"#cfcfd6",d:"Joined the site",t:()=>true},
+ {id:"a_board",n:"On the Board",i:"🏆",c:"#f2b800",d:"Placed on the leaderboard",t:p=>onB(p)},
+ {id:"a_t10",n:"Top 10",i:"🔟",c:"#6db4ff",d:"Reached the top 10",t:p=>onB(p)&&p.rank<=10},
+ {id:"a_t3",n:"Podium",i:"🥈",c:"#c3c8d0",d:"Reached the top 3",t:p=>onB(p)&&p.rank<=3},
+ {id:"a_champ",n:"Champion",i:"👑",c:"#f6c445",d:"Number one on the board",t:p=>onB(p)&&p.rank===1},
+ {id:"a_sg1",n:"Special Grade 1+",i:"⚡",c:"#a99bff",d:"Special Grade 1 or higher",t:p=>onB(p)&&(p.grade==="SG"||p.grade==="SG1")},
+ {id:"a_sg",n:"Special Grade",i:"🌌",c:"#ff6b9a",d:"Reached Special Grade",t:p=>onB(p)&&p.grade==="SG"},
+ {id:"a_clan",n:"Clan Member",i:"🛡️",c:"#5ee07e",d:"Part of a clan",t:p=>!!clanMem[p.id]},
+ {id:"a_lead",n:"Clan Leader",i:"⚔️",c:"#ff8a5a",d:"Leads a clan",t:p=>clans.some(c=>c.owner===p.id)},
+ {id:"a_dual",n:"Double Allegiance",i:"🔗",c:"#b9a8ff",d:"S3 member with a second clan",t:p=>!!sideMem[p.id]},
+ {id:"a_vet",n:"Veteran",i:"⏳",c:"#d98a4a",d:"A member for over 30 days",t:p=>!!p.created&&Date.now()-p.created>30*864e5},
+ {id:"a_staff",n:"Staff",i:"🔧",c:"#7be0a0",d:"Part of the team",t:p=>isHost(p)||p.roles.length>0}
+];
+function badgeList(p){
+  const got=new Set(bawards.filter(a=>a.user_id===p.id).map(a=>a.badge_id));
+  const A=AUTO.map(a=>({id:a.id,n:a.n,i:a.i,c:a.c,d:a.d,ok:!!a.t(p),auto:true}));
+  const M=bdefs.slice().sort((a,b)=>String(a.created_at).localeCompare(String(b.created_at))).map(b=>({id:b.id,n:b.name,i:b.icon,c:bcol(b.color),d:b.descr,ok:got.has(b.id),auto:false}));
+  return A.concat(M);
+}
+function bcard(b){return `<div class="bgc ${b.ok?"":"lock"}" title="${esc(b.d)}" style="--bc:${esc(b.c)}"><div class="bic">${esc(b.i)}</div><b>${esc(b.n)}</b><span>${esc(b.d)}</span><em>${b.ok?(b.auto?"Earned":"Awarded"):"Locked"}</em></div>`}
+function openProfile(id){
+  if(!profiles.some(p=>p.id===id))return;
+  if($("#modal").classList.contains("open"))closeModal();
+  if(pg!=="profile")profBack=pg;profId=id;go("profile");
+}
+function renderProfilePage(){
+  const box=$("#prof_box"),p=profiles.find(x=>x.id===profId);
+  if(!p){if(loaded)go("home");return}
+  ranked();
+  const ex=pex[p.id]||{},on=onB(p),cl=clanOf(p.id),sd=sideOf(p.id);
+  const self=(p.id===uid&&!p.banned)||isOwner,canEdit=self||can("grades")||can("ban");
+  const L=badgeList(p).sort((a,b)=>b.ok-a.ok),got=L.filter(b=>b.ok).length,pct=L.length?Math.round(100*got/L.length):0;
+  const col=cl?clanCol(cl):"#8f86d6";
+  const bn=ex.banner?`background-image:url('${esc(ex.banner)}')`:`background:linear-gradient(120deg,${col}66,#0b0b12 60%,${col}33)`;
+  const clanTxt=cl?ctag(cl)+esc(cl.name)+(sd?`<div class="pt" style="margin-top:4px">${ctag(sd)}${esc(sd.name)}</div>`:""):"—";
+  box.innerHTML=`<button class="ghost" data-go="${esc(profBack||"board")}">← Back</button>
+  <div class="pf-card" style="margin-top:12px"><div class="pf-ban" style="${bn}"><span class="pf-c1">Joined ${esc(p.created?new Date(p.created).toLocaleDateString([],{dateStyle:"medium"}):"—")}</span>${on?`<span class="pf-c2">#${p.rank} on the board</span>`:""}</div>
+   <div class="pf-head"><div class="pf-avc">${av(p)}<div class="pf-rank"><b>${on?"#"+p.rank:"—"}</b><span>RANK</span></div></div>
+    <div class="pf-info"><div class="pf-name">${nmx(p)}</div>
+     <div class="pf-bio ${ex.bio?"":"dim"}">${ex.bio?esc(ex.bio):"No bio yet."}</div>
+     <div class="pt" style="margin-top:8px">${rbA(p)} ↗ ${tags(p)?`<span style="margin-left:6px">${tags(p)}</span>`:""}</div></div>
+    <div class="pf-act">${self&&pexOk?`<button class="solid" data-pfcust="1">Customize</button>`:""}${canEdit?`<button data-pfedit="1">Edit profile</button>`:""}${cl?`<button class="ghost" data-clan="${esc(cl.id)}">View clan</button>`:""}${can("badges")&&bgOk?`<button class="ghost" data-pfwork="1">Badge workshop</button>`:""}</div></div></div>
+  <h3 class="pf-h">Badge progress</h3><div class="pbar"><i style="width:${pct}%"></i></div>
+  <div class="tiles pf-tiles"><div class="tile"><span>Grade</span><b class="sm">${on?esc(gl(p)):"—"}</b><em>${on?"Competitive":p.banned?"Banned":"Not competitive"}</em></div>
+   <div class="tile"><span>Region</span><b>${p.region==="None"?"—":esc(p.region)}</b><em>${esc(REG[p.region]||"None")}</em></div>
+   <div class="tile"><span>Rank</span><b>${on?"#"+p.rank:"—"}</b><em>${on?"Leaderboard":"Not placed"}</em></div>
+   <div class="tile"><span>Clan</span><b class="sm" style="white-space:normal">${clanTxt}</b></div>
+   <div class="tile"><span>Badges</span><b>${got}<small style="font-size:14px;color:var(--dim)"> / ${L.length}</small></b><em>${pct}% unlocked</em></div></div>
+  <h3 class="pf-h">Badges</h3><div class="bgrid">${L.map(bcard).join("")}</div>`;
+}
+function openCustomize(p){
+  if(!p)return;const ex=pex[p.id]||{};
+  openModal(`<h3>Customize profile</h3><label>Bio</label><textarea class="hta" id="cuBio" maxlength="240" placeholder="Tell people about yourself…">${esc(ex.bio||"")}</textarea>
+  <label>Banner</label><div class="avbtn"><button type="button" class="ghost" id="bnpick">Change banner</button>${ex.banner?`<button type="button" class="ghost" id="bnreset">Remove banner</button>`:""}</div><input type="file" id="bnfile" accept="image/*" hidden>
+  <div class="sub" id="bnmsg" style="margin-top:8px"></div><div class="err" id="err"></div>
+  <div class="acts"><button class="solid" id="cuSave">Save bio</button><button class="ghost" id="x">Close</button></div>`);
+}
+async function saveBio(){
+  const p=profiles.find(x=>x.id===profId);if(!p||!sb||!uid)return;
+  const r=await sb.rpc("set_bio",{target:p.id,b:($("#cuBio").value||"").trim().slice(0,240)});
+  if(r.error)return $("#err").textContent="Couldn’t save: "+r.error.message+" (has badges_profiles.sql been run?)";
+  closeModal();await loadProfiles();
+}
+async function setBanner(file){
+  const p=profiles.find(x=>x.id===profId),say=m=>{const e=$("#bnmsg");if(e)e.textContent=m};
+  if(!p||!sb||!uid)return say("Sign in first.");
+  if(!((p.id===uid&&!p.banned)||isOwner))return say("You can’t change this banner.");
+  if(!file||!/^image\//.test(file.type))return say("Choose an image file.");
+  if(file.size>8*1024*1024)return say("That image is over 8 MB.");
+  say("Uploading…");
+  try{
+    const bmp=await createImageBitmap(file),W=1200,H=300,c=document.createElement("canvas");c.width=W;c.height=H;
+    const k=Math.max(W/bmp.width,H/bmp.height),w=bmp.width*k,h=bmp.height*k;
+    c.getContext("2d").drawImage(bmp,(W-w)/2,(H-h)/2,w,h);
+    let type="image/webp",blob=await new Promise(r=>c.toBlob(r,type,.85));
+    if(!blob||blob.type!==type){type="image/jpeg";blob=await new Promise(r=>c.toBlob(r,type,.85))}
+    if(!blob)throw new Error("Couldn’t read that image.");
+    const path=p.id+"/banner";
+    let r=await sb.storage.from("avatars").upload(path,blob,{upsert:true,contentType:type,cacheControl:"3600"});
+    if(r.error)throw r.error;
+    const url=sb.storage.from("avatars").getPublicUrl(path).data.publicUrl+"?v="+Date.now();
+    r=await sb.rpc("set_banner",{target:p.id,url});if(r.error)throw r.error;
+    await loadProfiles();openCustomize(profiles.find(x=>x.id===p.id));const e=$("#bnmsg");if(e)e.textContent="Banner updated.";
+  }catch(e){say("Couldn’t update the banner: "+(e.message||"failed")+" (has badges_profiles.sql been run?)")}
+}
+async function resetBanner(){
+  const p=profiles.find(x=>x.id===profId);if(!p||!sb||!uid)return;
+  const r=await sb.rpc("set_banner",{target:p.id,url:null});
+  if(r.error){const e=$("#bnmsg");if(e)e.textContent="Couldn’t remove it: "+r.error.message;return}
+  sb.storage.from("avatars").remove([p.id+"/banner"]);
+  await loadProfiles();openCustomize(profiles.find(x=>x.id===p.id));const e=$("#bnmsg");if(e)e.textContent="Banner removed.";
+}
+document.addEventListener("change",e=>{if(e.target&&e.target.id==="bnfile"){const f=e.target.files[0];e.target.value="";setBanner(f)}});
+
+/* ---- badge workshop (Panel > Badge workshop, needs "Manage badges") ---- */
+const wblank=()=>({id:"",name:"",ds:"",ic:"🏅",col:BCOL,ap:"",ab:"",vb:""});
+let wk=wblank(),wmsg="";
+const wprev=()=>bcard({n:wk.name||"Badge name",i:wk.ic||"🏅",c:bcol(wk.col),d:wk.ds||"Description",ok:true,auto:false});
+function renderWorkshop(){
+  const box=$("#wbox");if(!box)return;const ae=document.activeElement;
+  if(ae&&box.contains(ae)&&/^(INPUT|TEXTAREA|SELECT)$/.test(ae.tagName))return;
+  if(!bgOk){box.innerHTML=`<div class="rbox"><div class="sl">Badge workshop</div><div class="sub" style="margin-top:8px">Badges aren’t set up yet. Run <b>badges_profiles.sql</b> in the Supabase SQL editor, then reload the page.</div></div>`;return}
+  const pl=profiles.slice().sort(byName),cnt=id=>bawards.filter(a=>a.badge_id===id).length;
+  const defs=bdefs.slice().sort((a,b)=>String(a.created_at).localeCompare(String(b.created_at)));
+  const holders=wk.vb?bawards.filter(a=>a.badge_id===wk.vb):[];
+  box.innerHTML=`${wmsg?`<div class="${/^(Saved|Awarded|Removed|Deleted)/.test(wmsg)?"fmsg":"fmsg bad"}" style="margin:0 0 12px">${esc(wmsg)}</div>`:""}
+  <div class="tgrid"><div class="col">
+   <div class="rbox"><div class="sl">${wk.id?"Edit badge":"Create a badge"}</div>
+    <div class="cform"><div><label>Name</label><input data-wk="name" maxlength="24" value="${esc(wk.name)}" placeholder="e.g. Tournament Winner" autocomplete="off"></div>
+    <div><label>Icon (emoji)</label><input data-wk="ic" maxlength="8" value="${esc(wk.ic)}" autocomplete="off"></div>
+    <div class="cwide"><label>Description (how to earn it)</label><input data-wk="ds" maxlength="120" value="${esc(wk.ds)}" placeholder="Short line shown under the badge" autocomplete="off"></div>
+    <div><label>Colour</label><input type="color" class="rcol" data-wk="col" value="${esc(bcol(wk.col))}"></div>
+    <div><label>Preview</label><div id="wkPrev" style="max-width:140px">${wprev()}</div></div></div>
+    <div class="acts"><button class="solid" id="wkSave">${wk.id?"Save changes":"Create badge"}</button>${wk.id?`<button class="ghost" id="wkCancel">Cancel</button>`:""}</div></div>
+   <div class="rbox"><div class="sl">Automatic badges</div><div class="sub" style="margin-top:8px">Earned from site activity, can’t be edited:</div><div class="rchips" style="margin-top:10px">${AUTO.map(a=>`<span class="host" title="${esc(a.d)}">${esc(a.i)} ${esc(a.n)}</span>`).join("")}</div></div>
+  </div><div class="col">
+   <div class="rbox"><div class="sl">Award a badge</div>
+    <div class="cform"><div><label>Player</label><select data-wk="ap"><option value="">— Pick a player —</option>${pl.map(p=>`<option value="${esc(p.id)}" ${p.id===wk.ap?"selected":""}>${esc(p.name)} (@${esc(p.roblox)})</option>`).join("")}</select></div>
+    <div><label>Badge</label><select data-wk="ab"><option value="">— Pick a badge —</option>${defs.map(b=>`<option value="${esc(b.id)}" ${b.id===wk.ab?"selected":""}>${esc(b.icon)} ${esc(b.name)}</option>`).join("")}</select></div></div>
+    <div class="acts"><button class="solid" data-wkgive="1">Award</button></div></div>
+   <div class="rbox"><div class="sl">Who has it</div>
+    <div style="margin-top:8px"><select data-wk="vb"><option value="">— Pick a badge —</option>${defs.map(b=>`<option value="${esc(b.id)}" ${b.id===wk.vb?"selected":""}>${esc(b.icon)} ${esc(b.name)} · ${cnt(b.id)}</option>`).join("")}</select></div>
+    <div style="margin-top:8px">${wk.vb?(holders.map(a=>{const q=profiles.find(x=>x.id===a.user_id);return `<div class="mini" style="display:flex;justify-content:space-between;align-items:center;gap:10px"><span><b>${q?esc(q.name):"Unknown"}</b></span><button class="ghost" style="padding:5px 10px" data-wkrev="${esc(a.badge_id)}" data-wku="${esc(a.user_id)}">Revoke</button></div>`}).join("")||`<div class="sub">Nobody has this badge yet.</div>`):`<div class="sub">Pick a badge to see who holds it.</div>`}</div></div>
+  </div></div>
+  <div class="rbox" style="margin-top:14px"><div class="sl">Badges · ${defs.length}</div>
+   ${defs.map(b=>`<div class="rrow"><span style="display:flex;align-items:center;gap:10px"><span class="bic" style="--bc:${esc(bcol(b.color))};width:38px;height:38px;font-size:19px;margin:0">${esc(b.icon)}</span><span><b>${esc(b.name)}</b><div class="pt" style="white-space:normal">${esc(b.descr)}</div></span></span><span class="sub" style="margin:0;flex:1">${cnt(b.id)} holder(s)</span><div class="obtn"><button class="ghost" data-wkedit="${esc(b.id)}">Edit</button><button class="ghost danger" data-wkdel="${esc(b.id)}">Delete</button></div></div>`).join("")||`<div class="sub">No custom badges yet — create the first one above.</div>`}</div>`;
+}
+async function bRpc(fn,args){
+  const r=await sb.rpc(fn,args);
+  if(r.error){wmsg=r.error.message;renderWorkshop();return false}
+  await loadProfiles();return true;
+}
+async function wkSave(){
+  if(!sb||!can("badges"))return;
+  const nm=(wk.name||"").trim(),ic=(wk.ic||"").trim()||"🏅",ed=!!wk.id;
+  if(!nm){wmsg="Give the badge a name.";return renderWorkshop()}
+  if(await bRpc("badge_save",{bid:wk.id||null,nm,ds:(wk.ds||"").trim(),ic,col:bcol(wk.col)})){
+    logEvent(ed?"badge edited":"badge created","general",null,nm,"");wk=Object.assign(wblank(),{vb:wk.vb});wmsg="Saved.";renderWorkshop()}
+}
+document.addEventListener("input",e=>{const k=e.target&&e.target.dataset&&e.target.dataset.wk;if(!k||e.target.tagName==="SELECT")return;wk[k]=e.target.value;const pv=$("#wkPrev");if(pv)pv.innerHTML=wprev()});
+document.addEventListener("change",e=>{const t=e.target,k=t&&t.dataset&&t.dataset.wk;if(!k||t.tagName!=="SELECT")return;wk[k]=t.value;t.blur();renderWorkshop()});
+document.addEventListener("click",async e=>{
+  const t=e.target;if(!t.closest)return;
+  if(t.closest("[data-pfedit]")){const p=profiles.find(x=>x.id===profId);if(p){ranked();view(p)}return}
+  if(t.closest("[data-pfcust]")){openCustomize(profiles.find(x=>x.id===profId));return}
+  if(t.closest("[data-pfwork]")){hostTab="badges";return go("host")}
+  if(t.closest("#bnpick")){const f=$("#bnfile");if(f)f.click();return}
+  if(t.closest("#bnreset"))return resetBanner();
+  if(t.closest("#cuSave"))return saveBio();
+  if(t.closest("#wkSave"))return wkSave();
+  if(t.closest("#wkCancel")){wk=Object.assign(wblank(),{vb:wk.vb});wmsg="";return renderWorkshop()}
+  const wke=t.closest("[data-wkedit]");
+  if(wke){const b=bdefs.find(x=>x.id===wke.dataset.wkedit);if(b){wk=Object.assign(wblank(),{id:b.id,name:b.name,ds:b.descr,ic:b.icon,col:bcol(b.color),vb:wk.vb});wmsg="";renderWorkshop()}return}
+  const wkd=t.closest("[data-wkdel]");
+  if(wkd){if(!can("badges"))return;const b=bdefs.find(x=>x.id===wkd.dataset.wkdel);if(!confirm("Delete the badge “"+(b?b.name:"")+"” and take it from everyone?"))return;
+    if(await bRpc("badge_delete",{bid:wkd.dataset.wkdel})){logEvent("badge deleted","general",null,b?b.name:"","");if(wk.id===wkd.dataset.wkdel)wk=wblank();if(wk.vb===wkd.dataset.wkdel)wk.vb="";if(wk.ab===wkd.dataset.wkdel)wk.ab="";wmsg="Deleted.";renderWorkshop()}return}
+  if(t.closest("[data-wkgive]")){if(!can("badges"))return;
+    if(!wk.ap||!wk.ab){wmsg="Pick a player and a badge.";return renderWorkshop()}
+    const q=profiles.find(x=>x.id===wk.ap),b=bdefs.find(x=>x.id===wk.ab);
+    if(await bRpc("badge_award",{bid:wk.ab,target:wk.ap})){logEvent("badge awarded","general",wk.ap,q?q.name:"",b?b.name:"");wmsg="Awarded.";renderWorkshop()}return}
+  const wkr=t.closest("[data-wkrev]");
+  if(wkr){if(!can("badges"))return;const q=profiles.find(x=>x.id===wkr.dataset.wku),b=bdefs.find(x=>x.id===wkr.dataset.wkrev);
+    if(!confirm("Take “"+(b?b.name:"this badge")+"” from "+(q?q.name:"this player")+"?"))return;
+    if(await bRpc("badge_revoke",{bid:wkr.dataset.wkrev,target:wkr.dataset.wku})){logEvent("badge revoked","general",wkr.dataset.wku,q?q.name:"",b?b.name:"");wmsg="Removed.";renderWorkshop()}return}
+});
 async function refreshAuth(){
   const {data:{session}}=await sb.auth.getSession();
   uid=session?session.user.id:null;isOwner=false;me=null;myDiscord="";
@@ -1762,13 +1987,13 @@ document.addEventListener("click",async e=>{
   if(bdd){if(!canBadge()||!confirm("Delete this badge and remove it from everyone?"))return;const r=await sb.from("s3_badges").delete().eq("id",bdd.dataset.bddel);if(r.error)return alert(r.error.message);await loadProfiles();return}
   if(t.closest("[data-bdnew]")){if(!canBadge())return;const n=(bd.name||"").trim().slice(0,20);if(!n)return alert("Enter a badge name.");const r=await sb.from("s3_badges").insert({name:n});if(r.error)return alert(r.error.message);bd.name="";await loadProfiles();return}
   if(t.closest("[data-bdgive]")){if(!canBadge())return;if(!bd.pm||!bd.pb)return alert("Pick a member and a badge.");const r=await sb.from("s3_badge_grants").insert({badge_id:bd.pb,user_id:bd.pm});if(r.error&&r.error.code!=="23505")return alert(r.error.message);await loadProfiles();return}
-  const cap=t.closest("[data-capply]");if(cap){await clanRpc("clan_apply",{cid:cap.dataset.capply});return}
+  const cap=t.closest("[data-capply]");if(cap){await clanRpc(clanMem[uid]?"side_apply":"clan_apply",{cid:cap.dataset.capply});return}
   const ces=t.closest("[data-cesave]");
   if(ces){const d=cedraft,cn=clanById(ces.dataset.cesave);if(!cn||!canDecide(cn))return;
     if(await clanRpc("clan_edit",{cid:cn.id,nm:(d.name||"").trim(),tg:(d.tag||"").trim().toUpperCase(),col:d.color,ds:(d.descr||"").trim()})){logEvent("clan edited","general",null,d.name,"["+(d.tag||"").toUpperCase()+"]");cedraft={id:"",name:"",tag:"",color:CLAN_C,descr:"",pick:""};render()}return}
   const cea=t.closest("[data-ceadd]");
   if(cea){const cn=clanById(cea.dataset.ceadd),pid=cedraft.pick;if(!cn||!canDecide(cn))return;if(!pid)return alert("Pick a player first.");
-    const q=profiles.find(x=>x.id===pid);if(await clanRpc("clan_add_member",{cid:cn.id,target:pid})){logEvent("clan member added","general",pid,q?q.name:"",cn.name);cedraft.pick="";render()}return}
+    const q=profiles.find(x=>x.id===pid);if(await clanRpc(clanMem[pid]?"side_set":"clan_add_member",{cid:String(cn.id),target:pid})){logEvent("clan member added","general",pid,q?q.name:"",cn.name);cedraft.pick="";render()}return}
   const cpl=t.closest("[data-cplace]");
   if(cpl){if(!can("clans"))return;const v=cpl.dataset.clear?null:parseInt(($("#cplace")||{}).value,10);if(v!==null&&!(v>=1&&v<=999))return alert("Enter a placement from 1 to 999.");
     const cn=clanById(cpl.dataset.cplace);if(await clanRpc("clan_set_place",{cid:cpl.dataset.cplace,pl:v}))logEvent("clan placement","general",null,cn?cn.name:"",v==null?"cleared":"#"+v);return}
@@ -1780,7 +2005,14 @@ document.addEventListener("click",async e=>{
   if(t.closest("[data-cleave]")){if(!confirm("Leave this clan?"))return;if(await clanRpc("clan_leave",{}))reopenClan();return}
   const cac=t.closest("[data-cacc],[data-cdec]");
   if(cac){const acc=cac.hasAttribute("data-cacc"),id=acc?cac.dataset.cacc:cac.dataset.cdec,a=clanApps.find(x=>x.id===id),ap=a&&profiles.find(q=>q.id===a.user_id),cn=a&&clanById(a.clan_id);
-    if(await clanRpc("clan_decide",{app:id,acc})){logEvent(acc?"clan application accepted":"clan application declined","general",a?a.user_id:null,ap?ap.name:"",cn?cn.name:"");reopenClan()}return}
+    if(await clanRpc(a&&clanMem[a.user_id]&&sideOk?"side_decide":"clan_decide",{app:id,acc})){logEvent(acc?"clan application accepted":"clan application declined","general",a?a.user_id:null,ap?ap.name:"",cn?cn.name:"");reopenClan()}return}
+  const srm=t.closest("[data-srem]");
+  if(srm){const q=profiles.find(x=>x.id===srm.dataset.srem),cn=clanById(sideMem[srm.dataset.srem]);if(!confirm("Remove "+(q?q.name:"this player")+" from the clan? They keep their S3 tag."))return;
+    if(await clanRpc("side_remove",{target:srm.dataset.srem}))logEvent("clan member removed","general",srm.dataset.srem,q?q.name:"",cn?cn.name:"");return}
+  if(t.closest("[data-sleave]")){if(!confirm("Leave this clan? You stay in S3."))return;await clanRpc("side_leave",{});return}
+  const psd=t.closest("[data-pside]");
+  if(psd){if(!can("clans"))return;const pid=psd.dataset.pside,cid=($("#pf_side")||{}).value||"",q=profiles.find(x=>x.id===pid),nc=clanById(cid);
+    if(await clanRpc(cid?"side_set":"side_remove",cid?{cid:String(cid),target:pid}:{target:pid})){logEvent(nc?"clan member added":"clan member removed","general",pid,q?q.name:"",nc?nc.name:"second clan");const q2=profiles.find(x=>x.id===pid);if(q2){ranked();view(q2)}}return}
   const crm=t.closest("[data-crem]");
   if(crm){const q=profiles.find(x=>x.id===crm.dataset.crem),cn=clanById(clanMem[crm.dataset.crem]);if(!confirm("Remove "+(q?q.name:"this player")+" from the clan?"))return;
     if(await clanRpc("clan_remove",{target:crm.dataset.crem})){logEvent("clan member removed","general",crm.dataset.crem,q?q.name:"",cn?cn.name:"");reopenClan()}return}
@@ -1797,7 +2029,8 @@ document.addEventListener("click",async e=>{
     logEvent(d.id?"clan edited":"clan created","general",null,d.name,"["+(d.tag||"").toUpperCase()+"]");
     const keep={ap:d.ap,ac:d.ac};cdraft=Object.assign(cblank(),keep);cmsg="Saved.";await loadProfiles();return}
   if(t.closest("#cAssign")){if(!can("clans"))return;const pid=cdraft.ap;if(!pid){cmsg="Pick a player first.";return renderClansPanel()}
-    const r=await sb.rpc("clan_assign",{target:pid,cid:cdraft.ac||null});if(r.error){cmsg=r.error.message;return renderClansPanel()}
+    const mainC=clanById(clanMem[pid]),tgtC=clanById(cdraft.ac),useSide=sideOk&&isS3(mainC)&&tgtC&&!isS3(tgtC);
+    const r=useSide?await sb.rpc("side_set",{target:pid,cid:String(tgtC.id)}):await sb.rpc("clan_assign",{target:pid,cid:cdraft.ac||null});if(r.error){cmsg=r.error.message;return renderClansPanel()}
     const q=profiles.find(x=>x.id===pid),c=clanById(cdraft.ac);logEvent(c?"clan member added":"clan member removed","general",pid,q?q.name:"",c?c.name:"");
     cmsg=c?"Added to the clan.":"Removed from their clan.";cdraft.ap="";await loadProfiles();return}
   const pgb=t.closest("[data-purge]");if(pgb)return purgeLog(pgb.dataset.purge);
@@ -1860,12 +2093,12 @@ document.addEventListener("click",async e=>{
   if(t.id==="modal"||t.id==="x")return tryClose();
   if(t.closest("#login")&&sb)return sb.auth.signInWithOAuth({provider:"discord",options:{redirectTo:location.origin+location.pathname}});
   if(t.closest("#logout")){linkedRoblox=null;lnkErr="";await sb.auth.signOut();return}
-  if(t.closest("#meBtn")){ranked();const p=profiles.find(p=>p.id===uid);return p?view(p):onboard()}
+  if(t.closest("#meBtn")){ranked();const p=profiles.find(p=>p.id===uid);return p?openProfile(p.id):onboard()}
   if(t.id==="skip"){skipped=true;return closeModal()}
   if(t.id==="save")return save();
   if(t.id==="del"){if(isOwner&&confirm("Remove this profile?")){const dp=profiles.find(x=>x.id===editId);const dr=await sb.rpc("admin_delete",{target:editId});if(!dr.error)logEvent("profile removed","general",editId,dp?dp.name:"","");closeModal();loadProfiles()}return}
   const tab=t.closest(".tab");if(tab){filter=tab.dataset.r;return render()}
-  const c=t.closest("[data-id]");if(c){ranked();const p=profiles.find(p=>p.id===c.dataset.id);if(p)view(p)}
+  const c=t.closest("[data-id]");if(c){ranked();const p=profiles.find(p=>p.id===c.dataset.id);if(p){if(c.closest("#v_host"))view(p);else openProfile(p.id)}}
 });
 $("#q").addEventListener("input",render);$("#pq").addEventListener("input",render);$("#hq").addEventListener("input",render);$("#lq").addEventListener("input",render);$("#lf").addEventListener("change",render);$("#cq").addEventListener("input",render);$("#clq").addEventListener("input",render);
 document.addEventListener("keydown",e=>{if(e.key==="Escape")tryClose();if(e.key==="Enter"&&e.target.matches&&e.target.matches(".cont")){pf=e.target.dataset.pr;render()}});
@@ -1899,7 +2132,7 @@ $("#cmd").addEventListener("click",e=>{const ci=e.target.closest("[data-ci]");if
     sb.auth.onAuthStateChange(()=>{setTimeout(refreshAuth,0)});
     await loadProfiles();await refreshAuth();await loadLog();
     sb.channel("site_content").on("postgres_changes",{event:"*",schema:"public",table:"site_content"},loadLog).subscribe();
-    ["clans","clan_members","clan_apps","s3_badges","s3_badge_grants"].forEach(t=>sb.channel(t).on("postgres_changes",{event:"*",schema:"public",table:t},loadProfiles).subscribe());
+    ["clans","clan_members","clan_apps","clan_side","badge_defs","badge_awards","profile_extra","s3_badges","s3_badge_grants"].forEach(t=>sb.channel(t).on("postgres_changes",{event:"*",schema:"public",table:t},loadProfiles).subscribe());
     sb.channel("roles").on("postgres_changes",{event:"*",schema:"public",table:"roles"},loadProfiles).subscribe();
     sb.channel("profiles").on("postgres_changes",{event:"*",schema:"public",table:"profiles"},loadProfiles).subscribe();
     sb.channel("audit_log").on("postgres_changes",{event:"INSERT",schema:"public",table:"audit_log"},()=>{if(pg==="host")loadAudit()}).subscribe();
