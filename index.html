@@ -37,6 +37,8 @@ body{margin:0;background:var(--bg);color:var(--fg);font-family:var(--sans);overf
 .hostbg.on{display:block}
 .hostbg video{width:100%;height:100%;object-fit:cover;display:block}
 .hostbg::after{content:"";position:absolute;inset:0;background:rgba(7,7,10,.45)}
+.rgh{display:flex;align-items:center;gap:12px;margin:14px 0 2px;font:800 11px var(--sans);letter-spacing:.28em;text-transform:uppercase;color:#8f86d6}
+.rgh:first-child{margin-top:0}.rgh i{flex:1;height:1px;background:var(--line)}.rgh span{color:var(--dim);letter-spacing:.1em}
 .wrap{max-width:900px;margin:0 auto;padding:0 18px 60px}
 header{display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap;margin:22px 0;padding:14px 20px;background:var(--panel);border:1px solid var(--line);border-radius:14px}
 .logo{font:400 32px var(--logo);text-shadow:var(--glow);letter-spacing:.04em}
@@ -732,7 +734,13 @@ const HOST_NAMES=["toojways","kyoum1i",...((window.JJSGC_CONFIG||{}).hostNames||
 const isHost=p=>(!!p.discord&&HOST_IDS.includes(String(p.discord)))||(!!p.roblox&&HOST_NAMES.includes(String(p.roblox).toLowerCase()))||(p.roles||[]).some(r=>/^hosts?$/i.test(r))||(p.id===uid&&isOwner);
 const nmx=(p,noClan)=>{const c=nmCol(p),cl=noClan?null:mainClan(p.id);return (cl?ctag(cl):"")+`<span class="${isHost(p)&&!c?"flash":""}"${c?` style="color:${c};-webkit-text-fill-color:${c}"`:""}>${esc(p.name)}</span>`};
 const banTag=p=>p.banned?'<span class="host bn">Banned</span>':"";
-const tags=p=>(p.banned?'<span class="host bn">Banned</span>':"")+(isHost(p)?'<span class="host hostflash">Host</span>':"")+p.roles.filter(r=>!/^hosts?$/i.test(r)).map(badge).join("");
+/* Role hierarchy: top = highest. Add more with hostRoleOrder in config.js, e.g. roleOrder:["Moderator"] (placed after Assistant). */
+const ROLE_ORDER=["Host","Site Manager","Leaderboard Manager","Assistant",...((window.JJSGC_CONFIG||{}).roleOrder||[])];
+const ROLE_LC=ROLE_ORDER.map(r=>r.toLowerCase());
+const roleIdx=r=>{const k=String(r).toLowerCase().replace(/^hosts$/,"host"),i=ROLE_LC.indexOf(k);return i<0?ROLE_ORDER.length:i};
+const roleRank=p=>{let m=isHost(p)?0:99;(p.roles||[]).forEach(r=>{m=Math.min(m,roleIdx(r))});return m};
+const roleGroup=p=>{const k=roleRank(p);return k>=99?"Players":k>=ROLE_ORDER.length?"Staff":ROLE_ORDER[k]+"s"};
+const tags=p=>(p.banned?'<span class="host bn">Banned</span>':"")+(isHost(p)?'<span class="host hostflash">Host</span>':"")+p.roles.filter(r=>!/^hosts?$/i.test(r)).sort((x,y)=>roleIdx(x)-roleIdx(y)).map(badge).join("");
 /* rank badge: #1 yellow, #2 white, fading to pure black at #20+ */
 const rkStyle=r=>{
   if(r===1)return"background:linear-gradient(120deg,#ffe45c,#f2b800);color:#2a1d00";
@@ -968,9 +976,9 @@ function renderPlayers(board){
   <div class="tiles"><div class="tile"><span>Players</span><b>${L.length}</b></div><div class="tile"><span>On the board</span><b>${b.length}</b></div>
   <div class="tile"><span>Top player</span><b class="sm">${top?esc(top.name):"—"}</b><em>${top?esc(gl(top)):"Nobody ranked yet"}</em></div>
   </div>`;
-  const pl=L.filter(p=>!t||(p.name+" "+p.roblox).toLowerCase().includes(t)).sort((a,b)=>(a.banned-b.banned)||(onB(b)-onB(a))||score(b)-score(a));
+  const pl=L.filter(p=>!t||(p.name+" "+p.roblox).toLowerCase().includes(t)).sort((a,b)=>(roleRank(a)-roleRank(b))||(a.banned-b.banned)||(onB(b)-onB(a))||score(b)-score(a));
   $("#plabel").textContent=`${pl.length} player${pl.length===1?"":"s"}${pf==="ALL"?"":" · "+REG[pf]}`;
-  $("#pgrid").innerHTML=pl.length?pl.map(pcard).join(""):`<div class="empty" style="grid-column:1/-1">${t?"No players found.":"Nobody has registered in this region yet."}</div>`;
+  $("#pgrid").innerHTML=pl.length?(()=>{let last="",hasStaff=pl.some(p=>roleRank(p)<99);return pl.map((p,i)=>{const g=roleGroup(p),hd=hasStaff&&g!==last?`<div class="rgh" style="grid-column:1/-1"><b>${esc(g)}</b><i></i><span>${pl.filter(x=>roleGroup(x)===g).length}</span></div>`:"";last=g;return hd+pcard(p,i)}).join("")})():`<div class="empty" style="grid-column:1/-1">${t?"No players found.":"Nobody has registered in this region yet."}</div>`;
 }
 
 
