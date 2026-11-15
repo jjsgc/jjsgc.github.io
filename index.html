@@ -479,6 +479,24 @@ header{justify-content:flex-start}
 .btier{display:flex;flex-direction:column;align-items:center;gap:6px;min-width:76px;padding:8px;border:1px solid transparent;border-radius:12px;background:none;color:var(--fg);font:600 11px var(--sans);text-transform:none;letter-spacing:0}
 button.btier:hover{background:none;color:var(--fg);border-color:#555}
 .btier.on{border-color:#7a6224;background:rgba(255,200,80,.08)}
+
+/* ---- panel categories ---- */
+.tg{margin-bottom:12px}.tgl{font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--dim);margin:0 0 4px 2px}.tg .tabs{margin-bottom:0;flex-wrap:wrap}
+/* ---- host check + snipe panel ---- */
+#hterm{position:fixed;top:14px;left:14px;z-index:90;width:min(390px,calc(100vw - 28px));background:#030504;border:1px solid #1f3a2a;border-radius:10px;font:12px/1.55 ui-monospace,Menlo,Consolas,monospace;color:#9fe8b4;overflow:hidden;animation:rise .35s both}
+#htbar{display:flex;justify-content:space-between;align-items:center;width:100%;background:#07100b;border:0;border-bottom:1px solid transparent;border-radius:0;color:#7fd99a;font:700 11px ui-monospace,Menlo,Consolas,monospace;letter-spacing:.12em;padding:9px 12px;cursor:pointer;text-transform:none}
+#htbar:hover{background:#0a1710;color:#baf5cb}#htbar i{font-style:normal;color:#5d8a6c;letter-spacing:.06em}
+#hterm.open #htbar{border-bottom-color:#1f3a2a}
+#htout{max-height:230px;overflow-y:auto;padding:10px 12px;white-space:pre-wrap;word-break:break-word}
+#htout .d{color:#5d8a6c}#htout .ok{color:#7fd99a}#htout .no{color:#ff8a8a}#htout .wn{color:#e8c56a}#htout .c{color:#fff}
+.htin{display:flex;gap:8px;align-items:center;border-top:1px solid #12241a;padding:8px 12px}.htin span{color:#7fd99a}
+#htcmd{flex:1;background:transparent;border:0;outline:0;color:#e9fff0;font:12px ui-monospace,Menlo,Consolas,monospace;padding:0;min-width:0}
+#htcmd::placeholder{color:#3f6150}#htcmd:disabled{opacity:.4}
+.snt{display:inline-block;font-size:10px;letter-spacing:.08em;text-transform:uppercase;padding:2px 7px;border-radius:999px;border:1px solid #444;color:#cfcfd6;margin-left:6px;vertical-align:middle}
+.snt.r{color:#ff8a8a;border-color:#7a2f2f}.snt.y{color:#e8c56a;border-color:#6b5a22}
+.lg.sn-r{border-left-color:#e5484d}.lg.sn-y{border-left-color:#d6a93a}
+.sn-act{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}.sn-act button{padding:5px 10px;font-size:11px}
+.snc{padding:7px 13px;font-size:12px}.snc.on{background:#fff;color:#000}.snc small{margin-left:6px;opacity:.6}
 </style>
 </head>
 <body>
@@ -568,7 +586,7 @@ button.btier:hover{background:none;color:var(--fg);border-color:#555}
 
 <section class="view" id="v_host" hidden style="margin-top:26px">
   <div style="margin-bottom:12px;display:flex;justify-content:space-between;align-items:flex-end;gap:10px;flex-wrap:wrap"><div><h2 id="hh">Panel</h2><div class="sub" id="hstat"></div></div><button class="ghost" id="cmdBtn">Quick search · Ctrl K</button></div>
-  <div class="tabs" id="htabs" style="flex-wrap:wrap;margin-bottom:16px"></div>
+  <div id="htabs" style="margin-bottom:16px"></div>
   <div id="hp_over"><div id="obox"></div></div>
   <div id="hp_roles" hidden>
   <div class="rbox" id="rbox" hidden>
@@ -594,7 +612,7 @@ button.btier:hover{background:none;color:var(--fg);border-color:#555}
     <div class="bar"><div class="sl" id="ccount" style="padding-bottom:12px"></div><input id="cq" placeholder="Search placements…" autocomplete="off" style="max-width:240px;margin-bottom:10px"></div>
     <div class="list" id="clist"></div>
   </div>
-  <div id="hp_stats" hidden><div id="sbox"></div></div>
+  <div id="hp_snipe" hidden><div id="snbox"></div></div>
   <div id="hp_tools" hidden><div id="tbox"></div></div>
   <div id="hp_access" hidden><div id="abox"></div></div>
   <div id="hp_order" hidden><div id="ordbox"></div></div>
@@ -622,8 +640,8 @@ const GRADES={G1:"Grade 1",SG1:"Special Grade 1",SG:"Special Grade"},GKEYS=["G1"
 const SUBS=["Low","Mid","High"],SSUBS=["Weak","Stable","Strong"];
 const NONE="None";
 const score=p=>{const gi=GKEYS.indexOf(p.grade||"G1");if(gi<0)return -10;if(p.grade==="SG")return gi*9;const si=SUBS.indexOf(p.sub);if(si<0)return gi*9-1;const ss=SSUBS.indexOf(p.subsub);return gi*9+si*3+(ss<0?-.5:ss)};
-const PERMS={roblox:"Edit Roblox names",ban:"Ban / unban players",grades:"Edit grades & board",reorder:"Reorder leaderboard",changelog:"Edit change log",logs:"View activity log",placements:"View placement history",stats:"View stats",export:"Export data (CSV)",fights:"Edit fight notes & cooldowns",clans:"Manage clans",badges:"Manage badges"};
-const STAFFP=["roblox","ban","grades","reorder","logs","placements","stats","export","fights","clans","badges"];
+const PERMS={roblox:"Edit Roblox names",ban:"Ban / unban players",grades:"Edit grades & board",reorder:"Reorder leaderboard",changelog:"Edit change log",logs:"View activity log",placements:"View placement history",fights:"Edit fight notes & cooldowns",clans:"Manage clans"};
+const STAFFP=["roblox","ban","grades","reorder","logs","placements","fights","clans"];
 let roleDefs={},roleColors={};
 const roleCol=r=>/^#[0-9a-f]{6}$/i.test(roleColors[r]||"")?roleColors[r]:"";
 let clans=[],clanMem={},clanApps=[],clansOk=true,openClanId=null;
@@ -836,7 +854,7 @@ function go(v){
   ["home","list","players","clans","clan","host","profile"].forEach(k=>{const el=$("#v_"+k),on=k===show;el.hidden=!on;if(on){el.classList.remove("view");void el.offsetWidth;el.classList.add("view")}});
     if(v==="host")loadAudit();render();window.scrollTo(0,0);
 }
-function render(){
+function render(){try{hostCheck()}catch(e){}
   if(pg==="host"&&!staff())return go("home");
   renderHome();
   const board=ranked(),t=$("#q").value.trim().toLowerCase(),inR=p=>filter==="ALL"||p.region===filter;
@@ -909,7 +927,9 @@ const hSort=(a,b)=>{const m=$("#hsort").value;
   if(m==="name")return String(a.name).localeCompare(String(b.name));
   return b.created-a.created};
 const fmt=t=>new Date(t).toLocaleString([],{dateStyle:"medium",timeStyle:"short"});
-const HT=[["over","Overview",()=>true],["players","Players",()=>true],["order","Order",()=>can("reorder")],["tools","Tools",()=>true],["access","Access",()=>isOwner],["roles","Roles",()=>isOwner],["clans","Clans",()=>can("clans")],["badges","Badge workshop",()=>can("badges")],["home","Home page",()=>isOwner],["logs","Activity log",()=>can("logs")],["place","Placements",()=>can("placements")],["stats","Stats",()=>can("stats")],["export","Export",()=>can("export")],["fights","Fight notes",()=>can("fights")]];
+/* tab = [key, label, visible?, group]  group "n" = normal perms (role permissions), "h" = host perms (hosts only) */
+const HT=[["over","Overview",()=>true,"n"],["players","Players",()=>true,"n"],["order","Order",()=>can("reorder"),"n"],["tools","Tools",()=>true,"n"],["clans","Clans",()=>can("clans"),"n"],["logs","Activity log",()=>can("logs"),"n"],["place","Placements",()=>can("placements"),"n"],["fights","Fight notes",()=>can("fights"),"n"],
+["access","Access",()=>isOwner,"h"],["roles","Roles",()=>isOwner,"h"],["badges","Badge workshop",()=>isOwner,"h"],["home","Home page",()=>isOwner,"h"],["export","Export",()=>isOwner,"h"],["snipe","Snipe Panel",()=>isOwner&&snipeOk&&snipeOpen,"h"]];
 function logEvent(action,kind,tid,tname,detail){
   if(!sb||!uid)return;
   sb.from("audit_log").insert({actor:uid,actor_name:(me&&me.name)||"?",action:String(action).slice(0,60),kind,target:tid||null,target_name:String(tname||"").slice(0,60),detail:String(detail||"").slice(0,300)})
@@ -925,13 +945,14 @@ function renderHost(board){
   const tabs=HT.filter(t=>t[2]());
   if(!tabs.some(t=>t[0]===hostTab))hostTab="over";
   $("#hh").textContent="Panel";
-  $("#htabs").innerHTML=tabs.map(t=>`<button class="tab ${t[0]===hostTab?"on":""}" data-ht="${t[0]}">${t[1]}</button>`).join("");
-  ["over","players","order","tools","access","roles","clans","badges","home","logs","place","stats","export","fights"].forEach(k=>{$("#hp_"+k).hidden=k!==hostTab});
+  const grp=(g,label)=>{const l=tabs.filter(t=>t[3]===g);return l.length?`<div class="tg"><div class="tgl">${label}</div><div class="tabs">${l.map(t=>`<button class="tab ${t[0]===hostTab?"on":""}" data-ht="${t[0]}">${t[1]}</button>`).join("")}</div></div>`:""};
+  $("#htabs").innerHTML=grp("n","Normal perms")+grp("h","Host perms · hosts only");
+  ["over","players","order","tools","access","roles","clans","badges","home","logs","place","snipe","export","fights"].forEach(k=>{$("#hp_"+k).hidden=k!==hostTab});
   if(hostTab==="over")renderOverview(board);
   if(hostTab==="roles")renderRoles();
   if(hostTab==="logs")renderAuditList("#llist","#lcount",$("#lq").value,false,$("#lf").value);
   if(hostTab==="place")renderAuditList("#clist","#ccount",$("#cq").value,true);
-  if(hostTab==="stats")renderStats(board);
+  if(hostTab==="snipe")renderSnipe();
   if(hostTab==="tools")renderTools(board);
   if(hostTab==="access")renderAccess();
   if(hostTab==="order")renderOrder(board);
@@ -951,26 +972,6 @@ function renderAuditList(listSel,cntSel,q,placeOnly,cat){
   ct.textContent=`${L.length} entr${L.length===1?"y":"ies"}${audit.length>=500?" · latest 500":""}`;
   el.innerHTML=L.length?L.map(a=>`<div class="lg ${a.kind==="placement"?"pl":""}"><div class="lg-t">${esc(fmt(a.created_at))}</div><div><b>${esc(a.actor_name)}</b> · ${esc(a.action)}${a.target_name?` · <b>${esc(a.target_name)}</b>`:""}${a.detail?`<div class="pt" style="white-space:normal">${esc(a.detail)}</div>`:""}</div></div>`).join(""):`<div class="empty">Nothing logged yet.</div>`;
 }
-function renderStats(board){
-  const bars=o=>{const mx=Math.max(1,...o.map(x=>x[1]));return o.map(([l,n])=>`<div class="dr"><span>${esc(l)}</span><div class="db"><i style="width:${Math.round(100*n/mx)}%"></i></div><b>${n}</b></div>`).join("")};
-  const wk=profiles.filter(p=>p.created>Date.now()-6048e5).length;
-  const staffN=profiles.filter(p=>isHost(p)||p.roles.length).length;
-  const regs=Object.keys(REG).map(r=>[REG[r],profiles.filter(p=>p.region===r).length]);
-  const rungs=[];GKEYS.slice().reverse().forEach(g=>{if(g==="SG"){rungs.push([GRADES.SG,board.filter(p=>p.grade==="SG").length]);return}SUBS.slice().reverse().forEach(s=>{if(g==="G1"&&s==="Low")return;rungs.push([GRADES[g]+" · "+s,board.filter(p=>(p.grade||"G1")===g&&p.sub===s).length])})});
-  const acts={};audit.forEach(a=>{acts[a.actor_name]=(acts[a.actor_name]||0)+1});
-  const top=Object.entries(acts).sort((a,b)=>b[1]-a[1]).slice(0,6);
-  const D=864e5,nT=Date.now(),sd=[];for(let i=29;i>=0;i--){const d=new Date(nT-i*D);d.setHours(0,0,0,0);sd.push(d.getTime())}
-  const sc=sd.map(d=>profiles.filter(p=>p.created>=d&&p.created<d+D).length),smx=Math.max(1,...sc);
-  const sgraph=`<div class="sl" style="margin-top:18px">Signups · last 30 days</div><div class="spark">${sc.map((n,i)=>`<div class="sp" title="${new Date(sd[i]).toLocaleDateString([],{month:"short",day:"numeric"})}: ${n}"><i style="height:${Math.max(4,Math.round(100*n/smx))}%"></i></div>`).join("")}</div>`;
-  $("#sbox").innerHTML=`<div class="rstats" style="margin-top:0"><div class="tiles">
-    <div class="tile"><span>Profiles</span><b>${profiles.length}</b></div><div class="tile"><span>On the board</span><b>${board.length}</b></div><div class="tile"><span>Banned</span><b>${profiles.filter(p=>p.banned).length}</b></div>
-    <div class="tile"><span>Joined · 7 days</span><b>${wk}</b></div><div class="tile"><span>Staff</span><b>${staffN}</b></div><div class="tile"><span>Roles</span><b>${Object.keys(roleDefs).length}</b></div></div>
-    ${sgraph}
-    <div class="sl" style="margin-top:18px">By region</div><div class="dist">${bars(regs)}</div>
-    <div class="sl" style="margin-top:18px">Board by region</div><div class="dist">${bars(Object.keys(REG).map(r=>[REG[r],board.filter(p=>p.region===r).length]))}</div>
-    <div class="sl" style="margin-top:18px">Board by grade</div><div class="dist">${bars(rungs)}</div>
-    ${top.length?`<div class="sl" style="margin-top:18px">Most active staff (latest log)</div><div class="dist">${bars(top)}</div>`:""}</div>`;
-}
 function renderOverview(board){
   const day=864e5,now=Date.now();
   const waiting=profiles.filter(p=>!p.banned&&!p.ranked).sort((a,b)=>a.created-b.created);
@@ -985,7 +986,7 @@ function renderOverview(board){
   }
   const feed=canA?`<div class="sl">Latest activity</div>${feedSrc.slice(0,8).map(a=>`<div class="mini"><b>${esc(a.actor_name)}</b> · ${esc(a.action)}${a.target_name?` · <b>${esc(a.target_name)}</b>`:""}${a.detail?`<span style="color:#9a9aa6">${esc(a.detail)}</span>`:""}<span>${esc(fmt(a.created_at))}</span></div>`).join("")||`<div class="sub">Nothing logged yet.</div>`}`:`<div class="sub">${auditErr?"Activity log unavailable — run audit_log.sql.":"Activity is only shown to staff with the log permission."}</div>`;
   const q=waiting.slice(0,8).map(p=>{const d=Math.max(0,Math.floor((now-p.created)/day));return`<div class="mini click" data-id="${esc(p.id)}"><b>${esc(p.name)}</b> · @${esc(p.roblox)} · ${p.region}<span>Registered ${d?d+" day"+(d===1?"":"s")+" ago":"today"} · not on the board</span></div>`}).join("")||`<div class="sub">Everyone registered is evaluated.</div>`;
-  const roleRows=Object.keys(roleDefs).sort().map(n=>`<div class="mini"><b>${esc(n)}</b> · ${profiles.filter(p=>p.roles.includes(n)).length} member(s)<span>${esc(roleTip(n)||"No permissions")}</span></div>`).join("");
+  const roleRows=!isOwner?"":Object.keys(roleDefs).sort().map(n=>`<div class="mini"><b>${esc(n)}</b> · ${profiles.filter(p=>p.roles.includes(n)).length} member(s)<span>${esc(roleTip(n)||"No permissions")}</span></div>`).join("");
   const newest=profiles.slice().sort((a,b)=>b.created-a.created).slice(0,5).map(p=>`<div class="mini click" data-id="${esc(p.id)}"><b>${esc(p.name)}</b> · @${esc(p.roblox)} · ${p.region}<span>Joined ${ago(p.created)}</span></div>`).join("")||`<div class="sub">Nobody yet.</div>`;
   $("#obox").innerHTML=`<div class="rstats" style="margin-top:0"><div class="tiles">
     <div class="tile"><span>Profiles</span><b>${profiles.length}</b></div><div class="tile"><span>On the board</span><b>${board.length}</b></div><div class="tile"><span>Waiting for eval</span><b>${waiting.length}</b></div>
@@ -1235,8 +1236,8 @@ function renderTools(board){
   const now=Date.now(),day=864e5,canA=(can("logs")||can("placements"))&&!auditErr;
   const last={};audit.forEach(a=>{if(a.kind==="placement"&&a.target&&!last[a.target])last[a.target]=Date.parse(a.created_at)});
   const age=p=>last[p.id]||p.created||now;
-  const over=board.filter(p=>now-age(p)>evDays*day).sort((a,b)=>age(a)-age(b));
-  const evRows=over.slice(0,12).map(p=>`<div class="mini click" data-id="${esc(p.id)}"><b>${esc(p.name)}</b> · ${esc(gl(p))} · ${p.region}<span>${last[p.id]?"Last placement":"Joined"} ${Math.floor((now-age(p))/day)} days ago</span></div>`).join("")||`<div class="sub">Everyone on the board was evaluated within ${evDays} days.</div>`;
+  const over=evDays?board.filter(p=>now-age(p)>evDays*day).sort((a,b)=>age(a)-age(b)):[];
+  const evRows=over.slice(0,12).map(p=>`<div class="mini click" data-id="${esc(p.id)}"><b>${esc(p.name)}</b> · ${esc(gl(p))} · ${p.region}<span>${last[p.id]?"Last placement":"Joined"} ${Math.floor((now-age(p))/day)} days ago</span></div>`).join("")||`<div class="sub">${evDays?`Everyone on the board was evaluated within ${evDays} days.`:"Evaluation reminders are off."}</div>`;
   const ex=can("export"),ac=can("changelog");
   const chk=[["Cloud connection",!demo,demo?reason:"Connected"],["Roles table",rolesOk,rolesOk?"OK":"Run roles.sql"],["Clans tables",clansOk,clansOk?"OK":"Run clans.sql"],["Member count",regN!==null,regN!==null?"OK":"registered_count missing"],["Change log / announcement",!logErr,logErr?logErr:"OK"],["Activity log",canA?true:null,canA?"OK":(auditErr?"Run audit_log.sql":"No permission")],["Roblox avatars",rbState==="function"||rbState==="proxy",rbState==="function"?"Edge function OK":rbState==="proxy"?"Public proxy only - deploy the roblox function":rbState==="fail"?"Not loading - deploy the roblox function"+(rbErr?" ("+rbErr+")":""):"Not loaded yet"],["Hosts with flashing badge",true,HOST_IDS.length+" Discord ID"+(HOST_IDS.length===1?"":"s")]]
     .map(([l,ok,d])=>`<div class="chkrow"><span>${esc(l)}</span><b class="${ok===null?"":ok?"ok":"no"}">${ok===null?"—":ok?"✓":"✗"} ${esc(d)}</b></div>`).join("");
@@ -1245,10 +1246,10 @@ function renderTools(board){
   <div class="col">
     <div class="rbox"><div class="sl">Evaluation &amp; regrade</div>
       <div class="sub">Players on the board who haven’t been placed for a while — time for a re-eval.</div>
-      <div class="trow"><select id="evd">${[14,21,30,45,60,90].map(d=>`<option value="${d}" ${d===evDays?"selected":""}>Older than ${d} days</option>`).join("")}</select><span class="sub" style="margin:0"><b>${over.length}</b> overdue of ${board.length}</span></div>
+      <div class="trow"><select id="evd"><option value="none" ${!evDays?"selected":""}>None</option>${[14,21,30,45,60,90].map(d=>`<option value="${d}" ${d===evDays?"selected":""}>Older than ${d} days</option>`).join("")}</select><span class="sub" style="margin:0">${evDays?`<b>${over.length}</b> overdue of ${board.length}`:"Off"}</span></div>
       <div style="margin-top:10px">${evRows}</div>
       ${over.length>12?`<div class="sub">…and ${over.length-12} more</div>`:""}
-      <div class="sub" style="margin-top:8px">${canA?"Based on the latest 500 activity log entries; players with no placement logged count from their join date.":"Counting from join date (you need the log or placements permission for exact dates)."}</div>
+      <div class="sub" style="margin-top:8px"${evDays?"":" hidden"}>${canA?"Based on the latest 500 activity log entries; players with no placement logged count from their join date.":"Counting from join date (you need the log or placements permission for exact dates)."}</div>
     </div>
     <div class="rbox"><div class="sl">Site announcement</div>
       <div class="sub">Shows as a banner on every page. Leave it empty to hide it.</div>
@@ -2087,14 +2088,14 @@ document.addEventListener("click",async e=>{
 });
 async function refreshAuth(){
   const {data:{session}}=await sb.auth.getSession();
-  uid=session?session.user.id:null;isOwner=false;me=null;myDiscord="";
+  uid=session?session.user.id:null;isOwner=false;me=null;myDiscord="";if(!session){snipeOk=false;hcDone="";snipeOpen=false;{const e=$("#hterm");if(e)e.remove()}}
   if(session){
     let fl=null;try{fl=sessionStorage.getItem("jj_link")}catch(e){}
     if(fl&&session.provider_token)grabLinked(session.provider_token);
     const m=session.user.user_metadata||{};
     {const i=(session.user.identities||[]).find(x=>x.provider==="discord");myDiscord=String(m.provider_id||(i&&i.id)||(i&&i.identity_data&&i.identity_data.sub)||"")}
     me={name:(m.custom_claims&&m.custom_claims.global_name)||m.full_name||m.name||"You",avatar:m.avatar_url};
-    const r=await sb.rpc("is_admin");isOwner=r.data===true;
+    const r=await sb.rpc("is_admin");isOwner=r.data===true;if(!isOwner){snipeOk=false;snipeOpen=false}
     if(syncedFor!==uid){syncedFor=uid;sb.rpc("sync_discord").then(()=>loaded&&loadProfiles())}
   }
   syncOwnName();hostSync();renderAuth();render();applyGate();maybeOnboard();if(staff()&&!audit.length&&!auditErr)loadAudit();
@@ -2169,7 +2170,7 @@ document.addEventListener("click",async e=>{
   if(t.closest("#lnkDisc")){try{sessionStorage.setItem("jj_link","1")}catch(_){}return sb.auth.signInWithOAuth({provider:"discord",options:{scopes:"identify email connections",redirectTo:location.origin+location.pathname}})}
   if(t.closest("#lbEdit")){lbEdit=true;orderDraft=null;ordMsg="";return render()}
   const gb=t.closest("[data-go]");if(gb)return go(gb.dataset.go);
-  const ht=t.closest("[data-ht]");if(ht){hostTab=ht.dataset.ht;if(hostTab==="fights")loadFights();if(hostTab==="over"||hostTab==="logs"||hostTab==="place"||hostTab==="stats"||hostTab==="tools")loadAudit();return render()}
+  const ht=t.closest("[data-ht]");if(ht){hostTab=ht.dataset.ht;if(hostTab==="fights")loadFights();if(hostTab==="over"||hostTab==="logs"||hostTab==="place"||hostTab==="snipe"||hostTab==="tools")loadAudit();return render()}
   if(t.closest("#avpick"))return $("#avfile").click();
   if(t.closest("#avreset"))return resetAvatar();
   if(t.closest("#exP"))return exportPlayers();
@@ -2235,7 +2236,7 @@ document.addEventListener("keydown",e=>{if(e.key==="Escape")tryClose();if(e.key=
 document.addEventListener("input",e=>{if(e.target&&e.target.id==="annTa")annDraft=e.target.value;const cf=e.target&&e.target.dataset&&e.target.dataset.cf;if(cf)cdraft[cf]=e.target.type==="checkbox"?e.target.checked:e.target.value;const ce=e.target&&e.target.dataset&&e.target.dataset.ce;if(ce)cedraft[ce]=e.target.value;const bk=e.target&&e.target.dataset&&e.target.dataset.bd;if(bk)bd[bk]=e.target.value;const hck=e.target&&e.target.dataset&&e.target.dataset.hc;if(hck)hcSet(hck,e.target.value)});
 document.addEventListener("change",e=>{const t=e.target;if(!t)return;
   if(t.id==="hsort")render();
-  if(t.id==="evd"){evDays=+t.value||30;render()}
+  if(t.id==="evd"){evDays=t.value==="none"?0:(+t.value||30);render()}
   if(t.id==="imgR"){imgR=t.value;render()}
   if(t.id==="f_g"){const w=$("#subwrap");if(w)w.hidden=t.value==="SG"||t.value==="None"}
   if(t.id==="f_s"){const w=$("#ssubwrap");if(w)w.hidden=t.value==="None"}});
@@ -2269,6 +2270,140 @@ $("#cmd").addEventListener("click",e=>{const ci=e.target.closest("[data-ci]");if
   }finally{hideBoot()}
 })();
 renderAuth();render();
+
+/* ===== host check (top-left) + Snipe Panel — hosts only ===== */
+let snipeOk=false,hcDone="",snF="all",snQ="";
+const SN_DEF=["lol","xd","noob","trash","clown","ez","bozo"];
+let snWords=SN_DEF.slice(),snMine={};
+try{const w=JSON.parse(localStorage.getItem("jj_sn_words")||"null");if(Array.isArray(w))snWords=w.map(String)}catch(e){}
+try{snMine=JSON.parse(localStorage.getItem("jj_sn_flags")||"{}")||{}}catch(e){}
+const snSave=()=>{try{localStorage.setItem("jj_sn_words",JSON.stringify(snWords));localStorage.setItem("jj_sn_flags",JSON.stringify(snMine))}catch(e){}};
+const sleep=ms=>new Promise(r=>setTimeout(r,ms));
+const hash12=str=>{let h1=0xdeadbeef,h2=0x41c6ce57;for(let i=0;i<str.length;i++){const c=str.charCodeAt(i);h1=Math.imul(h1^c,2654435761);h2=Math.imul(h2^c,1597334677)}h1=Math.imul(h1^(h1>>>16),2246822507)^Math.imul(h2^(h2>>>13),3266489909);h2=Math.imul(h2^(h2>>>16),2246822507)^Math.imul(h1^(h1>>>13),3266489909);return((h2>>>0).toString(16).padStart(8,"0")+(h1>>>0).toString(16).padStart(8,"0")).toUpperCase().slice(0,12)};
+let snipeOpen=false,htHist=[],htHi=0;
+const hcOut=(txt,cls)=>{const o=$("#htout");if(!o)return null;const d=document.createElement("div");if(cls)d.className=cls;d.textContent=txt;o.appendChild(d);o.scrollTop=o.scrollHeight;return d};
+const hcSt=t=>{const e=$("#htst");if(e)e.textContent=t};
+function hcToggle(open){const t=$("#hterm"),b=$("#htbody");if(!t||!b)return;const o=open===undefined?b.hidden:open;b.hidden=!o;t.classList.toggle("open",o);const bar=$("#htbar span");if(bar)bar.textContent=(o?"▴":"▾")+" host@jjsgc";if(o){const c=$("#htcmd");if(c&&!c.disabled)setTimeout(()=>c.focus(),30)}}
+function hcShell(){
+  let t=$("#hterm");if(t)return t;
+  t=document.createElement("div");t.id="hterm";
+  t.innerHTML=`<button type="button" id="htbar"><span>▾ host@jjsgc</span><i id="htst">verifying…</i></button><div id="htbody" hidden><div id="htout"></div><div class="htin"><span>$</span><input id="htcmd" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="type ?help" disabled></div></div>`;
+  document.body.appendChild(t);
+  $("#htbar").addEventListener("click",()=>hcToggle());
+  const inp=$("#htcmd");
+  inp.addEventListener("keydown",e=>{
+    if(e.key==="ArrowUp"){if(htHist.length){htHi=Math.max(0,htHi-1);inp.value=htHist[htHi]||""}e.preventDefault();return}
+    if(e.key==="ArrowDown"){htHi=Math.min(htHist.length,htHi+1);inp.value=htHist[htHi]||"";e.preventDefault();return}
+    if(e.key!=="Enter")return;
+    const v=inp.value.trim();inp.value="";if(!v)return;htHist.push(v);htHi=htHist.length;hcRun(v)});
+  return t}
+function hcRun(v){
+  hcOut("$ "+v,"c");
+  const c=v.toLowerCase();
+  if(!snipeOk)return hcOut("access denied","no");
+  if(c==="?snipe"){
+    snipeOpen=true;hcOut("snipe panel unlocked · opening…","ok");hcSt("snipe: open");
+    hostTab="snipe";loadAudit();renderAuth();go("host");render();setTimeout(()=>hcToggle(false),700);return}
+  if(c==="?exit"){snipeOpen=false;hcSt("verified");if(hostTab==="snipe")hostTab="over";hcOut("snipe panel closed","wn");render();return}
+  if(c==="?clear"){const o=$("#htout");if(o)o.innerHTML="";return}
+  if(c==="?whoami"){const d=String(myDiscord||"");hcOut((me&&me.name||"host")+" · "+(d?d.slice(0,3)+"…"+d.slice(-3):"id unknown")+" · server-verified","d");return}
+  if(c==="?help"){["?snipe   open the Snipe Panel","?exit    close the Snipe Panel","?whoami  show who you are verified as","?clear   clear this screen"].forEach(l=>hcOut(l,"d"));return}
+  hcOut("unknown command · type ?help","wn")}
+async function hostCheck(){
+  if(!uid||!sb||hcDone===uid)return;
+  const did=String(myDiscord||((profiles.find(x=>x.id===uid)||{}).discord)||"");
+  if(!did){if(loaded)hcDone=uid;return}
+  if(!HOST_IDS.includes(did)){hcDone=uid;return}   /* only the Discord IDs in HOST_IDS ever see this */
+  hcDone=uid;
+  hcShell();hcToggle(true);
+  const sl=(ms)=>sleep(ms);
+  let pass=false;
+  try{
+    hcOut("> jjsgc --verify-host","c");
+    await sl(450);hcOut("[1/4] session token ....... "+(uid?"ok":"missing"),uid?"ok":"no");
+    await sl(450);hcOut("[2/4] discord id ........... "+did.slice(0,3)+"…"+did.slice(-3)+" · on host list","ok");
+    await sl(450);
+    let srv=isOwner;try{const r=await sb.rpc("is_admin");srv=r.data===true}catch(e){}
+    hcOut("[3/4] server is_admin() .... "+(srv?"confirmed":"rejected"),srv?"ok":"no");
+    pass=srv&&!!uid;
+    await sl(450);
+    const code=hash12(uid+"|"+did+"|"+new Date().toISOString().slice(0,10)),ln=hcOut("[4/4] session code ....... ","d");
+    for(let i=0;i<=12;i++){ln.textContent="[4/4] session code ....... "+(code.slice(0,i)+Array.from({length:12-i},()=>"0123456789ABCDEF"[Math.random()*16|0]).join("")).replace(/(.{4})(?=.)/g,"$1-");await sl(40)}
+    ln.textContent="[4/4] session code ....... "+code.replace(/(.{4})(?=.)/g,"$1-");ln.className=pass?"ok":"no";
+    if(pass)isOwner=true;
+  }catch(e){pass=false}
+  const inp=$("#htcmd");
+  if(pass){snipeOk=true;hcOut("ACCESS GRANTED","ok");hcOut("type ?snipe to open the Snipe Panel · ?help for commands","d");hcSt("verified");if(inp){inp.disabled=false;inp.focus()}renderAuth();render()}
+  else{snipeOk=false;hcOut("ACCESS DENIED · server did not confirm host","no");hcSt("denied");logEvent("host check failed","general",uid,(me&&me.name)||"","server did not confirm host")}
+}
+
+const SN_SENS=["names","roles","media","bans"];
+function snCat(a){const x=String(a.action||"").toLowerCase();
+  if(/role/.test(x))return"roles";
+  if(/roblox name|profile edited/.test(x))return"names";
+  if(/picture|announcement|changelog|home page|banner/.test(x))return"media";
+  if(/ban/.test(x))return"bans";
+  return"other"}
+const snWordHit=t=>{const v=String(t||"").toLowerCase();return snWords.find(w=>w&&v.includes(w.toLowerCase()))};
+const snOdd=n=>{n=String(n||"").trim();if(!n)return"";const w=snWordHit(n);if(w)return"watch word “"+w+"”";if(n.length<=2)return"very short";if(/(.)\1{3,}/.test(n))return"spammy";if(!/[a-z0-9]/i.test(n))return"symbols only";return""};
+const snKey=a=>String(a.id||(a.created_at+"|"+a.actor+"|"+a.action+"|"+a.target_name));
+function snAnalyse(){
+  const hostIds=new Set(profiles.filter(isHost).map(p=>p.id)),rows=audit.map(a=>({a,cat:snCat(a),flags:[],mod:!!a.actor&&!hostIds.has(a.actor)&&!(isOwner&&a.actor===uid),key:snKey(a)}));
+  rows.forEach(r=>{const a=r.a,d=String(a.detail||""),act=String(a.action||"").toLowerCase();
+    if(r.cat==="roles"){
+      if(/roles changed/.test(act)){const add=(d.match(/\+\s*([^·]*)/)||[])[1];if(add)add.split(",").map(x=>x.trim()).filter(Boolean).forEach(n=>{const o=snOdd(n);if(o)r.flags.push("Odd role “"+n+"” · "+o)});
+        if(r.mod&&a.actor===a.target&&add)r.flags.push("Gave themselves a role")}
+      if(/role saved|role removed|role colour/.test(act)){const o=snOdd(a.target_name);if(o)r.flags.push("Odd role name · "+o)}}
+    if(r.cat==="names"&&/roblox name|profile edited/.test(act)){const nw=d.split("→").pop().trim();const o=snOdd(nw);if(o)r.flags.push("Odd name · "+o);if(r.mod&&a.actor===a.target)r.flags.push("Changed own name")}
+    if(r.cat==="media"){const w=snWordHit(d);if(w)r.flags.push("Watch word “"+w+"”");if(/https?:\/\//i.test(d))r.flags.push("Contains a link");if(r.mod&&/picture/.test(act))r.flags.push("Picture changed by a mod — check it")}
+  });
+  const by={};rows.forEach(r=>{if(SN_SENS.includes(r.cat)&&r.mod&&a_t(r.a)){(by[r.a.actor]=by[r.a.actor]||[]).push(r)}});
+  Object.values(by).forEach(l=>{l.sort((x,y)=>a_t(x.a)-a_t(y.a));let i=0;for(let j=0;j<l.length;j++){while(a_t(l[j].a)-a_t(l[i].a)>6e5)i++;if(j-i+1>=5)for(let k=i;k<=j;k++)if(!l[k].flags.some(f=>/^Rapid/.test(f)))l[k].flags.push("Rapid changes (5+ in 10 min)")}});
+  return rows}
+const a_t=a=>Date.parse(a.created_at)||0;
+function renderSnipe(){
+  const box=$("#snbox");if(!box)return;
+  if(!isOwner||!snipeOk){box.innerHTML="";return}
+  if(!$("#snlist")){
+    box.innerHTML=`<div class="rbox"><div class="sl" style="margin-bottom:6px">Snipe Panel · hosts only</div>
+      <div class="sub">Live feed of everything logged on the site. Entries are auto-flagged when a mod changes names, hands out odd roles, swaps pictures or posts links — flag anything yourself and open the player to act on it.</div>
+      <div class="tiles" id="sntiles" style="margin-top:12px"></div></div>
+      <div class="rbox"><div class="hfil" id="snchips"></div>
+      <div class="bar"><div></div><input id="snq" placeholder="Snipe a player, mod, role, picture…" autocomplete="off" style="margin-bottom:10px"></div>
+      <div class="sl" id="snmods" style="padding-bottom:6px"></div>
+      <div class="list" id="snlist"></div></div>
+      <div class="rbox"><div class="sl" style="margin-bottom:6px">Watch words</div>
+      <div class="sub">Role names, names, announcements and changelog text containing these get flagged. Comma separated. Saved in this browser.</div>
+      <div class="trow" style="margin-top:10px"><input id="snw" style="flex:1;min-width:200px"><button class="solid" id="snws">Save</button><button class="ghost" id="snwr">Reset</button></div></div>`;
+    $("#snq").value=snQ;$("#snw").value=snWords.join(", ");
+  }
+  const rows=snAnalyse(),now=Date.now(),day=864e5,sus=rows.filter(r=>r.flags.length),mine=rows.filter(r=>snMine[r.key]);
+  const c24=k=>rows.filter(r=>r.cat===k&&now-a_t(r.a)<day).length;
+  $("#sntiles").innerHTML=[["Flagged",sus.length],["Flagged by you",mine.length],["Role changes · 24h",c24("roles")],["Name changes · 24h",c24("names")],["Pictures / posts · 24h",c24("media")],["Mod actions · 24h",rows.filter(r=>r.mod&&SN_SENS.includes(r.cat)&&now-a_t(r.a)<day).length]].map(([l,n])=>`<div class="tile"><span>${l}</span><b>${n}</b></div>`).join("");
+  const chips=[["all","All",rows.length],["sus","Flagged",sus.length],["mine","Mine",mine.length],["names","Names",rows.filter(r=>r.cat==="names").length],["roles","Roles",rows.filter(r=>r.cat==="roles").length],["media","Pictures & posts",rows.filter(r=>r.cat==="media").length],["bans","Bans",rows.filter(r=>r.cat==="bans").length],["other","Other",rows.filter(r=>r.cat==="other").length]];
+  $("#snchips").innerHTML=chips.map(([k,l,n])=>`<button class="snc ${k===snF?"on":""}" data-snf="${k}">${l}<small>${n}</small></button>`).join("");
+  const act={};rows.filter(r=>r.mod&&SN_SENS.includes(r.cat)).forEach(r=>{const n=r.a.actor_name||"?";act[n]=(act[n]||0)+(r.flags.length?3:1)});
+  const top=Object.entries(act).sort((a,b)=>b[1]-a[1]).slice(0,5);
+  $("#snmods").innerHTML=top.length?`Most active mods: `+top.map(([n])=>`<button class="ghost snc" data-snactor="${esc(n)}">${esc(n)}</button>`).join(" "):"";
+  const s=snQ.trim().toLowerCase();
+  const L=rows.filter(r=>(snF==="all"||(snF==="sus"?r.flags.length:snF==="mine"?snMine[r.key]:r.cat===snF))&&(!s||((r.a.actor_name||"")+" "+r.a.action+" "+(r.a.target_name||"")+" "+(r.a.detail||"")).toLowerCase().includes(s)));
+  if(auditErr){$("#snlist").innerHTML=`<div class="empty">Couldn’t load the log: ${esc(auditErr)}<br>Run audit_log.sql in Supabase first.</div>`;return}
+  $("#snlist").innerHTML=L.length?L.slice(0,150).map(r=>{const a=r.a,sev=r.flags.length?"r":(r.mod&&SN_SENS.includes(r.cat)?"y":"");
+    return`<div class="lg sn-${sev}"><div class="lg-t">${esc(fmt(a.created_at))}</div><div><b>${esc(a.actor_name)}</b>${r.mod&&SN_SENS.includes(r.cat)?'<span class="snt y">mod</span>':""} · ${esc(a.action)}${a.target_name?` · <b>${esc(a.target_name)}</b>`:""}${snMine[r.key]?'<span class="snt r">flagged</span>':""}${r.flags.map(f=>`<span class="snt r">${esc(f)}</span>`).join("")}${a.detail?`<div class="pt" style="white-space:normal">${esc(a.detail)}</div>`:""}
+      <div class="sn-act"><button class="ghost" data-snflag="${esc(r.key)}">${snMine[r.key]?"Unflag":"Flag"}</button>${a.actor&&profiles.some(p=>p.id===a.actor)?`<button class="ghost" data-snopen="${esc(a.actor)}">Open ${esc(a.actor_name||"actor")}</button>`:""}${a.target&&a.target!==a.actor&&profiles.some(p=>p.id===a.target)?`<button class="ghost" data-snopen="${esc(a.target)}">Open ${esc(a.target_name||"target")}</button>`:""}<button class="ghost" data-sncopy="${esc(r.key)}">Copy report</button></div></div></div>`}).join(""):`<div class="empty">${audit.length?"Nothing matches.":"Nothing logged yet."}</div>`;
+}
+document.addEventListener("click",e=>{
+  const t=e.target;if(!t.closest)return;
+  if(!isOwner||!snipeOk)return;
+  const f=t.closest("[data-snf]");if(f){snF=f.dataset.snf;return renderSnipe()}
+  const fl=t.closest("[data-snflag]");if(fl){const k=fl.dataset.snflag;if(snMine[k])delete snMine[k];else snMine[k]=1;snSave();return renderSnipe()}
+  const op=t.closest("[data-snopen]");if(op){const p=profiles.find(x=>x.id===op.dataset.snopen);if(p){ranked();view(p)}return}
+  const cp=t.closest("[data-sncopy]");if(cp){const r=snAnalyse().find(x=>x.key===cp.dataset.sncopy);if(r){const a=r.a,txt=`[JJSGC snipe] ${fmt(a.created_at)} · ${a.actor_name} · ${a.action}${a.target_name?" · "+a.target_name:""}${a.detail?" — "+a.detail:""}${r.flags.length?" ⚠ "+r.flags.join("; "):""}`;try{navigator.clipboard.writeText(txt);cp.textContent="Copied"}catch(x){cp.textContent="Copy failed"}}return}
+  const ac=t.closest("[data-snactor]");if(ac){snQ=ac.dataset.snactor;const q=$("#snq");if(q)q.value=snQ;return renderSnipe()}
+  if(t.closest("#snws")){snWords=($("#snw").value||"").split(",").map(x=>x.trim()).filter(Boolean).slice(0,40);snSave();return renderSnipe()}
+  if(t.closest("#snwr")){snWords=SN_DEF.slice();snSave();$("#snw").value=snWords.join(", ");return renderSnipe()}
+});
+document.addEventListener("input",e=>{if(e.target&&e.target.id==="snq"){snQ=e.target.value;renderSnipe()}});
 </script>
 </body>
 </html>
