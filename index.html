@@ -1842,7 +1842,8 @@ function bcard(d,t,p){const ti=d.tiers[t-1];return `<div class="bgc" data-bk="${
 function openBadge(key,pid,sel){
   const d=defByKey(key),p=profiles.find(x=>x.id===pid);if(!d||!p)return;ranked();
   const cur=d.tier(p),t=Math.min(d.tiers.length,Math.max(1,sel||cur||1)),ti=d.tiers[t-1];
-  const have=profiles.filter(q=>d.tier(q)>=t).length,pct=profiles.length?Math.round(100*have/profiles.length):0;
+  const total=Math.max(regN||0,profiles.length),holdN=k=>d.manual?new Set(bawards.filter(a=>a.badge_id===d.id&&Math.min(d.tiers.length,Math.max(1,+a.tier||1))>=k).map(a=>a.user_id)).size:profiles.filter(q=>d.tier(q)>=k).length,
+    pctTxt=k=>{const h=holdN(k);if(!total||!h)return"0%";const v=100*h/total;return v<1?"<1%":v<10?v.toFixed(1).replace(/\.0$/,"")+"%":Math.round(v)+"%"},have=holdN(t);
   let when="";
   if(d.manual&&cur){const a=bawards.find(a=>a.user_id===p.id&&a.badge_id===d.id);if(a&&a.created_at)when="Earned "+new Date(a.created_at).toLocaleString()}
   else if(cur)when="Current tier: "+d.tiers[cur-1].n;
@@ -1850,8 +1851,8 @@ function openBadge(key,pid,sel){
   <h3 style="margin-top:14px">${esc(d.name)}${d.tiers.length>1?" · "+esc(ti.n):""}</h3>
   <div style="color:#cfcfd6;font-size:15px;margin-top:10px">${esc(ti.d)}</div>
   ${when?`<div style="font-weight:700;font-size:13px;margin-top:16px">${esc(when)}</div>`:""}
-  <div class="sub" style="margin-top:12px">${pct}% of players have earned this</div>
-  ${d.tiers.length>1?`<div class="btiers">${d.tiers.map((x,i)=>`<button type="button" class="btier ${i+1===t?"on":""}" data-bt="${i+1}" data-bk2="${esc(key)}" data-bp2="${esc(pid)}">${hex(x.g||d.glyph(p),x.pal,54,i+1>cur)}<span>${esc(x.n)}</span></button>`).join("")}</div>`:""}
+  <div class="sub" style="margin-top:12px">${pctTxt(t)} of players have earned this (${have} of ${total})</div>
+  ${d.tiers.length>=1?`<div class="btiers">${d.tiers.map((x,i)=>`<button type="button" class="btier ${i+1===t?"on":""}" data-bt="${i+1}" data-bk2="${esc(key)}" data-bp2="${esc(pid)}">${hex(x.g||d.glyph(p),x.pal,54,i+1>cur)}<span>${esc(x.n)}</span></button>`).join("")}</div>`:""}
   <div class="acts" style="justify-content:center"><button class="ghost" id="x">Close</button></div></div>`);
 }
 function openProfile(id){
