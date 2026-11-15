@@ -483,20 +483,47 @@ button.btier:hover{background:none;color:var(--fg);border-color:#555}
 /* ---- panel categories ---- */
 .tg{margin-bottom:12px}.tgl{font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--dim);margin:0 0 4px 2px}.tg .tabs{margin-bottom:0;flex-wrap:wrap}
 /* ---- host check + snipe panel ---- */
-#hterm{position:fixed;top:14px;left:14px;z-index:90;width:min(390px,calc(100vw - 28px));background:#030504;border:1px solid #1f3a2a;border-radius:10px;font:12px/1.55 ui-monospace,Menlo,Consolas,monospace;color:#9fe8b4;overflow:hidden;animation:rise .35s both}
-#htbar{display:flex;justify-content:space-between;align-items:center;width:100%;background:#07100b;border:0;border-bottom:1px solid transparent;border-radius:0;color:#7fd99a;font:700 11px ui-monospace,Menlo,Consolas,monospace;letter-spacing:.12em;padding:9px 12px;cursor:pointer;text-transform:none}
-#htbar:hover{background:#0a1710;color:#baf5cb}#htbar i{font-style:normal;color:#5d8a6c;letter-spacing:.06em}
-#hterm.open #htbar{border-bottom-color:#1f3a2a}
-#htout{max-height:230px;overflow-y:auto;padding:10px 12px;white-space:pre-wrap;word-break:break-word}
-#htout .d{color:#5d8a6c}#htout .ok{color:#7fd99a}#htout .no{color:#ff8a8a}#htout .wn{color:#e8c56a}#htout .c{color:#fff}
-.htin{display:flex;gap:8px;align-items:center;border-top:1px solid #12241a;padding:8px 12px}.htin span{color:#7fd99a}
-#htcmd{flex:1;background:transparent;border:0;outline:0;color:#e9fff0;font:12px ui-monospace,Menlo,Consolas,monospace;padding:0;min-width:0}
-#htcmd::placeholder{color:#3f6150}#htcmd:disabled{opacity:.4}
+#hterm{position:fixed;top:14px;left:14px;z-index:90;width:min(400px,calc(100vw - 28px));background:#07040d;border:1px solid #3a2a63;border-radius:10px;font:12px/1.55 ui-monospace,Menlo,Consolas,monospace;color:#cbbdf5;overflow:hidden;animation:rise .35s both}
+#htbar{display:flex;justify-content:space-between;align-items:center;width:100%;background:#0e0818;border:0;border-bottom:1px solid transparent;border-radius:0;color:#b9a8ff;font:700 11px ui-monospace,Menlo,Consolas,monospace;letter-spacing:.12em;padding:9px 12px;cursor:pointer;text-transform:none}
+#htbar:hover{background:#150d26;color:#ddd3ff}#htbar i{font-style:normal;color:#7d6ba8;letter-spacing:.06em}
+#hterm.open #htbar{border-bottom-color:#3a2a63}
+#htout{max-height:240px;overflow-y:auto;padding:10px 12px;white-space:pre-wrap;word-break:break-word}
+#htout .d{color:#7d6ba8}#htout .ok{color:#b9a8ff}#htout .no{color:#ff8a8a}#htout .wn{color:#e8c56a}#htout .c{color:#fff}
+.htin{display:flex;gap:8px;align-items:center;border-top:1px solid #241640;padding:8px 12px}.htin span{color:#b9a8ff}
+#htcmd{flex:1;background:transparent;border:0;outline:0;color:#efe9ff;caret-color:#b9a8ff;font:12px ui-monospace,Menlo,Consolas,monospace;padding:0;min-width:0}
+#htcmd::placeholder{color:#55447c}#htcmd:disabled{opacity:.4}
 .snt{display:inline-block;font-size:10px;letter-spacing:.08em;text-transform:uppercase;padding:2px 7px;border-radius:999px;border:1px solid #444;color:#cfcfd6;margin-left:6px;vertical-align:middle}
 .snt.r{color:#ff8a8a;border-color:#7a2f2f}.snt.y{color:#e8c56a;border-color:#6b5a22}
 .lg.sn-r{border-left-color:#e5484d}.lg.sn-y{border-left-color:#d6a93a}
 .sn-act{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}.sn-act button{padding:5px 10px;font-size:11px}
 .snc{padding:7px 13px;font-size:12px}.snc.on{background:#fff;color:#000}.snc small{margin-left:6px;opacity:.6}
+/* snipe panel: purple theme */
+.tab[data-ht="snipe"]{color:#b9a8ff}.tab[data-ht="snipe"].on{color:#e3dbff;border-color:#b9a8ff}
+#hp_snipe .rbox{border-color:#32245a;background:linear-gradient(180deg,rgba(150,120,255,.07),transparent),var(--panel)}
+#hp_snipe .sl{color:#b9a8ff}#hp_snipe .tile b{color:#e3dbff}#hp_snipe .tile{border-color:#32245a}
+#hp_snipe .lg{border-color:#2a1f4a;border-left-color:#6b55c7}
+#hp_snipe .lg.sn-r{border-left-color:#e5484d}#hp_snipe .lg.sn-y{border-left-color:#d6a93a}
+#hp_snipe .snt{border-color:#4b3a85;color:#cbbdf5}#hp_snipe .snt.r{color:#ff8a8a;border-color:#7a2f2f}#hp_snipe .snt.y{color:#e8c56a;border-color:#6b5a22}
+#hp_snipe .snc{border-color:#3a2a63}#hp_snipe .snc.on{background:#b9a8ff;color:#12081f;border-color:#b9a8ff}
+#hp_snipe input:focus{border-color:#8b74e6}#hp_snipe .solid{background:#b9a8ff;color:#12081f;border-color:#b9a8ff}
+/* notification bell */
+#nwrap{position:relative}
+button.bell{position:relative;display:grid;place-items:center;width:44px;height:44px;padding:0;border-radius:10px;border:1px solid #555;line-height:0}
+button.bell svg{width:19px;height:19px;stroke:currentColor;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+button.bell.ring svg{animation:bring .8s ease-in-out 1;transform-origin:50% 10%}
+@keyframes bring{0%,100%{transform:rotate(0)}20%{transform:rotate(14deg)}40%{transform:rotate(-12deg)}60%{transform:rotate(8deg)}80%{transform:rotate(-5deg)}}
+.bdot{position:absolute;top:-6px;right:-6px;min-width:17px;height:17px;padding:0 4px;border-radius:9px;background:#fff;color:#000;font:800 10px var(--sans);letter-spacing:0;display:grid;place-items:center;border:2px solid var(--panel);box-sizing:content-box;line-height:1}
+button.bell:hover .bdot{background:#000;color:#fff}
+.npop{position:absolute;right:0;top:calc(100% + 10px);width:min(370px,88vw);max-height:440px;overflow-y:auto;background:var(--panel);border:1px solid #444;border-radius:12px;z-index:70;text-align:left;box-shadow:0 14px 40px rgba(0,0,0,.6);animation:rise .25s both}
+.nph{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:12px 14px;border-bottom:1px solid var(--line);position:sticky;top:0;background:var(--panel)}
+.nph b{font-size:12px;letter-spacing:.16em;text-transform:uppercase}
+.nph div{display:flex;gap:6px}.nph button{padding:5px 9px;font-size:10px}
+.ni{display:grid;grid-template-columns:22px 1fr;gap:10px;padding:12px 14px;border-bottom:1px solid var(--line);cursor:pointer;font-size:13px;line-height:1.45;color:#cfcfd6}
+.ni:last-child{border-bottom:0}.ni:hover{background:var(--row);color:#fff}
+.ni.new{border-left:2px solid #fff;padding-left:12px;color:#fff}
+.ni i{font-style:normal;color:var(--dim);text-align:center;font-size:15px}
+.ni span{display:block;color:var(--dim);font-size:11px;margin-top:2px}
+.nem{padding:30px 18px;text-align:center;color:var(--dim);font-size:13px;line-height:1.5}
 </style>
 </head>
 <body>
@@ -836,7 +863,7 @@ function setCloud(){
 }
 function renderAuth(){
   $("#authbox").innerHTML=uid&&me
-    ?`<button class="chip" id="meBtn">${av({name:me.name,avatar:(profiles.find(x=>x.id===uid)||{}).avatar||me.avatar})}${nmx({name:me.name,roles:myRoles(),id:uid})}${isOwner?`<span class="host hostflash">Host</span>`:""}${myRoles().map(badge).join("")}</button><button class="ghost" id="logout">Sign out</button>`
+    ?`${nBell()}<button class="chip" id="meBtn">${av({name:me.name,avatar:(profiles.find(x=>x.id===uid)||{}).avatar||me.avatar})}${nmx({name:me.name,roles:myRoles(),id:uid})}${isOwner?`<span class="host hostflash">Host</span>`:""}${myRoles().map(badge).join("")}</button><button class="ghost" id="logout">Sign out</button>`
     :`<button class="solid" id="login">Continue with Discord</button>`;
   if($("#login"))$("#login").disabled=!sb;
 }
@@ -1606,6 +1633,7 @@ async function loadProfiles(){
   loaded=true;
   if(onboarding&&uid&&profiles.some(p=>p.id===uid))closeModal();
   syncOwnName();renderAuth();render();applyGate();maybeOnboard();if(staff()&&!audit.length&&!auditErr)loadAudit();rbLoad();hostSync();
+  try{notifyDiff()}catch(e){console.warn("notify:",e)}
   if(reopen&&uid){reopen=false;openOwn()}
 }
 /* ---- site profile pictures (stored in Supabase Storage bucket "avatars", see avatars.sql) ---- */
@@ -2287,19 +2315,36 @@ function hcToggle(open){const t=$("#hterm"),b=$("#htbody");if(!t||!b)return;cons
 function hcShell(){
   let t=$("#hterm");if(t)return t;
   t=document.createElement("div");t.id="hterm";
-  t.innerHTML=`<button type="button" id="htbar"><span>▾ host@jjsgc</span><i id="htst">verifying…</i></button><div id="htbody" hidden><div id="htout"></div><div class="htin"><span>$</span><input id="htcmd" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="type ?help" disabled></div></div>`;
+  t.innerHTML=`<button type="button" id="htbar"><span>▾ host@jjsgc</span><i id="htst">verifying…</i></button><div id="htbody" hidden><div id="htout"></div><div class="htin"><span id="htps">$</span><input id="htcmd" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="type ?help" disabled></div></div>`;
   document.body.appendChild(t);
   $("#htbar").addEventListener("click",()=>hcToggle());
   const inp=$("#htcmd");
   inp.addEventListener("keydown",e=>{
     if(e.key==="ArrowUp"){if(htHist.length){htHi=Math.max(0,htHi-1);inp.value=htHist[htHi]||""}e.preventDefault();return}
     if(e.key==="ArrowDown"){htHi=Math.min(htHist.length,htHi+1);inp.value=htHist[htHi]||"";e.preventDefault();return}
+    if(e.key==="Tab"){e.preventDefault();const w=inp.value.trim().toLowerCase();if(w&&!w.includes(" ")){const m=HC_CMDS.filter(x=>x.startsWith(w));if(m.length===1)inp.value=m[0]+" ";else if(m.length>1)hcOut(m.join("   "),"d")}return}
     if(e.key!=="Enter")return;
     const v=inp.value.trim();inp.value="";if(!v)return;htHist.push(v);htHi=htHist.length;hcRun(v)});
   return t}
-function hcRun(v){
+const HC_CMDS=["?snipe","?exit","?console","?export","?logs","?flagged","?find","?open","?bans","?mods","?watch","?goto","?refresh","?lock","?unlock","?whoami","?clear","?help"];
+const hcTime=t=>new Date(t).toLocaleString([],{month:"short",day:"numeric",hour:"2-digit",minute:"2-digit"});
+const hcFind=q=>{q=String(q||"").toLowerCase();return q?profiles.filter(p=>[p.name,p.roblox,p.discord].some(x=>String(x||"").toLowerCase().includes(q))):[]};
+const hcP=p=>`${p.name} · @${p.roblox} · ${p.region} · ${gl(p)}${p.banned?" · BANNED":""}`;
+let htMode="sh";
+function hcMode(m){htMode=m;const ps=$("#htps"),i=$("#htcmd");if(ps)ps.textContent=m==="js"?"js>":"$";if(i)i.placeholder=m==="js"?"javascript · exit to leave":"type ?help";hcSt(m==="js"?"console":(snipeOpen?"snipe: open":"verified"))}
+const hcFmt=r=>{if(r===undefined)return"undefined";if(typeof r==="function")return String(r).slice(0,300);if(typeof r==="string")return JSON.stringify(r).slice(0,600);try{const j=JSON.stringify(r,(k,v)=>typeof v==="bigint"?String(v):v);return(j===undefined?String(r):j).slice(0,600)}catch(e){return String(r).slice(0,600)}};
+async function hcJs(v){
+  const t=v.trim();hcOut("js> "+v,"c");
+  if(t==="exit"||t==="quit"||t==="?exit"){hcMode("sh");return hcOut("console closed","wn")}
+  if(t==="clear"){const o=$("#htout");if(o)o.innerHTML="";return}
+  if(t==="help"){["javascript runs in this page · this session only · nothing is saved","use var x=… or window.x=… to keep values between lines","handy: profiles, audit, me, uid, $(sel), go(page), render(), loadProfiles()","exit  leave the console · clear  clear the screen"].forEach(l=>hcOut(l,"d"));return}
+  if(!snipeOk||!isOwner)return hcOut("access denied","no");
+  try{let r=(0,eval)(t);if(r&&typeof r.then==="function")r=await r;hcOut("← "+hcFmt(r),"ok")}catch(e){hcOut("✗ "+(e&&e.message||e),"no")}
+  logEvent("console run","general",null,"",t.slice(0,200))}
+async function hcRun(v){
+  if(htMode==="js")return hcJs(v);
   hcOut("$ "+v,"c");
-  const c=v.toLowerCase();
+  const parts=v.trim().split(/\s+/),c=parts[0].toLowerCase(),a=parts.slice(1).join(" "),a0=(parts[1]||"").toLowerCase();
   if(!snipeOk)return hcOut("access denied","no");
   if(c==="?snipe"){
     snipeOpen=true;hcOut("snipe panel unlocked · opening…","ok");hcSt("snipe: open");
@@ -2307,7 +2352,70 @@ function hcRun(v){
   if(c==="?exit"){snipeOpen=false;hcSt("verified");if(hostTab==="snipe")hostTab="over";hcOut("snipe panel closed","wn");render();return}
   if(c==="?clear"){const o=$("#htout");if(o)o.innerHTML="";return}
   if(c==="?whoami"){const d=String(myDiscord||"");hcOut((me&&me.name||"host")+" · "+(d?d.slice(0,3)+"…"+d.slice(-3):"id unknown")+" · server-verified","d");return}
-  if(c==="?help"){["?snipe   open the Snipe Panel","?exit    close the Snipe Panel","?whoami  show who you are verified as","?clear   clear this screen"].forEach(l=>hcOut(l,"d"));return}
+  if(c==="?console"){
+    hcOut("console · runs JavaScript in this page, this session only (nothing is saved).","wn");
+    hcOut("only paste code you wrote or fully understand — it can read your host session.","wn");
+    hcOut("type help for helpers · exit to leave","d");
+    logEvent("console opened","general",null,"","via terminal");hcMode("js");return}
+  if(c==="?export"){
+    ranked();
+    if(!a0||a0==="players"){exportPlayers();return hcOut("players.csv downloaded · "+profiles.length+" rows","ok")}
+    if(a0==="log"||a0==="logs"){if(!audit.length)await loadAudit();exportLog();return hcOut("activity-log.csv downloaded · "+audit.length+" rows","ok")}
+    if(a0==="board"||a0==="lb"){const reg=(parts[2]||"ALL").toUpperCase();if(!["ALL","NA","EU","AS"].includes(reg))return hcOut("region must be NA, EU, AS or ALL","wn");copyBoard({textContent:""},reg);return hcOut("leaderboard ("+reg+") copied for Discord","ok")}
+    return hcOut("usage: ?export [players | log | board [NA|EU|AS]]","wn")}
+  if(c==="?logs"){
+    if(!audit.length)await loadAudit();
+    const n=Math.min(25,Math.max(1,+a0||8)),L=audit.slice(0,n);
+    if(!L.length)return hcOut(auditErr?"log unavailable: "+auditErr:"nothing logged yet","wn");
+    L.forEach(x=>hcOut(hcTime(x.created_at)+" · "+x.actor_name+" · "+x.action+(x.target_name?" → "+x.target_name:""),"d"));return}
+  if(c==="?flagged"){
+    if(!audit.length)await loadAudit();
+    const F=snAnalyse().filter(r=>r.flags.length);
+    if(!F.length)return hcOut("nothing flagged","ok");
+    hcOut(F.length+" flagged · showing "+Math.min(8,F.length),"wn");
+    F.slice(0,8).forEach(r=>{hcOut(hcTime(r.a.created_at)+" · "+r.a.actor_name+" · "+r.a.action+(r.a.target_name?" → "+r.a.target_name:""),"d");hcOut("   ⚠ "+r.flags.join("; "),"no")});
+    return hcOut("open ?snipe for the full list","d")}
+  if(c==="?find"){
+    if(!a)return hcOut("usage: ?find <name | roblox | discord id>","wn");
+    const L=hcFind(a);if(!L.length)return hcOut("no players match","wn");
+    L.slice(0,6).forEach(p=>hcOut(hcP(p),"d"));if(L.length>6)hcOut("…and "+(L.length-6)+" more","d");return}
+  if(c==="?open"){
+    if(!a)return hcOut("usage: ?open <name | roblox | discord id>","wn");
+    const L=hcFind(a);if(!L.length)return hcOut("no players match","wn");
+    if(L.length>1)return hcOut(L.length+" matches · be more specific (try ?find "+a+")","wn");
+    ranked();view(L[0]);hcOut("opened "+L[0].name,"ok");setTimeout(()=>hcToggle(false),500);return}
+  if(c==="?bans"){
+    const L=profiles.filter(p=>p.banned);if(!L.length)return hcOut("nobody is banned","ok");
+    hcOut(L.length+" banned","wn");L.slice(0,12).forEach(p=>hcOut(p.name+" · @"+p.roblox+(p.reason?" · "+p.reason:""),"d"));if(L.length>12)hcOut("…and "+(L.length-12)+" more","d");return}
+  if(c==="?mods"){
+    const L=profiles.filter(p=>p.roles.length&&!HOST_IDS.includes(String(p.discord)));
+    if(!L.length)return hcOut("no role holders besides hosts","d");
+    const day=864e5,now=Date.now();
+    L.slice(0,12).forEach(p=>{const n=audit.filter(x=>x.actor===p.id&&now-a_t(x)<day).length;hcOut(p.name+" · "+p.roles.join(", ")+" · "+n+" actions 24h","d")});return}
+  if(c==="?watch"){
+    if(!a0||a0==="list"){return hcOut("watch words: "+(snWords.join(", ")||"(none)"),"d")}
+    const w=a.slice(a0.length).trim().toLowerCase()||"";
+    if(a0==="add"&&w){if(!snWords.includes(w))snWords.push(w);snSave();const e=$("#snw");if(e)e.value=snWords.join(", ");return hcOut("added “"+w+"”","ok")}
+    if((a0==="rm"||a0==="remove")&&w){snWords=snWords.filter(x=>x.toLowerCase()!==w);snSave();const e=$("#snw");if(e)e.value=snWords.join(", ");return hcOut("removed “"+w+"”","ok")}
+    return hcOut("usage: ?watch [list | add <word> | rm <word>]","wn")}
+  if(c==="?goto"){
+    if(a0==="snipe")return hcRun("?snipe");
+    const t=HT.filter(x=>x[2]()).find(x=>x[0]===a0||x[1].toLowerCase()===a.toLowerCase());
+    if(!t)return hcOut("tabs: "+HT.filter(x=>x[2]()&&x[0]!=="snipe").map(x=>x[0]).join(", "),"wn");
+    hostTab=t[0];if(["over","logs","place","tools"].includes(t[0]))loadAudit();if(t[0]==="fights")loadFights();
+    go("host");render();hcOut("opened "+t[1],"ok");setTimeout(()=>hcToggle(false),500);return}
+  if(c==="?refresh"){await loadProfiles();await loadAudit();return hcOut("refreshed · "+profiles.length+" players · "+audit.length+" log entries","ok")}
+  if(c==="?lock"||c==="?unlock"){
+    const want=c==="?lock";
+    if(want&&a0!=="confirm")return hcOut("this locks the whole site for non-hosts · type ?lock confirm","wn");
+    if(lockOn===want)return hcOut("site is already "+(want?"locked":"unlocked"),"d");
+    const ok=await saveSetting("site_lock",{on:want,msg:lockMsg});
+    if(!ok)return hcOut("couldn’t save the lock setting","no");
+    lockOn=want;logEvent(want?"site locked":"site unlocked","general",null,"","via terminal");applyGate();if(hostTab==="access")renderAccess();
+    return hcOut("site "+(want?"locked":"unlocked"),"ok")}
+  if(c==="?help"){
+    if(a0==="more"||a0==="all"){["secondary commands:","?logs [n]          last n activity entries","?find <text>       search players","?open <text>       open a player’s profile","?mods              role holders + 24h activity","?watch [add|rm] w  edit watch words","?goto <tab>        jump to a panel tab","?refresh           reload players + log","(Tab completes any command)"].forEach(l=>hcOut(l,"d"));return}
+    ["?snipe            open the Snipe Panel","?exit             close the Snipe Panel","?whoami           who you’re verified as","?clear            clear this screen","?help [more]       this list · more = secondary commands","?lock confirm      lock the site for non-hosts","?unlock            unlock the site","?bans              list banned players","?flagged           auto-flagged entries","?export [players|log|board]  download / copy data","?console           run JavaScript in the page"].forEach(l=>hcOut(l,"d"));return}
   hcOut("unknown command · type ?help","wn")}
 async function hostCheck(){
   if(!uid||!sb||hcDone===uid)return;
@@ -2404,6 +2512,78 @@ document.addEventListener("click",e=>{
   if(t.closest("#snwr")){snWords=SN_DEF.slice();snSave();$("#snw").value=snWords.join(", ");return renderSnipe()}
 });
 document.addEventListener("input",e=>{if(e.target&&e.target.id==="snq"){snQ=e.target.value;renderSnipe()}});
+
+/* ===== notification bell: role / badge / grade / placement / leaderboard + clan changes =====
+   No new tables: each browser remembers what it last saw for the signed-in player and reports what changed since. */
+var nState={items:[],snap:null},nOpen=false,nFresh=new Set(),nUid=null,nRing=false;
+const NICON={role:"◆",badge:"★",grade:"▲",place:"#",lb:"≡",clan:"⚑"};
+function nLoad(){if(nUid===uid)return;nUid=uid;nState={items:[],snap:null};try{const o=JSON.parse(localStorage.getItem("jj_notif_"+uid)||"null");if(o&&typeof o==="object"){nState.items=Array.isArray(o.items)?o.items:[];nState.snap=o.snap||null}}catch(e){}}
+function nSave(){try{localStorage.setItem("jj_notif_"+uid,JSON.stringify({items:nState.items.slice(0,60),snap:nState.snap}))}catch(e){}}
+function nAdd(k,x,extra){nState.items.unshift(Object.assign({id:Date.now().toString(36)+Math.random().toString(36).slice(2,6),t:Date.now(),k,x,r:0},extra||{}))}
+function nSnapNow(){
+  const L=ranked(),p=profiles.find(x=>x.id===uid);if(!p)return null;
+  const idx=L.findIndex(x=>x.id===uid);
+  const bd=(bgOk&&!demo)?Object.fromEntries(allDefs().map(d=>[d.key,d.tier(p)])):null;
+  return{grade:p.ranked?gtxt(p.grade,p.sub,p.subsub):"No grade",sc:p.ranked?score(p):-99,rank:idx>=0?idx+1:0,roles:p.roles.slice(),
+    top:L.slice(0,10).map(x=>[x.id,x.name]),badges:bd,
+    clan:clansOk?(clanMem[uid]||""):null,side:(clansOk&&sideOk)?(sideMem[uid]||""):null,
+    cp:clansOk?Object.fromEntries(clans.map(c=>[String(c.id),c.place==null?0:(+c.place||0)])):null}}
+function notifyDiff(){
+  if(!uid||!loaded||demo)return;nLoad();
+  const cur=nSnapNow();if(!cur)return;
+  const prev=nState.snap;
+  /* sections that failed to load keep their last known values so a hiccup never causes fake alerts */
+  if(prev){["badges","clan","side","cp"].forEach(k=>{if(cur[k]===null)cur[k]=prev[k]===undefined?null:prev[k]})}
+  let added=0;
+  if(prev){
+    const before=nState.items.length;
+    (cur.roles||[]).filter(r=>!(prev.roles||[]).includes(r)&&!/^hosts?$/i.test(r)).forEach(r=>nAdd("role","You received the role “"+r+"”."));
+    if(cur.badges&&prev.badges){const defs=allDefs();Object.keys(cur.badges).forEach(k=>{const a=+prev.badges[k]||0,b=+cur.badges[k]||0;if(b>a){const d=defs.find(x=>x.key===k);if(!d)return;const tn=(d.tiers[b-1]||{}).n||("tier "+b);nAdd("badge",a?"Your “"+d.name+"” badge reached "+tn+".":"You earned the “"+d.name+"” badge ("+tn+").")}})}
+    if(cur.grade!==prev.grade){nAdd("grade",cur.sc>prev.sc?"You were promoted to "+cur.grade+".":"Your grade changed to "+cur.grade+".")}
+    if(cur.rank!==prev.rank){
+      if(!prev.rank&&cur.rank)nAdd("place","You were placed on the leaderboard at #"+cur.rank+".");
+      else if(prev.rank&&!cur.rank)nAdd("place","You’re no longer on the leaderboard.");
+      else if(prev.rank&&cur.rank)nAdd("place","Your placement moved "+(cur.rank<prev.rank?"up":"down")+": #"+prev.rank+" → #"+cur.rank+".")}
+    /* main leaderboard (top 10) */
+    const po=(prev.top||[]).map(x=>x[0]),co=(cur.top||[]).map(x=>x[0]);
+    if(po.join()!==co.join()){
+      const ln=[];(cur.top||[]).forEach(([id,nm],i)=>{const j=po.indexOf(id);if(j<0)ln.push(nm+" entered the top 10 at #"+(i+1));else if(j!==i)ln.push(nm+" #"+(j+1)+" → #"+(i+1))});
+      (prev.top||[]).forEach(([id,nm])=>{if(!co.includes(id))ln.push(nm+" left the top 10")});
+      if(ln.length)nAdd("lb","Leaderboard updated: "+ln.slice(0,3).join(" · ")+(ln.length>3?" · +"+(ln.length-3)+" more":""),{pg:"board"})}
+    /* clans */
+    if(cur.cp&&prev.cp){const cl=[];Object.keys(cur.cp).forEach(id=>{if(prev.cp[id]===undefined)return;const a=prev.cp[id]||0,b=cur.cp[id]||0;if(a===b)return;const c=clanById(id)||clans.find(x=>String(x.id)===id);if(!c)return;
+        const mine=clanMem[uid]===c.id||sideMem[uid]===c.id,nm=(mine?"Your clan ":"")+"["+c.tag+"]";
+        cl.push({id:c.id,x:b&&a?nm+" moved "+(b<a?"up":"down")+": #"+a+" → #"+b+".":b?nm+" is now placed #"+b+".":nm+" was taken off the placements."})});
+      cl.slice(0,3).forEach(o=>nAdd("clan",o.x,{cid:o.id}));if(cl.length>3)nAdd("clan","+"+(cl.length-3)+" more clan placement changes.",{pg:"clans"})}
+    if(cur.clan!==null&&prev.clan!==null&&cur.clan&&cur.clan!==prev.clan){const c=clanById(cur.clan);if(c)nAdd("clan","You joined ["+c.tag+"] "+c.name+".",{cid:c.id})}
+    if(cur.side!==null&&prev.side!==null&&cur.side&&cur.side!==prev.side){const c=clanById(cur.side);if(c)nAdd("clan","You joined ["+c.tag+"] "+c.name+".",{cid:c.id})}
+    added=nState.items.length-before;
+  }
+  nState.snap=cur;nState.items=nState.items.slice(0,60);nSave();
+  if(added){nRing=true;renderAuth();setTimeout(()=>{nRing=false},1200)}
+}
+const nUnread=()=>nState.items.filter(i=>!i.r).length;
+function nBell(){
+  try{
+    if(!uid)return"";nLoad();const n=nUnread();
+    const list=nState.items.length?nState.items.map(i=>`<div class="ni ${nFresh.has(i.id)?"new":""}" data-nitem="${esc(i.id)}" role="button" tabindex="0"><i>${NICON[i.k]||"•"}</i><div>${esc(i.x)}<span>${esc(ago(i.t))}</span></div></div>`).join(""):`<div class="nem">Nothing yet.<br>You’ll be told here when you get a role, badge, grade or placement, and when the leaderboards change.</div>`;
+    return`<div id="nwrap"><button class="bell ${nRing?"ring":""}" id="bellBtn" type="button" aria-label="Notifications${n?" ("+n+" new)":""}" aria-expanded="${nOpen}" title="Notifications"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/></svg>${n?`<b class="bdot">${n>9?"9+":n}</b>`:""}</button>${nOpen?`<div class="npop" id="npop"><div class="nph"><b>Notifications</b><div><button class="ghost" id="nread" type="button">Mark read</button><button class="ghost" id="nclear" type="button">Clear</button></div></div>${list}</div>`:""}</div>`;
+  }catch(e){return""}
+}
+function nClose(){if(!nOpen)return;nOpen=false;nFresh=new Set();renderAuth()}
+document.addEventListener("click",e=>{
+  const t=e.target;if(!t.closest)return;
+  if(t.closest("#bellBtn")){
+    if(nOpen)return nClose();
+    nLoad();nFresh=new Set(nState.items.filter(i=>!i.r).map(i=>i.id));nState.items.forEach(i=>{i.r=1});nSave();nOpen=true;return renderAuth()}
+  if(t.closest("#nread")){nState.items.forEach(i=>{i.r=1});nFresh=new Set();nSave();return renderAuth()}
+  if(t.closest("#nclear")){nState.items=[];nFresh=new Set();nSave();return renderAuth()}
+  const it=t.closest("[data-nitem]");
+  if(it){const i=nState.items.find(x=>x.id===it.dataset.nitem);nOpen=false;nFresh=new Set();renderAuth();
+    if(i){if(i.cid)openClan(i.cid);else if(i.pg)go(i.pg);else if(i.k==="lb")go("board");else openProfile(uid)}return}
+  if(nOpen&&!t.closest("#nwrap"))nClose();
+});
+document.addEventListener("keydown",e=>{if(e.key==="Escape"&&nOpen)nClose();if((e.key==="Enter"||e.key===" ")&&e.target&&e.target.classList&&e.target.classList.contains("ni")){e.preventDefault();e.target.click()}});
 </script>
 </body>
 </html>
