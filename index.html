@@ -16,6 +16,10 @@ box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:en
 html{scroll-padding-top:env(safe-area-inset-top,0px)}
 *,*::before,*::after{box-sizing:inherit}
 body{margin:0;background:var(--bg);color:var(--fg);font-family:var(--sans);overflow-x:hidden}
+.hostbg{position:fixed;inset:0;z-index:-1;display:none;background:#000}
+.hostbg.on{display:block}
+.hostbg video{width:100%;height:100%;object-fit:cover;display:block}
+.hostbg::after{content:"";position:absolute;inset:0;background:rgba(7,7,10,.45)}
 .wrap{max-width:900px;margin:0 auto;padding:0 18px 60px}
 header{display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap;margin:22px 0;padding:14px 20px;background:var(--panel);border:1px solid var(--line);border-radius:14px}
 .logo{font:400 32px var(--logo);text-shadow:var(--glow);letter-spacing:.04em}
@@ -609,6 +613,7 @@ button.bell:hover .bdot{background:#000;color:#fff}
   <div id="clan_box"></div>
 </section>
 
+<div class="hostbg" id="hostbg"><video id="hostbgv" src="host-bg.mp4" playsinline preload="none"></video></div>
 <section class="view" id="v_profile" hidden style="margin-top:26px"><div id="prof_box"></div></section>
 
 <section class="view" id="v_host" hidden style="margin-top:26px">
@@ -874,12 +879,29 @@ function hrow(p,i){
   return `<div class="card hrow" data-id="${esc(p.id)}" style="--i:${Math.min(i||0,14)}"><div class="l">${av(p)}<div style="min-width:0"><div class="nm">${nmx(p)}${tags(p)}</div><div class="pt">${esc(gl(p))} · ${rbA(p)} · ${p.region}${p.ranked?" · on board":""} · ${esc(p.discord)} · joined ${ago(p.created)}</div></div></div>
   <div style="display:flex;gap:6px">${p.discord?`<button class="ghost" data-copy="${esc(p.discord)}" title="Copy Discord ID">ID</button>`:""}${can("roblox")?`<button class="ghost" data-rbn="${esc(p.id)}">Roblox</button>`:""}${can("ban")?`<button class="ghost" data-ban="${esc(p.id)}">${p.banned?"Unban":"Ban"}</button>`:""}</div></div>`;
 }
+/* Host profile video background (starts at 9s, quiet audio) */
+const HOSTBG_ID="523755389544693791",HOSTBG_START=9,HOSTBG_VOL=.12;
+let hostBgOn=false;
+function hostBgSync(){
+  const box=document.getElementById("hostbg"),v=document.getElementById("hostbgv");if(!box||!v)return;
+  const p=pg==="profile"?profiles.find(x=>x.id===profId):null,want=!!p&&String(p.discord||"")===HOSTBG_ID;
+  if(want===hostBgOn)return;hostBgOn=want;box.classList.toggle("on",want);
+  if(!want){v.pause();return}
+  v.volume=HOSTBG_VOL;v.muted=false;
+  const start=()=>{try{v.currentTime=HOSTBG_START}catch(e){}const r=v.play();
+    if(r&&r.catch)r.catch(()=>{v.muted=true;v.play().catch(()=>{});
+      const un=()=>{if(hostBgOn){v.muted=false;v.volume=HOSTBG_VOL}};
+      ["pointerdown","keydown","touchstart"].forEach(e=>addEventListener(e,un,{once:true,capture:true}))})};
+  v.readyState>0?start():(v.addEventListener("loadedmetadata",start,{once:true}),v.load());
+}
+(()=>{const v=document.getElementById("hostbgv");if(v)v.addEventListener("timeupdate",()=>{if(!hostBgOn)return;if(v.currentTime<HOSTBG_START-.5||(v.duration&&v.currentTime>=v.duration-.25))v.currentTime=HOSTBG_START});
+  if(v)v.addEventListener("ended",()=>{v.currentTime=HOSTBG_START;v.play().catch(()=>{})})})();
 function go(v){
   if(v==="myclan"){const mc=uid&&clanMem[uid];if(mc){clanBack=pg==="clan"?clanBack:pg;openClanId=mc;v="clan"}else v="home"}
   if(v==="host"&&!staff())v="home";pg=v;
   const show=v==="board"?"list":v;
   ["home","list","players","clans","clan","host","profile"].forEach(k=>{const el=$("#v_"+k),on=k===show;el.hidden=!on;if(on){el.classList.remove("view");void el.offsetWidth;el.classList.add("view")}});
-    if(v==="host")loadAudit();render();window.scrollTo(0,0);
+    if(v==="host")loadAudit();render();window.scrollTo(0,0);hostBgSync();
 }
 function render(){try{hostCheck()}catch(e){}
   if(pg==="host"&&!staff())return go("home");
@@ -905,7 +927,7 @@ function render(){try{hostCheck()}catch(e){}
   }
   if(pg==="players")renderPlayers(board);
   if(pg==="clan")renderClanPage();
-  if(pg==="profile")renderProfilePage();
+  if(pg==="profile")renderProfilePage();hostBgSync();
   if(pg==="clans")renderClansList();
   renderLog();setCloud();
 }
