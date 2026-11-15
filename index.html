@@ -464,7 +464,12 @@ header{justify-content:flex-start}
 .bgc em{display:block;margin-top:7px;font-style:normal;font-size:9px;letter-spacing:.22em;text-transform:uppercase;color:var(--bc,var(--dim))}
 .bgc.lock{opacity:.38;filter:grayscale(1)}.bgc.lock em{color:var(--dim)}
 /* tiered hex badges */
-.hex{display:block;margin:0 auto;flex:none}.hex.lk{opacity:.38;filter:grayscale(.9)}
+.hex{display:block;margin:0 auto;flex:none;overflow:visible}.hex.lk{opacity:.38;filter:grayscale(.9)}
+@keyframes dpulse{0%,100%{filter:drop-shadow(0 0 3px rgba(143,220,255,.55)) drop-shadow(0 0 9px rgba(70,150,255,.35))}50%{filter:drop-shadow(0 0 7px rgba(200,244,255,.95)) drop-shadow(0 0 18px rgba(70,150,255,.65))}}
+@keyframes twk{0%,100%{opacity:0;transform:scale(.2) rotate(0deg)}50%{opacity:1;transform:scale(1) rotate(45deg)}}
+.hex.dia{animation:dpulse 2.4s ease-in-out infinite}
+.dsp{transform-box:fill-box;transform-origin:center;opacity:0;animation:twk 2.2s ease-in-out infinite}
+@media (prefers-reduced-motion:reduce){.hex.dia,.dsp{animation:none}}
 .bgrid{grid-template-columns:repeat(auto-fill,minmax(128px,1fr))}
 .bgc{cursor:pointer;padding:16px 8px 12px}.bgc:hover{border-color:#777;transform:translateY(-2px)}
 .bgc b{margin-top:9px}.bgc em{color:var(--dim)}
@@ -1812,10 +1817,21 @@ const BCOL="#b9a8ff";
 const METAL=["Bronze","Silver","Gold","Platinum","Diamond"];
 const PAL=[["#e0a46a","#7d4f24"],["#eef0f4","#848d9d"],["#ffe27a","#c07f0c"],["#c9f2e8","#3f9c8c"],["#8fdcff","#2a78d1"]];
 let hid=0;
+const EMO=/\p{Extended_Pictographic}/u,h2c=h=>[1,3,5].map(i=>parseInt(h.substr(i,2),16));
 function hex(glyph,pi,sz,lock){
-  const id="hx"+(hid++),pal=PAL[Math.max(0,Math.min(4,pi|0))],a=pal[0],b=pal[1],g=String(glyph||""),n=[...g].length;
+  const id="hx"+(hid++),k=Math.max(0,Math.min(4,pi|0)),pal=PAL[k],a=pal[0],b=pal[1],g=String(glyph||""),n=[...g].length,emo=EMO.test(g),dia=k===4&&!lock;
   const fs=n>=4?15:n===3?22:n===2?30:38;
-  return `<svg class="hex${lock?" lk":""}" width="${sz}" height="${sz}" viewBox="0 0 100 100" aria-hidden="true"><defs><linearGradient id="${id}" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="${a}"/><stop offset="1" stop-color="${b}"/></linearGradient></defs><polygon points="50,3 91,26.5 91,73.5 50,97 9,73.5 9,26.5" fill="url(#${id})"/><polygon points="50,11 84,30.5 84,69.5 50,89 16,69.5 16,30.5" fill="#15151c"/><polygon points="50,11 84,30.5 84,69.5 50,89 16,69.5 16,30.5" fill="none" stroke="${a}" stroke-opacity=".4"/><text x="50" y="${(50+fs*0.34).toFixed(1)}" text-anchor="middle" font-size="${fs}" font-weight="800" fill="${a}" font-family="Archivo,system-ui,sans-serif">${esc(g)}</text></svg>`;
+  let defs="",fa="";
+  if(emo){/* emoji are re-coloured to the tier's metal (light/dark duotone) */
+    const L=h2c(a).map(v=>Math.min(1,(v/255)*.85+.15)),D=h2c(b).map(v=>v/255*.9),W=[.2126,.7152,.0722],row=c=>W.map(x=>(x*(L[c]-D[c])).toFixed(4)).join(" ")+" 0 "+D[c].toFixed(4);
+    defs+=`<filter id="${id}f" color-interpolation-filters="sRGB"><feColorMatrix type="matrix" values="${row(0)} ${row(1)} ${row(2)} 0 0 0 1 0"/></filter>`;fa=` filter="url(#${id}f)"`}
+  const rgb=h2c(a).join(","),gl=Math.max(3,Math.round(sz*.09)),st=lock?"":` style="filter:drop-shadow(0 0 ${gl}px rgba(${rgb},.6))"`;
+  let fx="";
+  if(dia){
+    defs+=`<clipPath id="${id}c"><polygon points="50,3 91,26.5 91,73.5 50,97 9,73.5 9,26.5"/></clipPath><linearGradient id="${id}s" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#fff" stop-opacity="0"/><stop offset=".5" stop-color="#fff" stop-opacity=".7"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></linearGradient>`;
+    const star=(x,y,d,z)=>`<g transform="translate(${x},${y}) scale(${z})"><path class="dsp" style="animation-delay:${d}s" d="M0,-6 L1.6,-1.6 L6,0 L1.6,1.6 L0,6 L-1.6,1.6 L-6,0 L-1.6,-1.6Z" fill="#fff"/></g>`;
+    fx=`<g clip-path="url(#${id}c)"><rect x="-40" y="-10" width="24" height="120" fill="url(#${id}s)" transform="skewX(-20)"><animate attributeName="x" values="-40;140" dur="2.8s" repeatCount="indefinite"/></rect></g>`+star(88,20,0,1.3)+star(10,66,.8,1)+star(70,95,1.5,1.1)+star(26,10,2,.8)}
+  return `<svg class="hex${lock?" lk":""}${dia?" dia":""}" width="${sz}" height="${sz}" viewBox="0 0 100 100" aria-hidden="true"${st}><defs><linearGradient id="${id}" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="${a}">${dia?`<animate attributeName="stop-color" values="${a};#ffffff;${a}" dur="3s" repeatCount="indefinite"/>`:""}</stop><stop offset="1" stop-color="${b}"/></linearGradient>${defs}</defs><polygon points="50,3 91,26.5 91,73.5 50,97 9,73.5 9,26.5" fill="url(#${id})"/><polygon points="50,11 84,30.5 84,69.5 50,89 16,69.5 16,30.5" fill="#15151c"/><polygon points="50,11 84,30.5 84,69.5 50,89 16,69.5 16,30.5" fill="none" stroke="${a}" stroke-opacity=".4"/><text x="50" y="${(50+fs*0.34).toFixed(1)}" text-anchor="middle" font-size="${fs}" font-weight="800" fill="${a}"${fa} font-family="Archivo,system-ui,sans-serif">${esc(g)}</text>${fx}</svg>`;
 }
 const rk5=n=>!n||n>10?0:n===1?5:n===2?4:n<=3?3:n<=5?2:1;
 const bestPlace=p=>{const a=[clanOf(p.id),sideOf(p.id)].filter(c=>c&&c.place).map(c=>+c.place);return a.length?Math.min(...a):0};
@@ -1876,7 +1892,7 @@ function renderProfilePage(){
     <div class="pf-info"><div class="pf-name">${nmx(p)}</div>
      <div class="pf-bio ${ex.bio?"":"dim"}">${ex.bio?esc(ex.bio):"No bio yet."}</div>
      <div class="pt" style="margin-top:8px">${rbA(p)} ↗ ${tags(p)?`<span style="margin-left:6px">${tags(p)}</span>`:""}</div></div>
-    <div class="pf-act">${self&&pexOk?`<button class="solid" data-pfcust="1">Customize</button>`:""}${canEdit?`<button data-pfedit="1">Edit profile</button>`:""}${mc?`<button class="ghost" data-clan="${esc(mc.id)}">View clan</button>`:""}${p.id===uid&&oc?`<button class="ghost" data-swap="1">Swap name tag</button>`:""}${can("badges")&&bgOk?`<button class="ghost" data-pfwork="1">Badge workshop</button>`:""}</div></div></div>
+    <div class="pf-act">${self&&pexOk?`<button class="solid" data-pfcust="1">Customize</button>`:""}${canEdit?`<button data-pfedit="1">Edit profile</button>`:""}${mc?`<button class="ghost" data-clan="${esc(mc.id)}">View clan</button>`:""}${p.id===uid&&oc?`<button class="ghost" data-swap="1">Swap name tag</button>`:""}${can("badges")&&bgOk?`<button class="solid" data-pfgive="${esc(p.id)}">Give badge</button>`:""}</div></div></div>
   <div class="tiles pf-tiles"><div class="tile"><span>Grade</span><b class="sm">${on?esc(gl(p)):"—"}</b><em>${on?"Competitive":p.banned?"Banned":"Not competitive"}</em></div>
    <div class="tile"><span>Region</span><b>${p.region==="None"?"—":esc(p.region)}</b><em>${esc(REG[p.region]||"None")}</em></div>
    <div class="tile"><span>Rank</span><b>${on?"#"+p.rank:"—"}</b><em>${on?"Leaderboard":"Not placed"}</em></div>
@@ -1927,6 +1943,38 @@ async function resetBanner(){
   await loadProfiles();openCustomize(profiles.find(x=>x.id===p.id));const e=$("#bnmsg");if(e)e.textContent="Banner removed.";
 }
 document.addEventListener("change",e=>{if(e.target&&e.target.id==="bnfile"){const f=e.target.files[0];e.target.value="";setBanner(f)}});
+
+/* ---- give / take badges straight from a profile (needs "Manage badges") ---- */
+let gv={b:"",t:"1",msg:""};
+function openGive(pid){
+  const p=profiles.find(x=>x.id===pid);if(!p||!can("badges")||!bgOk)return;
+  const defs=bdefs.slice().sort((a,b)=>String(a.created_at).localeCompare(String(b.created_at))),sel=defs.find(b=>b.id===gv.b),tn=sel?parseTiers(sel.tiers):[];
+  if(!(+gv.t>=1&&+gv.t<=tn.length))gv.t="1";
+  const cur=bawards.filter(a=>a.user_id===pid).map(a=>({a,b:defs.find(x=>x.id===a.badge_id)})).filter(x=>x.b),ti=sel?tn[+gv.t-1]:null;
+  openModal(`<h3>Give a badge</h3><div class="sub" style="margin-top:4px">to ${esc(p.name)}</div>
+  ${gv.msg?`<div class="${/^Given|^Removed/.test(gv.msg)?"fmsg":"fmsg bad"}" style="margin:12px 0 0">${esc(gv.msg)}</div>`:""}
+  ${defs.length?`<label style="margin-top:14px">Badge</label><select data-gv="b" data-gvp="${esc(pid)}"><option value="">\u2014 Pick a badge \u2014</option>${defs.map(b=>`<option value="${esc(b.id)}" ${b.id===gv.b?"selected":""}>${esc(b.icon)} ${esc(b.name)}</option>`).join("")}</select>
+  <label style="margin-top:10px">Tier</label><select data-gv="t" data-gvp="${esc(pid)}" ${sel?"":"disabled"}>${tn.map((t,i)=>`<option value="${i+1}" ${String(i+1)===String(gv.t)?"selected":""}>${i+1} \u00b7 ${esc(t.n)}</option>`).join("")||`<option>\u2014</option>`}</select>
+  ${ti?`<div style="display:flex;justify-content:center;margin:14px 0 2px">${hex(ti.g||sel.icon,ti.m,72)}</div>`:""}
+  <div class="sub" style="margin-top:8px">Giving a higher tier to someone who already has the badge upgrades it.</div>
+  <div class="acts"><button class="solid" data-gvgo="${esc(pid)}">Give badge</button></div>`:`<div class="sub" style="margin-top:14px">No badges exist yet. Create one in the Panel \u2192 Badge workshop first.</div>`}
+  <div class="sl" style="margin-top:20px">Their badges \u00b7 ${cur.length}</div>
+  ${cur.map(x=>{const t=parseTiers(x.b.tiers)[Math.max(1,+x.a.tier||1)-1]||{n:""};return `<div class="mini" style="display:flex;justify-content:space-between;align-items:center;gap:10px"><span><b>${esc(x.b.name)}</b><span>${esc(t.n)}</span></span><button class="ghost" style="padding:5px 10px" data-gvrev="${esc(x.b.id)}" data-gvu="${esc(pid)}">Remove</button></div>`}).join("")||`<div class="sub" style="margin-top:6px">No badges yet.</div>`}
+  <div class="acts"><button class="ghost" id="x">Close</button></div>`);
+}
+document.addEventListener("change",e=>{const t=e.target,k=t&&t.dataset&&t.dataset.gv;if(!k)return;gv[k]=t.value;if(k==="b")gv.t="1";gv.msg="";openGive(t.dataset.gvp)});
+document.addEventListener("click",async e=>{
+  const t=e.target;if(!t.closest)return;
+  const g1=t.closest("[data-pfgive]");if(g1){gv={b:"",t:"1",msg:""};return openGive(g1.dataset.pfgive)}
+  const g2=t.closest("[data-gvgo]");if(g2){if(!can("badges"))return;const pid=g2.dataset.gvgo,q=profiles.find(x=>x.id===pid),b=bdefs.find(x=>x.id===gv.b);
+    if(!b){gv.msg="Pick a badge first.";return openGive(pid)}
+    const r=await sb.rpc("badge_award",{bid:gv.b,target:pid,tier:+gv.t||1});if(r.error){gv.msg=r.error.message;return openGive(pid)}
+    logEvent("badge awarded","general",pid,q?q.name:"",b.name);await loadProfiles();gv.msg="Given.";return openGive(pid)}
+  const g3=t.closest("[data-gvrev]");if(g3){if(!can("badges"))return;const pid=g3.dataset.gvu,q=profiles.find(x=>x.id===pid),b=bdefs.find(x=>x.id===g3.dataset.gvrev);
+    if(!confirm("Take \u201c"+(b?b.name:"this badge")+"\u201d from "+(q?q.name:"this player")+"?"))return;
+    const r=await sb.rpc("badge_revoke",{bid:g3.dataset.gvrev,target:pid});if(r.error){gv.msg=r.error.message;return openGive(pid)}
+    logEvent("badge revoked","general",pid,q?q.name:"",b?b.name:"");await loadProfiles();gv.msg="Removed.";return openGive(pid)}
+});
 
 /* ---- badge workshop (Panel > Badge workshop, needs "Manage badges") ---- */
 const wblank=()=>({id:"",name:"",ds:"",ic:"🏅",tiers:[{m:0,n:"Bronze",d:"",g:""}],ap:"",ab:"",at:"1",vb:""});
