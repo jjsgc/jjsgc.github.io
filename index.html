@@ -668,6 +668,7 @@ button.bell:hover .bdot{background:#000;color:#fff}
   <div id="hp_access" hidden><div id="abox"></div></div>
   <div id="hp_order" hidden><div id="ordbox"></div></div>
   <div id="hp_fights" hidden><div id="fbox"></div></div>
+  <div id="hp_track" hidden><div id="trbox"></div></div>
   <div id="hp_clans" hidden><div id="cbox"></div></div>
   <div id="hp_badges" hidden><div id="wbox"></div></div>
   <div id="hp_home" hidden><div id="hmbox"></div></div>
@@ -691,8 +692,8 @@ const GRADES={G1:"Grade 1",SG1:"Special Grade 1",SG:"Special Grade"},GKEYS=["G1"
 const SUBS=["Low","Mid","High"],SSUBS=["Weak","Stable","Strong"];
 const NONE="None";
 const score=p=>{const gi=GKEYS.indexOf(p.grade||"G1");if(gi<0)return -10;if(p.grade==="SG")return gi*9;const si=SUBS.indexOf(p.sub);if(si<0)return gi*9-1;const ss=SSUBS.indexOf(p.subsub);return gi*9+si*3+(ss<0?-.5:ss)};
-const PERMS={roblox:"Edit Roblox names",ban:"Ban / unban players",grades:"Edit grades & board",reorder:"Reorder leaderboard",changelog:"Edit change log",logs:"View activity log",placements:"View placement history",fights:"Edit fight notes & cooldowns",clans:"Manage clans"};
-const STAFFP=["roblox","ban","grades","reorder","logs","placements","fights","clans"];
+const PERMS={roblox:"Edit Roblox names",ban:"Ban / unban players",grades:"Edit grades & board",reorder:"Reorder leaderboard",changelog:"Edit change log",logs:"View activity log",placements:"View placement history",fights:"Edit fight notes & cooldowns",clans:"Manage clans",track:"View user tracking"};
+const STAFFP=["roblox","ban","grades","reorder","logs","placements","fights","clans","track"];
 let roleDefs={},roleColors={};
 const roleCol=r=>/^#[0-9a-f]{6}$/i.test(roleColors[r]||"")?roleColors[r]:"";
 let clans=[],clanMem={},clanApps=[],clansOk=true,openClanId=null;
@@ -1002,7 +1003,7 @@ const hSort=(a,b)=>{const m=$("#hsort").value;
   return b.created-a.created};
 const fmt=t=>new Date(t).toLocaleString([],{dateStyle:"medium",timeStyle:"short"});
 /* tab = [key, label, visible?, group]  group "n" = normal perms (role permissions), "h" = host perms (hosts only) */
-const HT=[["over","Overview",()=>true,"n"],["players","Players",()=>true,"n"],["order","Order",()=>can("reorder"),"n"],["tools","Tools",()=>true,"n"],["clans","Clans",()=>can("clans"),"n"],["logs","Activity log",()=>can("logs"),"n"],["place","Placements",()=>can("placements"),"n"],["fights","Fight notes",()=>can("fights"),"n"],
+const HT=[["over","Overview",()=>true,"n"],["players","Players",()=>true,"n"],["order","Order",()=>can("reorder"),"n"],["tools","Tools",()=>true,"n"],["clans","Clans",()=>can("clans"),"n"],["logs","Activity log",()=>can("logs"),"n"],["place","Placements",()=>can("placements"),"n"],["fights","Fight notes",()=>can("fights"),"n"],["track","User tracking",()=>can("track"),"n"],
 ["access","Access",()=>isOwner,"h"],["roles","Roles",()=>isOwner,"h"],["badges","Badge workshop",()=>isOwner,"h"],["home","Home page",()=>isOwner,"h"],["export","Export",()=>isOwner,"h"],["snipe","Snipe Panel",()=>isOwner&&snipeOk&&snipeOpen,"h"]];
 function logEvent(action,kind,tid,tname,detail){
   if(!sb||!uid)return;
@@ -1021,7 +1022,7 @@ function renderHost(board){
   $("#hh").textContent="Panel";
   const grp=(g,label)=>{const l=tabs.filter(t=>t[3]===g);return l.length?`<div class="tg"><div class="tgl">${label}</div><div class="tabs">${l.map(t=>`<button class="tab ${t[0]===hostTab?"on":""}" data-ht="${t[0]}">${t[1]}</button>`).join("")}</div></div>`:""};
   $("#htabs").innerHTML=grp("n","Normal perms")+grp("h","Host perms · hosts only");
-  ["over","players","order","tools","access","roles","clans","badges","home","logs","place","snipe","export","fights"].forEach(k=>{$("#hp_"+k).hidden=k!==hostTab});
+  ["over","players","order","tools","access","roles","clans","badges","home","logs","place","snipe","export","fights","track"].forEach(k=>{$("#hp_"+k).hidden=k!==hostTab});
   if(hostTab==="over")renderOverview(board);
   if(hostTab==="roles")renderRoles();
   if(hostTab==="logs")renderAuditList("#llist","#lcount",$("#lq").value,false,$("#lf").value);
@@ -1032,6 +1033,7 @@ function renderHost(board){
   if(hostTab==="order")renderOrder(board);
   if(hostTab==="export")$("#exL").disabled=!can("logs");
   if(hostTab==="fights")renderFights();
+  if(hostTab==="track")renderTracking();
   if(hostTab==="clans")renderClansPanel();
   if(hostTab==="badges")renderWorkshop();
   if(hostTab==="home")renderHomeEditor();
@@ -1272,6 +1274,100 @@ async function purgeLog(what){
   logEvent("log purged","general",null,"",M[1]+(n!=null?" ("+n+" entries)":""));
   alert("Purged "+M[1]+(n!=null?" \u2014 "+n+" entr"+(n===1?"y":"ies")+" deleted.":"."));
   if(what==="audit"||what==="place"){audit=[];setTimeout(loadAudit,800);render()}else{fMsg="";await loadFights()}
+}
+
+/* ---- user tracking (Panel > User tracking, needs "View user tracking") ----
+   Stores only coarse info per visit: time zone, language, browser/OS, page, referrer site. No IP addresses. See user_tracking.sql. */
+let trRows=[],trErr="",trF="unreg",trDays=7,trQ="",trOpen="",trLoaded=false,trBusy=false;
+const trVid=()=>{try{let v=localStorage.getItem("jj_vid");if(!v){v=(window.crypto&&crypto.randomUUID)?crypto.randomUUID():Date.now().toString(36)+Math.random().toString(36).slice(2,10);localStorage.setItem("jj_vid",v)}return v}catch(e){return"anon-"+Math.random().toString(36).slice(2,10)}};
+function trDevice(){const u=navigator.userAgent||"";
+  const b=/Edg\//.test(u)?"Edge":/OPR\//.test(u)?"Opera":/Firefox\//.test(u)?"Firefox":/Chrome\//.test(u)?"Chrome":/Safari\//.test(u)?"Safari":"Browser";
+  const o=/Windows/.test(u)?"Windows":/Android/.test(u)?"Android":/iPhone|iPad|iOS/.test(u)?"iOS":/Mac OS/.test(u)?"macOS":/Linux/.test(u)?"Linux":"Other";
+  return b+" · "+o+(/Mobi|Android|iPhone/.test(u)?" · mobile":"")}
+const trWhere=r=>{const tz=String(r.tz||""),p=tz.split("/"),city=(p[p.length-1]||"").replace(/_/g," "),reg=p.length>1?p[0]:"",c=(String(r.lang||"").split("-")[1]||"").toUpperCase();return tz?city+(reg?" ("+reg+")":"")+(c?" · "+c:""):"Unknown location"};
+async function trackVisit(){
+  if(!sb||demo)return;
+  const key="jj_trk_"+(uid||"anon");
+  try{if(sessionStorage.getItem(key))return;sessionStorage.setItem(key,"1")}catch(e){}
+  let tz="",ref="";
+  try{tz=Intl.DateTimeFormat().resolvedOptions().timeZone||""}catch(e){}
+  try{ref=document.referrer?new URL(document.referrer).hostname:""}catch(e){}
+  const r=await sb.from("visit_log").insert({visitor:trVid(),user_id:uid||null,name:((me&&me.name)||"").slice(0,60),discord:String(myDiscord||"").slice(0,30),kind:uid?"login":"visit",tz:tz.slice(0,60),lang:String(navigator.language||"").slice(0,12),device:trDevice().slice(0,60),referrer:ref.slice(0,80),page:(location.pathname||"/").slice(0,80)});
+  if(r.error)console.warn("visit_log:",r.error.message);
+}
+async function loadTrack(){
+  if(!sb||!can("track")||trBusy)return;
+  trBusy=true;
+  const r=await sb.from("visit_log").select("*").order("created_at",{ascending:false}).limit(2000);
+  trBusy=false;
+  if(r.error){trErr=/visit_log|relation|schema cache/i.test(r.error.message)?"User tracking isn’t set up yet — run user_tracking.sql in Supabase, then reload.":r.error.message;trRows=[]}else{trErr="";trRows=r.data||[]}
+  trLoaded=true;if(pg==="host"&&hostTab==="track")renderTracking(true);
+}
+function trGroups(){
+  const regIds=new Set(profiles.map(p=>p.id)),regV=new Set(trRows.filter(r=>r.user_id&&regIds.has(r.user_id)).map(r=>r.visitor)),g={};
+  trRows.forEach(r=>{
+    const k=r.user_id?"u:"+r.user_id:"v:"+r.visitor,o=g[k]||(g[k]={key:k,uid:r.user_id||null,vid:r.visitor,name:"",discord:"",rows:[],tz:new Set(),dev:new Set(),pages:new Set(),refs:new Set()});
+    o.rows.push(r);if(r.name&&!o.name)o.name=r.name;if(r.discord&&!o.discord)o.discord=r.discord;
+    if(r.tz)o.tz.add(trWhere(r));if(r.device)o.dev.add(r.device);if(r.page)o.pages.add(r.page);if(r.referrer)o.refs.add(r.referrer)});
+  return Object.values(g).map(o=>{o.last=Date.parse(o.rows[0].created_at)||0;o.first=Date.parse(o.rows[o.rows.length-1].created_at)||0;o.signed=!!o.uid;o.reg=!!o.uid&&regIds.has(o.uid);o.became=!o.uid&&regV.has(o.vid);return o}).sort((a,b)=>b.last-a.last);
+}
+function trStats(){
+  const cut=trDays?Date.now()-trDays*864e5:0,gs=trGroups().filter(o=>!o.reg&&!o.became&&(!cut||o.last>cut));
+  return{unreg:gs.length,signed:gs.filter(o=>o.signed).length,anon:gs.filter(o=>!o.signed).length,nw:profiles.filter(p=>!cut||p.created>cut).length,logs:trRows.filter(r=>!cut||Date.parse(r.created_at)>cut).length};
+}
+const trLog=r=>`<div class="mini" style="border-top:1px solid var(--line)"><b>${r.kind==="login"?"Signed in":"Visit"}</b> · ${esc(fmt(r.created_at))}<span>${esc(trWhere(r))} · ${esc(r.device||"?")} · ${esc(r.page||"/")}${r.referrer?" · from "+esc(r.referrer):""}</span></div>`;
+function trListHtml(){
+  const cut=trDays?Date.now()-trDays*864e5:0,s=trQ.trim().toLowerCase(),hit=(...a)=>!s||a.join(" ").toLowerCase().includes(s),empty=m=>`<div class="empty">${m}</div>`;
+  if(trF==="new"){
+    const L=profiles.filter(p=>(!cut||p.created>cut)&&hit(p.name,p.roblox,p.discord)).sort((a,b)=>b.created-a.created);
+    return L.length?L.map(p=>{
+      const rs=trRows.filter(r=>r.user_id===p.id),loc=[...new Set(rs.map(trWhere))],dev=[...new Set(rs.map(r=>r.device).filter(Boolean))];
+      return `<div class="card hrow" data-id="${esc(p.id)}"><div class="l">${av(p)}<div style="min-width:0"><div class="nm">${nmx(p)}${banTag(p)}</div><div class="pt" style="white-space:normal">@${esc(p.roblox)} · ${p.region} · joined ${esc(fmt(p.created))} (${ago(p.created)})</div><div class="pt" style="white-space:normal">${rs.length?"Seen from: "+esc(loc.join(", "))+" · "+esc(dev.join(", "))+" · last "+ago(Date.parse(rs[0].created_at)):"No sign-ins tracked yet"}</div></div></div></div>`}).join(""):empty("Nobody registered in this period.");
+  }
+  if(trF==="unreg"){
+    const gs=trGroups().filter(o=>!o.reg&&!o.became&&(!cut||o.last>cut)&&hit(o.name,o.discord,[...o.tz].join(" "),[...o.dev].join(" ")));
+    return gs.length?gs.map(o=>{
+      const open=trOpen===o.key,who=o.name||(o.signed?"Signed-in user":"Anonymous visitor · "+String(o.vid).slice(0,4));
+      return `<div class="lg" style="grid-template-columns:1fr"><div><b>${esc(who)}</b><span class="snt ${o.signed?"y":""}">${o.signed?"signed in · not registered":"anonymous"}</span>${o.discord?` <span class="pt" style="display:inline">ID ${esc(o.discord)}</span>`:""}
+        <div class="pt" style="white-space:normal">${o.rows.length} visit${o.rows.length===1?"":"s"} · first ${esc(fmt(o.first))} · last ${esc(fmt(o.last))} (${ago(o.last)})</div>
+        <div class="pt" style="white-space:normal">From: ${esc([...o.tz].join(", ")||"Unknown location")} · ${esc([...o.dev].join(", ")||"?")}${o.refs.size?" · via "+esc([...o.refs].join(", ")):""}</div>
+        <div class="sn-act"><button class="ghost" data-trx="${esc(o.key)}">${open?"Hide log":"Log · "+o.rows.length}</button>${o.discord?`<button class="ghost" data-copy="${esc(o.discord)}">Copy Discord ID</button>`:""}</div>
+        ${open?o.rows.slice(0,50).map(trLog).join(""):""}</div></div>`}).join(""):empty("No unregistered visitors in this period.");
+  }
+  const regIds=new Set(profiles.map(p=>p.id)),L=trRows.filter(r=>(!cut||Date.parse(r.created_at)>cut)&&hit(r.name,r.discord,r.tz,r.device,r.page)).slice(0,150);
+  return L.length?L.map(r=>`<div class="lg ${r.user_id&&regIds.has(r.user_id)?"pl":""}"><div class="lg-t">${esc(fmt(r.created_at))}</div><div><b>${esc(r.name||"Anonymous · "+String(r.visitor).slice(0,4))}</b><span class="snt ${r.user_id?(regIds.has(r.user_id)?"":"y"):""}">${r.user_id?(regIds.has(r.user_id)?"registered":"not registered"):"anonymous"}</span> · ${r.kind==="login"?"signed in":"visited"}<div class="pt" style="white-space:normal">${esc(trWhere(r))} · ${esc(r.device||"?")} · ${esc(r.page||"/")}${r.referrer?" · from "+esc(r.referrer):""}</div></div></div>`).join(""):empty("Nothing tracked yet.");
+}
+function renderTracking(force){
+  const b=$("#trbox");if(!b)return;
+  const ae=document.activeElement;if(!force&&ae&&b.contains(ae)&&/^(INPUT|SELECT)$/.test(ae.tagName))return;
+  if(!can("track")){b.innerHTML=`<div class="rbox"><div class="sub">You need the “View user tracking” permission.</div></div>`;return}
+  if(trErr){b.innerHTML=`<div class="rbox"><div class="sl">User tracking</div><div class="err" style="margin-top:8px">${esc(trErr)}</div></div>`;return}
+  if(!trLoaded){b.innerHTML=`<div class="rbox"><div class="sub">Loading…</div></div>`;loadTrack();return}
+  const st=trStats();
+  b.innerHTML=`<div class="rbox"><div class="sl">User tracking</div>
+    <div class="sub" style="margin-top:6px">Every visit and Discord sign-in is logged with a rough location (time zone + browser language), browser/OS, page and referring site. IP addresses are <b>not</b> collected. Registered = has a profile on the site.</div>
+    <div class="trow"><button class="ghost" id="trRefresh">Refresh</button>${isOwner?`<button class="ghost danger" id="trPurge">Purge tracking log</button>`:""}<span class="sub" style="margin:0">${trRows.length>=2000?"Latest 2000 entries":trRows.length+" entries"}</span></div></div>
+  <div class="rstats" style="margin-top:14px"><div class="tiles">
+    <div class="tile"><span>Unregistered</span><b>${st.unreg}</b><em>${st.signed} signed in · ${st.anon} anonymous</em></div>
+    <div class="tile"><span>New registered</span><b>${st.nw}</b></div>
+    <div class="tile"><span>Log entries</span><b>${st.logs}</b></div></div></div>
+  <div class="hfil" style="margin-top:14px">${[["unreg","Unregistered"],["new","New registered"],["all","All logs"]].map(([k,l])=>`<button class="hchip ${trF===k?"on":""}" data-trf="${k}">${l}</button>`).join("")}<select id="trd">${[["1","Last 24h"],["7","Last 7 days"],["30","Last 30 days"],["0","All time"]].map(([v,l])=>`<option value="${v}" ${String(trDays)===v?"selected":""}>${l}</option>`).join("")}</select><input id="trq" placeholder="Search name, Discord ID, place, device…" autocomplete="off" value="${esc(trQ)}" style="max-width:300px"></div>
+  <div class="list" id="trlist">${trListHtml()}</div>`;
+}
+document.addEventListener("click",e=>{const t=e.target;if(!t.closest)return;
+  const f=t.closest("[data-trf]");if(f){trF=f.dataset.trf;return renderTracking(true)}
+  const x=t.closest("[data-trx]");if(x){trOpen=trOpen===x.dataset.trx?"":x.dataset.trx;return renderTracking(true)}
+  if(t.closest("#trRefresh"))return loadTrack();
+  if(t.closest("#trPurge"))return trPurge()});
+document.addEventListener("input",e=>{if(e.target&&e.target.id==="trq"){trQ=e.target.value;const l=$("#trlist");if(l)l.innerHTML=trListHtml()}});
+document.addEventListener("change",e=>{if(e.target&&e.target.id==="trd"){trDays=+e.target.value||0;renderTracking(true)}});
+async function trPurge(){
+  if(!sb||!isOwner)return;
+  if(!confirm("Permanently delete the whole tracking log?\n\nThis can’t be undone."))return;
+  if((prompt("Type PURGE to confirm.")||"").trim().toUpperCase()!=="PURGE")return;
+  const r=await sb.from("visit_log").delete().gte("created_at","1970-01-01");
+  if(r.error)return alert("Couldn’t purge: "+r.error.message);
+  logEvent("tracking log purged","general",null,"","");trRows=[];renderTracking(true);
 }
 
 /* ---- tools tab ---- */
@@ -2173,7 +2269,7 @@ async function refreshAuth(){
     const r=await sb.rpc("is_admin");isOwner=r.data===true;if(!isOwner){snipeOk=false;snipeOpen=false}
     if(syncedFor!==uid){syncedFor=uid;sb.rpc("sync_discord").then(()=>loaded&&loadProfiles())}
   }
-  syncOwnName();hostSync();renderAuth();render();applyGate();maybeOnboard();if(staff()&&!audit.length&&!auditErr)loadAudit();
+  syncOwnName();hostSync();renderAuth();render();applyGate();maybeOnboard();if(staff()&&!audit.length&&!auditErr)loadAudit();trackVisit();
 }
 document.addEventListener("click",async e=>{
   const t=e.target;
@@ -2245,7 +2341,7 @@ document.addEventListener("click",async e=>{
   if(t.closest("#lnkDisc")){try{sessionStorage.setItem("jj_link","1")}catch(_){}return sb.auth.signInWithOAuth({provider:"discord",options:{scopes:"identify email connections",redirectTo:location.origin+location.pathname}})}
   if(t.closest("#lbEdit")){lbEdit=true;orderDraft=null;ordMsg="";return render()}
   const gb=t.closest("[data-go]");if(gb)return go(gb.dataset.go);
-  const ht=t.closest("[data-ht]");if(ht){hostTab=ht.dataset.ht;if(hostTab==="fights")loadFights();if(hostTab==="over"||hostTab==="logs"||hostTab==="place"||hostTab==="snipe"||hostTab==="tools")loadAudit();return render()}
+  const ht=t.closest("[data-ht]");if(ht){hostTab=ht.dataset.ht;if(hostTab==="fights")loadFights();if(hostTab==="track")loadTrack();if(hostTab==="over"||hostTab==="logs"||hostTab==="place"||hostTab==="snipe"||hostTab==="tools")loadAudit();return render()}
   if(t.closest("#avpick"))return $("#avfile").click();
   if(t.closest("#avreset"))return resetAvatar();
   if(t.closest("#exP"))return exportPlayers();
