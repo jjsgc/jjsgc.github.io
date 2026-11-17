@@ -553,6 +553,19 @@ button.bell:hover .bdot{background:#000;color:#fff}
 .ni i{font-style:normal;color:var(--dim);text-align:center;font-size:15px}
 .ni span{display:block;color:var(--dim);font-size:11px;margin-top:2px}
 .nem{padding:30px 18px;text-align:center;color:var(--dim);font-size:13px;line-height:1.5}
+
+.cwc{background:var(--row);border:1px solid var(--line);border-radius:12px;padding:14px 16px;margin:0 0 12px}
+.cwc h3{margin:0 0 8px;font-size:15px;letter-spacing:.04em}
+.cwl{font-size:13px;line-height:1.7;color:#d6d6dc}.cwl i{font-style:normal;color:var(--dim);margin:0 8px;font-size:11px;text-transform:uppercase}
+.cws{font-weight:800;font-size:13px;margin:4px 0}
+.cwr{margin-top:10px;font-weight:700;font-size:12px;letter-spacing:.08em}
+.cwg{height:8px}
+.cwt{width:100%;min-height:220px;background:var(--row);color:var(--fg);border:1px solid var(--line);border-radius:10px;padding:10px;font:13px/1.5 var(--sans);resize:vertical;box-sizing:border-box;margin-top:8px}
+.cwh{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:12px}.cwh h2{margin:0}
+.cwbody{max-height:68vh;overflow:auto}
+.lug{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:22px}.lug .rbox{margin:0}
+@media(max-width:720px){.lug{grid-template-columns:1fr}}
+.lurow{display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid var(--line)}.lurow>b{width:20px;color:var(--dim);font-size:12px}
 </style>
 </head>
 <body>
@@ -629,6 +642,7 @@ button.bell:hover .bdot{background:#000;color:#fff}
 <section class="view" id="v_clans" hidden style="margin-top:26px">
   <div><h2>Clans</h2><div class="sub">Ranked by placement. Click a clan to open it.</div></div>
   <div class="acts" id="myclans" style="margin:14px 0 0"></div>
+  <div class="acts" style="margin:10px 0 0"><button class="solid" data-cw="res">Clan wars · Results</button><button class="solid" data-cw="fix">Clan wars · Fixtures</button></div>
   <div class="bar" style="margin-top:16px"><div class="sl" id="clcount" style="padding-bottom:12px"></div><input id="clq" placeholder="Search clans…" autocomplete="off" style="max-width:240px;margin-bottom:10px"></div>
   <div class="cols cl"><span>#</span><span>CLAN</span><span>MEMBERS</span></div>
   <div class="list simple" id="clans_list"></div>
@@ -677,6 +691,7 @@ button.bell:hover .bdot{background:#000;color:#fff}
   <div id="hp_track" hidden><div id="trbox"></div></div>
   <div id="hp_warn" hidden><div id="wbox"></div></div>
   <div id="hp_clans" hidden><div id="cbox"></div></div>
+  <div id="hp_cw" hidden><div id="cwbox"></div></div>
   <div id="hp_badges" hidden><div id="wbox"></div></div>
   <div id="hp_home" hidden><div id="hmbox"></div></div>
   <div id="hp_export" hidden>
@@ -1011,7 +1026,7 @@ const hSort=(a,b)=>{const m=$("#hsort").value;
   return b.created-a.created};
 const fmt=t=>new Date(t).toLocaleString([],{dateStyle:"medium",timeStyle:"short"});
 /* tab = [key, label, visible?, group]  group "n" = normal perms (role permissions), "h" = host perms (hosts only) */
-const HT=[["over","Overview",()=>true,"n"],["players","Players",()=>true,"n"],["order","Order",()=>can("reorder"),"n"],["tools","Tools",()=>true,"n"],["clans","Clans",()=>can("clans"),"n"],["logs","Activity log",()=>can("logs"),"n"],["place","Placements",()=>can("placements"),"n"],["fights","Fight notes",()=>can("fights"),"n"],["track","User tracking",()=>can("track"),"n"],["warn","Warnings",()=>can("warn"),"n"],
+const HT=[["over","Overview",()=>true,"n"],["players","Players",()=>true,"n"],["order","Order",()=>can("reorder"),"n"],["tools","Tools",()=>true,"n"],["clans","Clans",()=>can("clans"),"n"],["cw","Clan wars",()=>can("clans"),"n"],["logs","Activity log",()=>can("logs"),"n"],["place","Placements",()=>can("placements"),"n"],["fights","Fight notes",()=>can("fights"),"n"],["track","User tracking",()=>can("track"),"n"],["warn","Warnings",()=>can("warn"),"n"],
 ["access","Access",()=>isOwner,"h"],["roles","Roles",()=>isOwner,"h"],["badges","Badge workshop",()=>isOwner,"h"],["home","Home page",()=>isOwner,"h"],["export","Export",()=>isOwner,"h"],["snipe","Snipe Panel",()=>isOwner&&snipeOk&&snipeOpen,"h"]];
 function logEvent(action,kind,tid,tname,detail){
   if(!sb||!uid)return;
@@ -1030,7 +1045,7 @@ function renderHost(board){
   $("#hh").textContent="Panel";
   const grp=(g,label)=>{const l=tabs.filter(t=>t[3]===g);return l.length?`<div class="tg"><div class="tgl">${label}</div><div class="tabs">${l.map(t=>`<button class="tab ${t[0]===hostTab?"on":""}" data-ht="${t[0]}">${t[1]}</button>`).join("")}</div></div>`:""};
   $("#htabs").innerHTML=grp("n","Normal perms")+grp("h","Host perms · hosts only");
-  ["over","players","order","tools","access","roles","clans","badges","home","logs","place","snipe","export","fights","track","warn"].forEach(k=>{$("#hp_"+k).hidden=k!==hostTab});
+  ["over","players","order","tools","access","roles","clans","cw","badges","home","logs","place","snipe","export","fights","track","warn"].forEach(k=>{$("#hp_"+k).hidden=k!==hostTab});
   if(hostTab==="over")renderOverview(board);
   if(hostTab==="roles")renderRoles();
   if(hostTab==="logs")renderAuditList("#llist","#lcount",$("#lq").value,false,$("#lf").value);
@@ -1044,6 +1059,7 @@ function renderHost(board){
   if(hostTab==="track")renderTracking();
   if(hostTab==="warn")renderWarn();
   if(hostTab==="clans")renderClansPanel();
+  if(hostTab==="cw")renderCwPanel();
   if(hostTab==="badges")renderWorkshop();
   if(hostTab==="home")renderHomeEditor();
   document.querySelectorAll("[data-own]").forEach(x=>x.hidden=!isOwner);
@@ -1716,8 +1732,8 @@ async function saveHome(reset){
 let logText="",logAt=null,logErr="",editingLog=false;
 async function loadLog(){
   if(!sb)return;
-  const {data,error}=await sb.from("site_content").select("key,body,updated_at").in("key",["changelog","announcement","site_lock","site_whitelist","home_content","eval_days","broadcasts","warnings"]);
-  if(error)logErr=error.message;else{logErr="";(data||[]).forEach(r=>{if(r.key==="changelog"){logText=r.body||"";logAt=r.updated_at}else if(r.key==="announcement"){annText=r.body||"";annAt=r.updated_at}else if(r.key==="eval_days"){let has=null;try{has=localStorage.getItem("jj_evdays")}catch(e){}if(has===null)evDays=r.body==="none"?0:(+r.body||30)}else if(r.key==="broadcasts"){try{bcList=JSON.parse(r.body||"[]");if(!Array.isArray(bcList))bcList=[]}catch(e){bcList=[]}}else if(r.key==="warnings"){try{warnMap=JSON.parse(r.body||"{}")||{}}catch(e){warnMap={}}}else if(r.key==="site_lock"){try{const o=JSON.parse(r.body||"{}");lockOn=!!o.on;lockMsg=String(o.msg||"")}catch(e){lockOn=false}}else if(r.key==="home_content"){try{homeSaved=JSON.parse(r.body||"{}")}catch(e){homeSaved={}}}else if(r.key==="site_whitelist"){try{const o=JSON.parse(r.body||"{}");wlOn=!!o.on;wlList=(Array.isArray(o.list)?o.list:[]).map(String)}catch(e){wlOn=false}}})}
+  const {data,error}=await sb.from("site_content").select("key,body,updated_at").in("key",["cw_results","cw_fixtures","changelog","announcement","site_lock","site_whitelist","home_content","eval_days","broadcasts","warnings"]);
+  if(error)logErr=error.message;else{logErr="";(data||[]).forEach(r=>{if(r.key==="changelog"){logText=r.body||"";logAt=r.updated_at}else if(r.key==="announcement"){annText=r.body||"";annAt=r.updated_at}else if(r.key==="eval_days"){let has=null;try{has=localStorage.getItem("jj_evdays")}catch(e){}if(has===null)evDays=r.body==="none"?0:(+r.body||30)}else if(r.key==="cw_results"){cwRes=r.body||""}else if(r.key==="cw_fixtures"){cwFix=r.body||""}else if(r.key==="broadcasts"){try{bcList=JSON.parse(r.body||"[]");if(!Array.isArray(bcList))bcList=[]}catch(e){bcList=[]}}else if(r.key==="warnings"){try{warnMap=JSON.parse(r.body||"{}")||{}}catch(e){warnMap={}}}else if(r.key==="site_lock"){try{const o=JSON.parse(r.body||"{}");lockOn=!!o.on;lockMsg=String(o.msg||"")}catch(e){lockOn=false}}else if(r.key==="home_content"){try{homeSaved=JSON.parse(r.body||"{}")}catch(e){homeSaved={}}}else if(r.key==="site_whitelist"){try{const o=JSON.parse(r.body||"{}");wlOn=!!o.on;wlList=(Array.isArray(o.list)?o.list:[]).map(String)}catch(e){wlOn=false}}})}
   renderHome();renderLog();try{bcSync();warnSync()}catch(e){console.warn(e)}if(pg==="host"&&hostTab==="warn")renderWarn();applyGate();if(pg==="host"&&hostTab==="home")renderHomeEditor();if(pg==="host"&&hostTab==="access"&&accDraft===null)renderAccess();
 }
 function renderLog(){
@@ -1966,6 +1982,72 @@ async function clanRpc(fn,args){
   await loadProfiles();return true;
 }
 function reopenClan(){}
+/* ---- Clan wars (results + fixtures) and clan line-ups ---- */
+let cwRes="",cwFix="",cwDraft=null,cwMsg="",LU={},luOk=true,luLoaded=false,luMsg="";
+const cwCards=t=>String(t||"").replace(/\r/g,"").split(/^\s*-{3,}\s*$/m).map(b=>b.split("\n").map(l=>l.trim())).map(a=>{while(a.length&&!a[0])a.shift();while(a.length&&!a[a.length-1])a.pop();return a}).filter(a=>a.length);
+const cwLine=l=>{
+  if(!l)return `<div class="cwg"></div>`;
+  if(/^round\b/i.test(l))return `<div class="cwr">${esc(l)}</div>`;
+  if(/\d+\s*[-–:]\s*\d+/.test(l)&&!/->|→/.test(l))return `<div class="cws">${esc(l)}</div>`;
+  const m=l.match(/^(.*?)\s+(vs\.?|->|→)\s+(.*)$/i);
+  return m?`<div class="cwl">${esc(m[1])}<i>${esc(m[2])}</i>${esc(m[3])}</div>`:`<div class="cwl">${esc(l)}</div>`};
+const cwCard=a=>`<div class="cwc"><h3>${esc(a[0])}</h3>${a.slice(1).map(cwLine).join("")}</div>`;
+function cwOpen(kind){
+  const cards=cwCards(kind==="res"?cwRes:cwFix);
+  openModal(`<div class="cwh"><h2>${kind==="res"?"Clan wars · Results":"Clan wars · Fixtures"}</h2><button class="ghost" data-cwx="1">Close</button></div><div class="cwbody">${cards.length?cards.map(cwCard).join(""):`<div class="empty">Nothing posted yet.</div>`}</div>${can("clans")?`<div class="acts"><button class="ghost" data-cwedit="1">Edit in panel</button></div>`:""}`);
+}
+function renderCwPanel(){
+  const box=$("#cwbox");if(!box)return;
+  const ae=document.activeElement;if(ae&&box.contains(ae)&&ae.tagName==="TEXTAREA")return;
+  if(!cwDraft)cwDraft={res:cwRes,fix:cwFix};
+  box.innerHTML=`<div class="rbox"><div class="sl">Clan wars · Results</div>
+    <textarea class="cwt" id="cw_res" placeholder="CW — CLAN A VS CLAN B&#10;CLAN A 1 - 0 CLAN B&#10;---&#10;ROUND 1&#10;player -> player">${esc(cwDraft.res)}</textarea>
+    <div class="sl" style="margin-top:16px">Clan wars · Fixtures</div>
+    <textarea class="cwt" id="cw_fix" placeholder="WEEK 1 — CLAN WAR MATCHUPS&#10;01 Clan A vs Clan B&#10;---&#10;WEEK 2 — CLAN WAR MATCHUPS&#10;01 Clan C vs Clan D">${esc(cwDraft.fix)}</textarea>
+    <div class="acts"><button class="solid" data-cwsave="1">Save both</button></div>
+    <div class="sub" style="margin-top:10px">Put <b>---</b> on its own line to start a new card. The first line of a card is its title. Lines like “A vs B” or “A -&gt; B” are laid out neatly, “ROUND 1” is bolded, and a score like “1 - 0” is highlighted.</div>
+    <div class="err">${esc(cwMsg)}</div></div>`;
+}
+async function cwSave(){
+  try{await scSet("cw_results",cwDraft.res);await scSet("cw_fixtures",cwDraft.fix);cwRes=cwDraft.res;cwFix=cwDraft.fix;cwMsg="Saved."}
+  catch(e){cwMsg="Couldn’t save: "+(e.message||"permission denied")+" (only hosts can write site content)"}
+  renderCwPanel();
+}
+async function luLoad(){
+  luLoaded=true;if(!sb)return;
+  const r=await sb.from("clan_lineups").select("*");
+  if(r.error){luOk=false;luMsg=r.error.message}else{luOk=true;LU={};(r.data||[]).forEach(x=>LU[x.clan_id]={main:Array.isArray(x.main)?x.main:[],sub:Array.isArray(x.sub)?x.sub:[]})}
+  if(pg==="clan")renderClanPage();
+}
+const luGet=c=>{const ids=new Set(clanMembers(c).map(p=>p.id)),l=LU[c.id]||{main:[],sub:[]};return {main:l.main.filter(i=>ids.has(i)),sub:l.sub.filter(i=>ids.has(i))}};
+async function luSave(c,l){
+  const r=await sb.from("clan_lineups").upsert({clan_id:c.id,main:l.main,sub:l.sub,updated_by:uid,updated_at:new Date().toISOString()});
+  if(r.error)luMsg="Couldn’t save: "+r.error.message+(/relation|schema cache/i.test(r.error.message)?" — run clan_lineups.sql in Supabase first.":"");
+  else{luMsg="";LU[c.id]=l}
+  renderClanPage();
+}
+function luHtml(c,m){
+  if(!luOk)return `<div class="rbox" style="margin-top:22px"><div class="sl">Line-ups</div><div class="sub" style="margin-top:8px">Line-ups aren’t set up yet. Run <b>clan_lineups.sql</b> in Supabase, then reload.</div></div>`;
+  const l=luGet(c),ed=canDecide(c),free=m.filter(p=>!l.main.includes(p.id)&&!l.sub.includes(p.id)).sort(byName);
+  const col=(k,label)=>`<div class="rbox"><div class="sl">${label} · ${l[k].length}</div>`+
+    (l[k].map((id,i)=>{const p=profiles.find(x=>x.id===id);return `<div class="lurow"><b>${i+1}</b>${av(p)}<div style="min-width:0;flex:1"><div class="nm">${nmx(p,1)}</div></div>${ed?`<button class="ghost" data-luup="${k}:${i}">↑</button><button class="ghost" data-ludn="${k}:${i}">↓</button><button class="ghost" data-lurm="${k}:${id}">×</button>`:""}</div>`}).join("")||`<div class="sub" style="margin-top:8px">Nobody yet.</div>`)+
+    (ed?`<div class="cform" style="grid-template-columns:1fr auto;align-items:end;margin-top:12px"><div><select data-lusel="${k}"><option value="">— Pick a member —</option>${free.map(p=>`<option value="${esc(p.id)}">${esc(p.name)}</option>`).join("")}</select></div><button class="solid" data-luadd="${k}">Add</button></div>`:"")+`</div>`;
+  return `<div class="lug">${col("main","Main line-up")}${col("sub","Sub line-up")}</div>${luMsg?`<div class="err">${esc(luMsg)}</div>`:""}`;
+}
+document.addEventListener("click",e=>{
+  const t=e.target.closest&&e.target.closest("[data-cw],[data-cwx],[data-cwedit],[data-cwsave],[data-luadd],[data-luup],[data-ludn],[data-lurm]");if(!t)return;
+  if(t.dataset.cw)return cwOpen(t.dataset.cw);
+  if("cwx" in t.dataset)return closeModal();
+  if("cwedit" in t.dataset){closeModal();hostTab="cw";cwDraft=null;return go("host")}
+  if("cwsave" in t.dataset)return cwSave();
+  const c=clanById(openClanId);if(!c||!canDecide(c)||!sb)return;
+  const l=luGet(c),[k,x]=String((t.dataset.luadd||t.dataset.luup||t.dataset.ludn||t.dataset.lurm)).split(":");
+  if(t.dataset.luadd){const s=document.querySelector(`[data-lusel="${k}"]`),id=s&&s.value;if(!id||l.main.includes(id)||l.sub.includes(id))return;l[k].push(id)}
+  else if(t.dataset.lurm){l[k]=l[k].filter(i=>i!==x)}
+  else{const i=+x,j=t.dataset.luup?i-1:i+1;if(j<0||j>=l[k].length)return;[l[k][i],l[k][j]]=[l[k][j],l[k][i]]}
+  luSave(c,l);
+});
+document.addEventListener("input",e=>{const t=e.target;if(t&&cwDraft){if(t.id==="cw_res")cwDraft.res=t.value;else if(t.id==="cw_fix")cwDraft.fix=t.value}});
 function openClan(id){
   if(!clanById(id))return;
   if($("#modal").classList.contains("open"))closeModal();
@@ -1995,7 +2077,7 @@ function renderClanPage(){
   if(!c){if(loaded)go("home");return}
   const ae=document.activeElement;if(ae&&box.contains(ae)&&/^(INPUT|SELECT|TEXTAREA)$/.test(ae.tagName))return;
   if(cedraft.id!==c.id){manageOpen=false;cedraft={id:c.id,name:c.name,tag:c.tag,color:clanCol(c),descr:c.descr||"",pick:""}}
-  ranked();
+  ranked();if(!luLoaded)luLoad();
   const m=clanMembers(c).sort(cmSort),top=m[0],n=m.filter(onB).length;
   m.sort(memSort(c));
   const meP=profiles.find(p=>p.id===uid),inClan=!!clanMem[uid],mine=clanMem[uid]===c.id,pend=myApps().find(a=>a.clan_id===c.id),sideMine=sideMem[uid]===c.id,s3m=sideOk&&!!clanMem[uid]&&isS3(clanById(clanMem[uid])),canSide=s3m&&!sideMem[uid]&&!isS3(c)&&!mine;
@@ -2038,6 +2120,7 @@ function renderClanPage(){
     <div class="cwide"><label>Description</label><input data-ce="descr" maxlength="160" value="${esc(cedraft.descr)}" autocomplete="off"></div></div>
     <div class="acts"><button class="solid" data-cesave="${esc(c.id)}">Save changes</button></div>
     <div class="cform" style="grid-template-columns:1fr auto;align-items:end;margin-top:18px"><div><label>Add a member</label><select data-ce="pick"><option value="">— Pick a player —</option>${profiles.filter(p=>!clanMem[p.id]&&!p.banned).sort(byName).map(p=>`<option value="${esc(p.id)}" ${p.id===cedraft.pick?"selected":""}>${esc(p.name)} (@${esc(p.roblox)})</option>`).join("")}</select></div><button class="solid" data-ceadd="${esc(c.id)}">Add</button></div></div>`:""}
+  ${luHtml(c,m)}
   ${bm}
   ${apps.length?`<div class="sl" style="margin:26px 0 6px">Applications · ${apps.length}</div>${apps.map(arow).join("")}`:""}
   <div class="sl" style="margin:26px 0 6px">Members · ${m.length}</div>
