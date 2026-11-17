@@ -1455,7 +1455,7 @@ async function embSendOne(c,i){
     const gif=await embLineGet();
     const embeds=await buildEmbeds(c.r,!!gif);
     if(!embeds.length){embMsg[i]="No players to send.";return false}
-    const payload={username:"JJSGC",content:"**JJSGC "+REG[c.r]+" Leaderboard** · "+new Date().toLocaleDateString([],{dateStyle:"long"}),embeds,allowed_mentions:{parse:[]}};
+    const payload={username:"JJSGC",embeds,allowed_mentions:{parse:[]}};
     let r;
     if(gif){
       payload.attachments=[{id:0,filename:EMB_LINE}];
