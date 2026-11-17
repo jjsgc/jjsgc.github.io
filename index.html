@@ -566,6 +566,23 @@ button.bell:hover .bdot{background:#000;color:#fff}
 .lug{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:22px}.lug .rbox{margin:0}
 @media(max-width:720px){.lug{grid-template-columns:1fr}}
 .lurow{display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid var(--line)}.lurow>b{width:20px;color:var(--dim);font-size:12px}
+
+.cwbtns{display:flex;flex-wrap:wrap;gap:16px;margin:26px 0 32px}
+.cwb{display:flex;flex-direction:column;align-items:flex-start;gap:6px;text-align:left;text-transform:none;letter-spacing:0;padding:18px 26px;min-width:240px;background:var(--row);color:var(--fg);border:1px solid var(--line);border-radius:14px}
+.cwb:hover{border-color:#55555f;background:#16161c;color:var(--fg)}
+.cwb b{font-size:13px;letter-spacing:.1em;text-transform:uppercase}.cwb span{font-size:12px;color:var(--dim);font-weight:400}
+.fxcard{background:var(--row);border:1px solid var(--line);border-radius:12px;padding:14px 16px;margin:12px 0}
+.fxhead{display:flex;flex-wrap:wrap;align-items:center;gap:10px}.fxhead select,.fxhead input{width:auto;min-width:150px;flex:1;margin:0}
+.fxhead i{font-style:normal;color:var(--dim);font-size:11px;text-transform:uppercase}
+.fxn{font-weight:800;color:var(--dim);font-size:13px;min-width:24px}
+.fxs{min-width:0}.fxs>.ghost{margin-top:8px}
+.fxwk{display:flex;gap:10px;align-items:center;margin-bottom:6px}.fxwk input{flex:1;margin:0;font-weight:700}
+details.fxm{border-top:1px solid var(--line);padding:10px 0}details.fxm:first-of-type{border-top:0}
+details.fxm summary{display:flex;align-items:center;gap:12px;cursor:pointer;list-style:none;flex-wrap:wrap}details.fxm summary::-webkit-details-marker{display:none}
+.fxt{flex:1;min-width:0;font-weight:600;font-size:14px}.fxt i{font-style:normal;color:var(--dim);font-size:11px;text-transform:uppercase;margin:0 6px}
+.fxw{font-size:12px;color:var(--dim)}
+.fxl{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin:10px 0 2px 36px}
+@media(max-width:720px){.fxl{grid-template-columns:1fr;margin-left:0}}
 </style>
 </head>
 <body>
@@ -642,7 +659,7 @@ button.bell:hover .bdot{background:#000;color:#fff}
 <section class="view" id="v_clans" hidden style="margin-top:26px">
   <div><h2>Clans</h2><div class="sub">Ranked by placement. Click a clan to open it.</div></div>
   <div class="acts" id="myclans" style="margin:14px 0 0"></div>
-  <div class="acts" style="margin:10px 0 0"><button class="solid" data-cw="res">Clan wars · Results</button><button class="solid" data-cw="fix">Clan wars · Fixtures</button></div>
+  <div class="cwbtns"><button class="cwb" data-cw="res"><b>Clan wars · Results</b><span>Scores and round-by-round</span></button><button class="cwb" data-cw="fix"><b>Clan wars · Fixtures</b><span>Matchups, times and line-ups</span></button></div>
   <div class="bar" style="margin-top:16px"><div class="sl" id="clcount" style="padding-bottom:12px"></div><input id="clq" placeholder="Search clans…" autocomplete="off" style="max-width:240px;margin-bottom:10px"></div>
   <div class="cols cl"><span>#</span><span>CLAN</span><span>MEMBERS</span></div>
   <div class="list simple" id="clans_list"></div>
@@ -1732,8 +1749,8 @@ async function saveHome(reset){
 let logText="",logAt=null,logErr="",editingLog=false;
 async function loadLog(){
   if(!sb)return;
-  const {data,error}=await sb.from("site_content").select("key,body,updated_at").in("key",["cw_results","cw_fixtures","changelog","announcement","site_lock","site_whitelist","home_content","eval_days","broadcasts","warnings"]);
-  if(error)logErr=error.message;else{logErr="";(data||[]).forEach(r=>{if(r.key==="changelog"){logText=r.body||"";logAt=r.updated_at}else if(r.key==="announcement"){annText=r.body||"";annAt=r.updated_at}else if(r.key==="eval_days"){let has=null;try{has=localStorage.getItem("jj_evdays")}catch(e){}if(has===null)evDays=r.body==="none"?0:(+r.body||30)}else if(r.key==="cw_results"){cwRes=r.body||""}else if(r.key==="cw_fixtures"){cwFix=r.body||""}else if(r.key==="broadcasts"){try{bcList=JSON.parse(r.body||"[]");if(!Array.isArray(bcList))bcList=[]}catch(e){bcList=[]}}else if(r.key==="warnings"){try{warnMap=JSON.parse(r.body||"{}")||{}}catch(e){warnMap={}}}else if(r.key==="site_lock"){try{const o=JSON.parse(r.body||"{}");lockOn=!!o.on;lockMsg=String(o.msg||"")}catch(e){lockOn=false}}else if(r.key==="home_content"){try{homeSaved=JSON.parse(r.body||"{}")}catch(e){homeSaved={}}}else if(r.key==="site_whitelist"){try{const o=JSON.parse(r.body||"{}");wlOn=!!o.on;wlList=(Array.isArray(o.list)?o.list:[]).map(String)}catch(e){wlOn=false}}})}
+  const {data,error}=await sb.from("site_content").select("key,body,updated_at").in("key",["cw_results","cw_fixtures","cw_fixtures2","changelog","announcement","site_lock","site_whitelist","home_content","eval_days","broadcasts","warnings"]);
+  if(error)logErr=error.message;else{logErr="";(data||[]).forEach(r=>{if(r.key==="changelog"){logText=r.body||"";logAt=r.updated_at}else if(r.key==="announcement"){annText=r.body||"";annAt=r.updated_at}else if(r.key==="eval_days"){let has=null;try{has=localStorage.getItem("jj_evdays")}catch(e){}if(has===null)evDays=r.body==="none"?0:(+r.body||30)}else if(r.key==="cw_results"){cwRes=r.body||""}else if(r.key==="cw_fixtures"){cwFix=r.body||""}else if(r.key==="cw_fixtures2"){cwFx=fxParse(r.body)}else if(r.key==="broadcasts"){try{bcList=JSON.parse(r.body||"[]");if(!Array.isArray(bcList))bcList=[]}catch(e){bcList=[]}}else if(r.key==="warnings"){try{warnMap=JSON.parse(r.body||"{}")||{}}catch(e){warnMap={}}}else if(r.key==="site_lock"){try{const o=JSON.parse(r.body||"{}");lockOn=!!o.on;lockMsg=String(o.msg||"")}catch(e){lockOn=false}}else if(r.key==="home_content"){try{homeSaved=JSON.parse(r.body||"{}")}catch(e){homeSaved={}}}else if(r.key==="site_whitelist"){try{const o=JSON.parse(r.body||"{}");wlOn=!!o.on;wlList=(Array.isArray(o.list)?o.list:[]).map(String)}catch(e){wlOn=false}}})}
   renderHome();renderLog();try{bcSync();warnSync()}catch(e){console.warn(e)}if(pg==="host"&&hostTab==="warn")renderWarn();applyGate();if(pg==="host"&&hostTab==="home")renderHomeEditor();if(pg==="host"&&hostTab==="access"&&accDraft===null)renderAccess();
 }
 function renderLog(){
@@ -1983,7 +2000,9 @@ async function clanRpc(fn,args){
 }
 function reopenClan(){}
 /* ---- Clan wars (results + fixtures) and clan line-ups ---- */
-let cwRes="",cwFix="",cwDraft=null,cwMsg="",LU={},luOk=true,luLoaded=false,luMsg="";
+let cwRes="",cwFix="",cwFx={weeks:[]},fxd=null,cwDraft=null,cwMsg="",cwBad=false,LU={},luOk=true,luLoaded=false,luMsg="";
+function fxParse(t){try{const o=JSON.parse(t||"{}");return{weeks:Array.isArray(o.weeks)?o.weeks:[]}}catch(e){return{weeks:[]}}}
+const uid8=()=>Math.random().toString(36).slice(2,9);
 const cwCards=t=>String(t||"").replace(/\r/g,"").split(/^\s*-{3,}\s*$/m).map(b=>b.split("\n").map(l=>l.trim())).map(a=>{while(a.length&&!a[0])a.shift();while(a.length&&!a[a.length-1])a.pop();return a}).filter(a=>a.length);
 const cwLine=l=>{
   if(!l)return `<div class="cwg"></div>`;
@@ -1992,25 +2011,58 @@ const cwLine=l=>{
   const m=l.match(/^(.*?)\s+(vs\.?|->|→)\s+(.*)$/i);
   return m?`<div class="cwl">${esc(m[1])}<i>${esc(m[2])}</i>${esc(m[3])}</div>`:`<div class="cwl">${esc(l)}</div>`};
 const cwCard=a=>`<div class="cwc"><h3>${esc(a[0])}</h3>${a.slice(1).map(cwLine).join("")}</div>`;
+const clName=id=>{const c=clanById(id);return c?c.name:"TBD"};
+const clTag=id=>{const c=clanById(id);return c?`<span style="color:${clanCol(c)};font-weight:800">[${esc(c.tag)}]</span> `:""};
+const fxWhen=iso=>{const d=new Date(iso);return isNaN(d)?"":d.toLocaleString([],{weekday:"short",day:"numeric",month:"short",hour:"2-digit",minute:"2-digit"})};
+const toLocalInput=iso=>{const d=new Date(iso);if(!iso||isNaN(d))return"";const p=n=>String(n).padStart(2,"0");return `${d.getFullYear()}-${p(d.getMonth()+1)}-${p(d.getDate())}T${p(d.getHours())}:${p(d.getMinutes())}`};
+const fxNames=ids=>(ids||[]).map(i=>pName(i)).join(", ")||"—";
+function fxView(){
+  const side=(cid,mn,sb2)=>`<div><b>${clTag(cid)}${esc(clName(cid))}</b><div class="cwl">Main: ${esc(fxNames(mn))}</div><div class="cwl">Sub: ${esc(fxNames(sb2))}</div></div>`;
+  return cwFx.weeks.map(w=>`<div class="cwc"><h3>${esc(w.title||"Week")}</h3>${(w.matches||[]).map((m,i)=>`<details class="fxm"><summary><span class="fxn">${String(i+1).padStart(2,"0")}</span><span class="fxt">${clTag(m.a)}${esc(clName(m.a))}<i>vs</i>${clTag(m.b)}${esc(clName(m.b))}</span>${m.at?`<span class="fxw">${esc(fxWhen(m.at))}</span>`:""}</summary><div class="fxl">${side(m.a,m.mainA,m.subA)}${side(m.b,m.mainB,m.subB)}</div></details>`).join("")||`<div class="sub">No matches yet.</div>`}</div>`).join("");
+}
 function cwOpen(kind){
-  const cards=cwCards(kind==="res"?cwRes:cwFix);
-  openModal(`<div class="cwh"><h2>${kind==="res"?"Clan wars · Results":"Clan wars · Fixtures"}</h2><button class="ghost" data-cwx="1">Close</button></div><div class="cwbody">${cards.length?cards.map(cwCard).join(""):`<div class="empty">Nothing posted yet.</div>`}</div>${can("clans")?`<div class="acts"><button class="ghost" data-cwedit="1">Edit in panel</button></div>`:""}`);
+  const empty=`<div class="empty">Nothing posted yet.</div>`;
+  let body;
+  if(kind==="res"){const c=cwCards(cwRes);body=c.length?c.map(cwCard).join(""):empty}
+  else{const c=cwCards(cwFix);body=cwFx.weeks.length?fxView():c.length?c.map(cwCard).join(""):empty}
+  openModal(`<div class="cwh"><h2>${kind==="res"?"Clan wars · Results":"Clan wars · Fixtures"}</h2><button class="ghost" data-cwx="1">Close</button></div><div class="cwbody">${body}</div>${can("clans")?`<div class="acts" style="margin-top:14px"><button class="ghost" data-cwedit="1">Edit in panel</button></div>`:""}`);
 }
 function renderCwPanel(){
   const box=$("#cwbox");if(!box)return;
-  const ae=document.activeElement;if(ae&&box.contains(ae)&&ae.tagName==="TEXTAREA")return;
-  if(!cwDraft)cwDraft={res:cwRes,fix:cwFix};
-  box.innerHTML=`<div class="rbox"><div class="sl">Clan wars · Results</div>
+  const ae=document.activeElement;if(ae&&box.contains(ae)&&/^(INPUT|TEXTAREA|SELECT)$/.test(ae.tagName))return;
+  if(!luLoaded)luLoad();
+  if(!fxd)fxd=JSON.parse(JSON.stringify(cwFx));
+  if(!cwDraft)cwDraft={res:cwRes};
+  const ord=clans.slice().sort(byName);
+  const copt=sel=>`<option value="">— Pick a clan —</option>`+ord.map(c=>`<option value="${esc(c.id)}" ${c.id===sel?"selected":""}>[${esc(c.tag)}] ${esc(c.name)}</option>`).join("");
+  const sideEd=(wi,mi,k)=>{
+    const m=fxd.weeks[wi].matches[mi],cid=k==="A"?m.a:m.b,c=clanById(cid),P=wi+":"+mi;
+    if(!c)return `<div class="fxs"><div class="sub">Pick the clan first.</div></div>`;
+    const mem=clanMembers(c).sort(byName),taken=[...(m["main"+k]||[]),...(m["sub"+k]||[])],free=mem.filter(p=>!taken.includes(p.id));
+    const list=(t,label)=>{const key=t+k,arr=m[key]||[];
+      return `<div class="sl" style="margin-top:12px">${label} · ${arr.length}</div><div class="rchips" style="margin-top:6px">${arr.map(id=>`<span class="bdg">${esc(pName(id))}<button type="button" class="bdx" data-act="rm" data-p="${P}:${key}:${esc(id)}">×</button></span>`).join("")||`<span class="sub">None</span>`}</div>
+      <div class="cform" style="grid-template-columns:1fr auto;align-items:end;margin-top:8px"><select data-sel="${P}:${key}"><option value="">— Add player —</option>${free.map(p=>`<option value="${esc(p.id)}">${esc(p.name)}</option>`).join("")}</select><button class="ghost" data-act="add" data-p="${P}:${key}">Add</button></div>`};
+    return `<div class="fxs"><div class="nm">${clTag(cid)}${esc(c.name)}</div><button class="ghost" data-act="use" data-p="${P}:${k}">Use clan’s saved line-up</button>${list("main","Main line-up")}${list("sub","Sub line-up")}</div>`};
+  const mcard=(wi,mi)=>{const m=fxd.weeks[wi].matches[mi],P=wi+":"+mi;
+    return `<div class="fxcard"><div class="fxhead"><span class="fxn">${String(mi+1).padStart(2,"0")}</span><select data-fxc="${P}:a">${copt(m.a)}</select><i>vs</i><select data-fxc="${P}:b">${copt(m.b)}</select><input type="datetime-local" data-at="${P}" value="${esc(toLocalInput(m.at))}" title="Match time (your local time)"><button class="ghost danger" data-act="delm" data-p="${P}">Delete</button></div><div class="lug">${sideEd(wi,mi,"A")}${sideEd(wi,mi,"B")}</div></div>`};
+  const wblock=(w,wi)=>`<div class="rbox"><div class="fxwk"><input data-wt="${wi}" maxlength="60" value="${esc(w.title)}" autocomplete="off"><button class="ghost danger" data-act="delw" data-p="${wi}">Delete week</button></div>${w.matches.map((_,mi)=>mcard(wi,mi)).join("")||`<div class="sub">No matches yet.</div>`}<div class="acts"><button class="solid" data-act="addm" data-p="${wi}">+ Add match</button></div></div>`;
+  box.innerHTML=`<div class="rbox"><div class="sl">Clan wars · Fixtures</div><div class="sub" style="margin-top:8px">Build each week: add matches, choose the two clans, set the time and pick each side’s main and sub line-up from its members. Times show in each visitor’s own time zone.</div>
+    <div class="acts" style="margin-top:14px"><button class="solid" data-act="addw">+ Add week</button><button class="solid" data-act="save">Save fixtures</button></div>
+    <div class="${cwBad?"err":"sub"}" style="margin-top:10px">${esc(cwMsg)}</div></div>
+    ${fxd.weeks.map(wblock).join("")||`<div class="empty">No weeks yet — click “+ Add week”.</div>`}
+    <div class="rbox"><div class="sl">Clan wars · Results</div>
     <textarea class="cwt" id="cw_res" placeholder="CW — CLAN A VS CLAN B&#10;CLAN A 1 - 0 CLAN B&#10;---&#10;ROUND 1&#10;player -> player">${esc(cwDraft.res)}</textarea>
-    <div class="sl" style="margin-top:16px">Clan wars · Fixtures</div>
-    <textarea class="cwt" id="cw_fix" placeholder="WEEK 1 — CLAN WAR MATCHUPS&#10;01 Clan A vs Clan B&#10;---&#10;WEEK 2 — CLAN WAR MATCHUPS&#10;01 Clan C vs Clan D">${esc(cwDraft.fix)}</textarea>
-    <div class="acts"><button class="solid" data-cwsave="1">Save both</button></div>
-    <div class="sub" style="margin-top:10px">Put <b>---</b> on its own line to start a new card. The first line of a card is its title. Lines like “A vs B” or “A -&gt; B” are laid out neatly, “ROUND 1” is bolded, and a score like “1 - 0” is highlighted.</div>
-    <div class="err">${esc(cwMsg)}</div></div>`;
+    <div class="acts"><button class="solid" data-cwsave="1">Save results</button></div>
+    <div class="sub" style="margin-top:10px">Put <b>---</b> on its own line to start a new card; the first line of a card is its title.</div></div>`;
 }
 async function cwSave(){
-  try{await scSet("cw_results",cwDraft.res);await scSet("cw_fixtures",cwDraft.fix);cwRes=cwDraft.res;cwFix=cwDraft.fix;cwMsg="Saved."}
-  catch(e){cwMsg="Couldn’t save: "+(e.message||"permission denied")+" (only hosts can write site content)"}
+  try{await scSet("cw_results",cwDraft.res);cwRes=cwDraft.res;cwMsg="Results saved.";cwBad=false}
+  catch(e){cwMsg="Couldn’t save: "+(e.message||"permission denied")+" (only hosts can write site content)";cwBad=true}
+  renderCwPanel();
+}
+async function fxSave(){
+  try{await scSet("cw_fixtures2",JSON.stringify(fxd));cwFx=JSON.parse(JSON.stringify(fxd));cwMsg="Fixtures saved.";cwBad=false}
+  catch(e){cwMsg="Couldn’t save: "+(e.message||"permission denied")+" (only hosts can write site content)";cwBad=true}
   renderCwPanel();
 }
 async function luLoad(){
@@ -2038,7 +2090,7 @@ document.addEventListener("click",e=>{
   const t=e.target.closest&&e.target.closest("[data-cw],[data-cwx],[data-cwedit],[data-cwsave],[data-luadd],[data-luup],[data-ludn],[data-lurm]");if(!t)return;
   if(t.dataset.cw)return cwOpen(t.dataset.cw);
   if("cwx" in t.dataset)return closeModal();
-  if("cwedit" in t.dataset){closeModal();hostTab="cw";cwDraft=null;return go("host")}
+  if("cwedit" in t.dataset){closeModal();hostTab="cw";cwDraft=null;fxd=null;return go("host")}
   if("cwsave" in t.dataset)return cwSave();
   const c=clanById(openClanId);if(!c||!canDecide(c)||!sb)return;
   const l=luGet(c),[k,x]=String((t.dataset.luadd||t.dataset.luup||t.dataset.ludn||t.dataset.lurm)).split(":");
@@ -2048,6 +2100,31 @@ document.addEventListener("click",e=>{
   luSave(c,l);
 });
 document.addEventListener("input",e=>{const t=e.target;if(t&&cwDraft){if(t.id==="cw_res")cwDraft.res=t.value;else if(t.id==="cw_fix")cwDraft.fix=t.value}});
+document.addEventListener("click",e=>{
+  const b=e.target.closest&&e.target.closest("[data-act]");if(!b||!fxd)return;
+  const act=b.dataset.act,P=(b.dataset.p||"").split(":"),wi=+P[0],mi=+P[1],wk=fxd.weeks[wi],m=wk&&wk.matches[mi];
+  if(act==="save")return fxSave();
+  if(act==="addw")fxd.weeks.push({id:uid8(),title:"WEEK "+(fxd.weeks.length+1)+" — CLAN WAR MATCHUPS",matches:[]});
+  else if(act==="delw"){if(!wk||!confirm("Delete this week and all its matches?"))return;fxd.weeks.splice(wi,1)}
+  else if(act==="addm"){if(!wk)return;wk.matches.push({id:uid8(),a:"",b:"",at:"",mainA:[],subA:[],mainB:[],subB:[]})}
+  else if(act==="delm"){if(!m||!confirm("Delete this match?"))return;wk.matches.splice(mi,1)}
+  else if(act==="add"&&m){const key=P[2],side=key.slice(-1),sel=document.querySelector(`[data-sel="${wi}:${mi}:${key}"]`),id=sel&&sel.value;if(!id||(m["main"+side]||[]).includes(id)||(m["sub"+side]||[]).includes(id))return;(m[key]=m[key]||[]).push(id)}
+  else if(act==="rm"&&m){m[P[2]]=(m[P[2]]||[]).filter(i=>i!==P[3])}
+  else if(act==="use"&&m){const side=P[2],c=clanById(side==="A"?m.a:m.b);if(!c)return;const l=luGet(c);m["main"+side]=l.main.slice();m["sub"+side]=l.sub.slice()}
+  else return;
+  renderCwPanel();
+});
+document.addEventListener("change",e=>{
+  const t=e.target;if(!fxd||!t||!t.dataset||!t.dataset.fxc)return;
+  const [wi,mi,s]=t.dataset.fxc.split(":"),m=fxd.weeks[+wi]&&fxd.weeks[+wi].matches[+mi];if(!m)return;
+  m[s]=t.value;if(s==="a"){m.mainA=[];m.subA=[]}else{m.mainB=[];m.subB=[]}
+  t.blur();renderCwPanel();
+});
+document.addEventListener("input",e=>{
+  const t=e.target;if(!fxd||!t||!t.dataset)return;
+  if(t.dataset.wt!==undefined&&fxd.weeks[+t.dataset.wt])fxd.weeks[+t.dataset.wt].title=t.value;
+  else if(t.dataset.at){const [wi,mi]=t.dataset.at.split(":"),m=fxd.weeks[+wi]&&fxd.weeks[+wi].matches[+mi],d=new Date(t.value);if(m)m.at=t.value&&!isNaN(d)?d.toISOString():""}
+});
 function openClan(id){
   if(!clanById(id))return;
   if($("#modal").classList.contains("open"))closeModal();
