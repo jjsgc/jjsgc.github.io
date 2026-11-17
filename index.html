@@ -1403,37 +1403,60 @@ async function makeBoardImage(region){
   x.textAlign="center";x.fillStyle="#4a4a56";x.font='600 18px Archivo,sans-serif';x.fillText("JJSGC",W/2,H-40);
   return c.toDataURL("image/png");
 }
-/* ---- discord embed sender ---- */
-let embMsg="",embBusy=false;
-const EMB_KEY="jj_webhook";
-const embUrl=()=>{try{return localStorage.getItem(EMB_KEY)||""}catch(e){return""}};
+/* ---- discord embed sender (3 webhooks) ---- */
+const EMB_KEY="jj_webhooks3",EMB_DEF=[{n:"North America",u:"",r:"NA"},{n:"Europe",u:"",r:"EU"},{n:"Asia",u:"",r:"AS"}];
+let embMsg=["","",""],embBusy=false;
+const embLoad=()=>{try{const a=JSON.parse(localStorage.getItem(EMB_KEY)||"[]");return EMB_DEF.map((d,i)=>Object.assign({},d,a[i]||{}))}catch(e){return EMB_DEF.map(d=>Object.assign({},d))}};
 const embOk=u=>/^https:\/\/(?:(?:canary|ptb)\.)?discord(?:app)?\.com\/api\/webhooks\/\d+\/[\w-]+$/.test(u);
 const dEsc=t=>String(t==null?"":t).replace(/([\\*_~`|>])/g,"\\$1").replace(/@/g,"@\u200b");
-function buildEmbed(region){
-  const b=ranked().filter(p=>region==="ALL"||p.region===region).slice(0,10);
-  const medal=["🥇","🥈","🥉"];
-  const lines=b.map((p,i)=>{
-    const m=medal[i]||"`"+String(i+1).padStart(2," ")+"`";
-    return m+" **"+dEsc(String(p.name).slice(0,28))+"**  `"+p.region+"`\n"+"\u2003"+"-# "+dEsc(gl(p))+" · @"+dEsc(p.roblox);
-  });
-  return {
-    title:"✦ JJSGC ✦  "+(region==="ALL"?"Overall":REG[region])+" Leaderboard",
-    description:b.length?lines.join("\n"):"No competitive players yet.",
-    color:0x6d5dfc,
-    footer:{text:"JJSGC · Top "+Math.max(b.length,1)},
-    timestamp:new Date().toISOString()
-  };
+function embRead(){
+  const c=EMB_DEF.map((d,i)=>{const u=$("#embU"+i);return {n:d.n,r:d.r,u:u?(u.value||"").trim():((embLoad()[i]||{}).u||"")}});
+  try{localStorage.setItem(EMB_KEY,JSON.stringify(c))}catch(e){}
+  return c;
 }
-async function sendEmbed(region){
-  const u=embUrl();
-  if(!embOk(u)){embMsg="Paste a valid Discord webhook URL first.";return render()}
-  embBusy=true;embMsg="Sending…";render();
+async function embAvatars(list){
+  const map={},ids=[...new Set(list.map(p=>(RB[rbKey(p.roblox)]||{}).id).filter(Boolean))];
+  if(ids.length){
+    const t="https://thumbnails.roblox.com/v1/users/avatar?userIds="+ids.join(",")+"&size=420x420&format=Png&isCircular=false";
+    for(const u of [t.replace("thumbnails.roblox.com","thumbnails.roproxy.com"),"https://api.allorigins.win/raw?url="+encodeURIComponent(t)]){
+      try{const r=await fx(u);if(!r.ok)continue;const j=await r.json();if(j&&Array.isArray(j.data)){j.data.forEach(x=>{if(x.imageUrl)map[x.targetId]=x.imageUrl});break}}catch(e){}
+    }
+  }
+  return p=>{const k=RB[rbKey(p.roblox)]||{};return map[k.id]||(/^https:\/\//.test(k.u||"")?k.u:"")||(/^https:\/\//.test(p.avatar||"")?p.avatar:"")};
+}
+async function buildEmbeds(region){
+  const b=ranked().filter(p=>region==="ALL"||p.region===region).slice(0,10),av=await embAvatars(b);
+  return b.map((p,i)=>{
+    const cl=mainClan(p.id),col=0xffffff;
+    const e={title:(i+1)+". "+String(p.name).slice(0,60),color:col,fields:[
+      {name:"Discord",value:/^\d{15,25}$/.test(p.discord||"")?"<@"+p.discord+">":"—",inline:true},
+      {name:"Roblox",value:dEsc(p.roblox)||"—",inline:true},
+      {name:"Grade",value:dEsc(gl(p)),inline:true},
+      {name:"Region",value:"🌐 "+(REG[p.region]||"None"),inline:true},
+      {name:"Clan",value:cl?"["+dEsc(cl.tag)+"] "+dEsc(cl.name):"No Clan",inline:true}]};
+    const img=av(p);if(img)e.thumbnail={url:img};
+    if(i===b.length-1){e.footer={text:"JJSGC"};e.timestamp=new Date().toISOString()}
+    return e;
+  });
+}
+async function embSendOne(c,i){
+  if(!embOk(c.u)){embMsg[i]="Add a valid webhook URL.";return false}
   try{
-    const r=await fetch(u+"?wait=true",{method:"POST",headers:{"Content-Type":"application/json"},
-      body:JSON.stringify({username:"JJSGC",embeds:[buildEmbed(region)],allowed_mentions:{parse:[]}})});
-    if(!r.ok){let d="";try{d=(await r.json()).message||""}catch(e){}throw new Error("Discord said "+r.status+(d?": "+d:""))}
-    embMsg="Sent ✓";logEvent("sent leaderboard embed","general",null,"",region);
-  }catch(e){embMsg="Couldn’t send: "+e.message}
+    const embeds=await buildEmbeds(c.r);
+    if(!embeds.length){embMsg[i]="No players to send.";return false}
+    const r=await fetch(c.u+"?wait=true",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({username:"JJSGC",
+      content:"**JJSGC "+REG[c.r]+" Leaderboard** · "+new Date().toLocaleDateString([],{dateStyle:"long"}),embeds,allowed_mentions:{parse:[]}})});
+    if(!r.ok){let d="";try{d=(await r.json()).message||""}catch(e){}throw new Error(r.status+(d?" "+d:""))}
+    embMsg[i]="Sent ✓";logEvent("sent leaderboard embed","general",null,"",c.n+" · "+c.r);return true;
+  }catch(e){embMsg[i]="Couldn’t send: "+e.message;return false}
+}
+async function embSend(which){
+  if(!can("export")||embBusy)return;
+  const c=embRead();embBusy=true;
+  const idx=which==="all"?[0,1,2].filter(i=>c[i].u):[+which];
+  if(!idx.length)embMsg[0]="Add at least one webhook first.";
+  idx.forEach(i=>embMsg[i]="Sending…");render();
+  for(const i of idx){await embSendOne(c[i],i);render()}
   embBusy=false;render();
 }
 async function saveAnn(clear){
@@ -1477,11 +1500,12 @@ function renderTools(board){
       <div class="trow"><select id="imgR">${regOpts}</select><button class="solid" id="imgGo" ${ex?"":"disabled"}>Generate</button>${boardImg?`<button id="imgDl">Download</button>`:""}</div>
       ${boardImg?`<img class="imgprev" alt="Leaderboard preview" src="${boardImg}">`:""}
     </div>
-    <div class="rbox"><div class="sl">Send to Discord (embed)</div>
-      <div class="sub">Posts a clean leaderboard embed straight to your channel through a webhook. The URL is saved only in this browser.</div>
-      <div class="trow"><input id="embUrl" type="password" autocomplete="off" placeholder="https://discord.com/api/webhooks/…" value="${esc(embUrl())}" style="flex:1;min-width:0;background:#000;border:1px solid var(--line);color:var(--fg);padding:11px 14px;font:400 14px var(--sans);border-radius:8px;outline:none"><button id="embSave">Save</button></div>
-      <div class="trow"><select id="embR">${regOpts}</select><button class="solid" id="embSend" ${ex&&!embBusy?"":"disabled"}>Send embed</button></div>
-      <div class="sub">${esc(embMsg)}</div>
+    <div class="rbox"><div class="sl">Send to Discord (embeds)</div>
+      <div class="sub">One webhook per region (NA, EU, AS). Each posts that region’s top 10 under its own title, one embed per player. URLs are saved only in this browser.</div>
+      ${embLoad().map((c,i)=>`<div style="margin-top:14px"><div class="sl" style="margin:0 0 6px">${esc(REG[c.r])} (${c.r})</div>
+      <div class="trow"><input id="embU${i}" type="password" autocomplete="off" placeholder="https://discord.com/api/webhooks/…" value="${esc(c.u)}" style="flex:1;min-width:0;background:#000;border:1px solid var(--line);color:var(--fg);padding:11px 14px;font:400 14px var(--sans);border-radius:8px;outline:none"><button data-emb="${i}" ${can("export")&&!embBusy?"":"disabled"}>Send</button></div>
+      <div class="sub" style="margin:4px 0 0">${esc(embMsg[i])}</div></div>`).join("")}
+      <div class="trow" style="margin-top:14px"><button id="embSave">Save</button><button class="solid" data-emb="all" ${can("export")&&!embBusy?"":"disabled"}>Send to all</button></div>
     </div>
     <div class="rbox"><div class="sl">Copy for Discord</div>
       <div class="sub">Top 25 overall, top 10 per region, as formatted text.</div>
@@ -2404,8 +2428,8 @@ document.addEventListener("click",async e=>{
   const hsb=t.closest("[data-hs]");if(hsb){hs=hsb.dataset.hs;return render()}
   const hrb=t.closest("[data-hr]");if(hrb){hr=hrb.dataset.hr;return render()}
   const cp=t.closest("[data-copy]");if(cp){const v=cp.dataset.copy,o=cp.textContent;const ok=()=>{cp.textContent="✓";setTimeout(()=>cp.textContent=o,1200)};(navigator.clipboard?navigator.clipboard.writeText(v):Promise.reject()).then(ok).catch(()=>{const ta=document.createElement("textarea");ta.value=v;document.body.appendChild(ta);ta.select();try{document.execCommand("copy");ok()}catch(e){}ta.remove()});return}
-  if(t.closest("#embSave")){const v=($("#embUrl").value||"").trim();if(v&&!embOk(v)){embMsg="That doesn’t look like a Discord webhook URL.";return render()}try{v?localStorage.setItem(EMB_KEY,v):localStorage.removeItem(EMB_KEY)}catch(e){}embMsg=v?"Webhook saved.":"Webhook removed.";return render()}
-  if(t.closest("#embSend")){if(!can("export")||embBusy)return;const r=($("#embR")||{}).value||"ALL";return sendEmbed(r)}
+  if(t.closest("#embSave")){const c=embRead();embMsg=["","",""];c.forEach((x,i)=>{if(x.u&&!embOk(x.u))embMsg[i]="That doesn’t look like a Discord webhook URL."});return render()}
+  const eb=t.closest("[data-emb]");if(eb)return embSend(eb.dataset.emb);
   if(t.closest("#imgGo")){if(!can("export"))return;boardImg=await makeBoardImage(imgR);logEvent("generated leaderboard image","general",null,"",imgR);return render()}
   if(t.closest("#imgDl")&&boardImg){const a=document.createElement("a");a.href=boardImg;a.download="jjsgc-leaderboard-"+imgR.toLowerCase()+".png";document.body.appendChild(a);a.click();a.remove();return}
   if(t.closest("#acLock")){if(!await saveSetting("site_lock",{on:!lockOn,msg:lockMsg}))return;lockOn=!lockOn;logEvent(lockOn?"site locked":"site unlocked","general",null,"","");accMsg="";renderAccess();applyGate();return}
