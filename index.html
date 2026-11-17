@@ -1404,6 +1404,7 @@ async function makeBoardImage(region){
   return c.toDataURL("image/png");
 }
 /* ---- discord embed sender (3 webhooks) ---- */
+const EMB_LINE="https://placehold.co/1000x4/ffffff/ffffff.png"; /* white divider image under each embed; swap for your own hosted image if you like */
 const EMB_KEY="jj_webhooks3",EMB_DEF=[{n:"North America",u:"",r:"NA"},{n:"Europe",u:"",r:"EU"},{n:"Asia",u:"",r:"AS"}];
 let embMsg=["","",""],embBusy=false;
 const embLoad=()=>{try{const a=JSON.parse(localStorage.getItem(EMB_KEY)||"[]");return EMB_DEF.map((d,i)=>Object.assign({},d,a[i]||{}))}catch(e){return EMB_DEF.map(d=>Object.assign({},d))}};
@@ -1427,13 +1428,14 @@ async function embAvatars(list){
 async function buildEmbeds(region){
   const b=ranked().filter(p=>region==="ALL"||p.region===region).slice(0,10),av=await embAvatars(b);
   return b.map((p,i)=>{
-    const cl=mainClan(p.id),col=0xffffff;
-    const e={title:(i+1)+". "+String(p.name).slice(0,60),color:col,fields:[
-      {name:"Discord",value:/^\d{15,25}$/.test(p.discord||"")?"<@"+p.discord+">":"—",inline:true},
-      {name:"Roblox",value:dEsc(p.roblox)||"—",inline:true},
-      {name:"Grade",value:dEsc(gl(p)),inline:true},
-      {name:"Region",value:"🌐 "+(REG[p.region]||"None"),inline:true},
-      {name:"Clan",value:cl?"["+dEsc(cl.tag)+"] "+dEsc(cl.name):"No Clan",inline:true}]};
+    const cls=[mainClan(p.id),otherClan(p.id)].filter((c,k,ar)=>c&&!isS3(c)&&ar.findIndex(x=>x&&x.id===c.id)===k);
+    const clan=cls.length?cls.map(c=>"["+dEsc(c.tag)+"] "+dEsc(c.name)).join("  ·  "):"None";
+    const un=String(p.uname||p.name).slice(0,60);
+    const e={
+      author:{name:(["🥇","🥈","🥉"][i]||"▸")+"  RANK "+String(i+1).padStart(2,"0")},
+      title:un,color:0xffffff,
+      description:"## "+dEsc(gl(p))+"\n`ROBLOX` "+(dEsc(p.roblox)||"—")+"　`REGION` "+(REG[p.region]||"None")+"\n`CLAN` "+clan,
+      image:{url:EMB_LINE}};
     const img=av(p);if(img)e.thumbnail={url:img};
     if(i===b.length-1){e.footer={text:"JJSGC"};e.timestamp=new Date().toISOString()}
     return e;
@@ -1844,7 +1846,7 @@ async function loadProfiles(){
   badgesOk=!bgr.error&&!bgg.error;badges=badgesOk?(bgr.data||[]).slice().sort((a,b)=>String(a.created_at).localeCompare(String(b.created_at))):[];badgeGrants=badgesOk?(bgg.data||[]):[];
   if(clansOk){clans=cl.data||[];clanMem=Object.fromEntries((cm.data||[]).map(m=>[m.user_id,m.clan_id]));clanApps=ca.error?[]:(ca.data||[])}else{clans=[];clanMem={};clanApps=[]}
   regN=(!rc.error&&typeof rc.data==="number")?rc.data:null;
-  profiles=data.filter(p=>REG[p.region]||p.region===NONE).map(p=>({id:p.user_id,name:p.name,roblox:p.roblox,region:p.region,grade:p.grade,sub:(SUBS.includes(p.sub)||p.sub===NONE)?p.sub:"Low",subsub:(SSUBS.includes(p.subsub)||p.subsub===NONE)?p.subsub:"Weak",ranked:!!p.ranked,banned:!!p.banned,reason:p.ban_reason||"",roles:(p.roles||"").split(",").map(x=>x.trim()).filter(Boolean),discord:p.discord_id||"",avatar:p.custom_avatar||p.avatar_url,custom:p.custom_avatar||"",created:Date.parse(p.created_at)||0,pos:(p.board_pos==null?null:+p.board_pos)}));
+  profiles=data.filter(p=>REG[p.region]||p.region===NONE).map(p=>({id:p.user_id,name:p.name,roblox:p.roblox,region:p.region,grade:p.grade,sub:(SUBS.includes(p.sub)||p.sub===NONE)?p.sub:"Low",subsub:(SSUBS.includes(p.subsub)||p.subsub===NONE)?p.subsub:"Weak",ranked:!!p.ranked,banned:!!p.banned,reason:p.ban_reason||"",roles:(p.roles||"").split(",").map(x=>x.trim()).filter(Boolean),discord:p.discord_id||"",uname:p.discord_username||"",avatar:p.custom_avatar||p.avatar_url,custom:p.custom_avatar||"",created:Date.parse(p.created_at)||0,pos:(p.board_pos==null?null:+p.board_pos)}));
   loaded=true;
   if(onboarding&&uid&&profiles.some(p=>p.id===uid))closeModal();
   syncOwnName();renderAuth();render();applyGate();maybeOnboard();if(staff()&&!audit.length&&!auditErr)loadAudit();rbLoad();hostSync();
