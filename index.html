@@ -294,8 +294,6 @@ header nav{display:flex;gap:2px;flex-wrap:wrap}header .tab{margin:0}
 .tgrid{display:grid;grid-template-columns:1fr 1fr;gap:14px;align-items:start}
 .tgrid .rbox{margin:0}.tgrid .col{display:grid;gap:14px}
 @media(max-width:760px){.tgrid{grid-template-columns:1fr}}
-.ann{margin:16px 0 0;padding:12px 16px;border:1px solid #5a4fb0;border-radius:12px;background:linear-gradient(90deg,rgba(160,140,255,.16),rgba(160,140,255,.03));font-size:14px;line-height:1.5;white-space:pre-wrap;box-shadow:0 0 30px rgba(160,140,255,.12)}
-.ann::before{content:"✦ ";color:#c9bfff}
 .chkrow{display:flex;justify-content:space-between;gap:10px;padding:9px 0;border-top:1px solid var(--line);font-size:13px;color:#cfcfd6}
 .chkrow b{font-weight:600;text-align:right}.chkrow b.ok{color:#7be0a0}.chkrow b.no{color:#ff8a8a}
 .imgprev{width:100%;border-radius:10px;border:1px solid var(--line);margin-top:12px}
@@ -325,7 +323,7 @@ body.gated .wrap{visibility:hidden}
 /* ---- calm theme: much less glow ---- */
 :root{--glow:none}
 .logo,.hero h1,.big,.tab.on,.pc-grade,.step .n,.sigil i,.bootlogo{text-shadow:none!important}
-.card:hover,.pc:hover,.step:hover,.pill:hover,.icon,.sigil,.ann,.cmdp,.climb span:last-child,.cloud.ok i{box-shadow:none!important}
+.card:hover,.pc:hover,.step:hover,.pill:hover,.icon,.sigil,.cmdp,.climb span:last-child,.cloud.ok i{box-shadow:none!important}
 .reg.on{box-shadow:inset 0 0 0 1px var(--rc)!important}
 .cont.on path{filter:none!important}
 .fog{opacity:.3}
@@ -333,7 +331,15 @@ body.gated .wrap{visibility:hidden}
 .pc:hover,.step:hover,.pill:hover{transform:none}
 .flash{background:none;-webkit-text-fill-color:#d6cffa;color:#d6cffa;animation:none;filter:none}
 .host.hostflash{animation:none;filter:none;border-color:#8f86d6;color:#cfc8ff}
-.ann{border-color:#3a3a48;background:var(--panel)}
+.ann{position:fixed;top:16px;left:50%;transform:translate(-50%,-150%);z-index:90;max-width:min(520px,calc(100vw - 32px));padding:12px 18px;border:1px solid #3a3a48;border-radius:12px;background:var(--panel);font-size:14px;line-height:1.5;white-space:pre-wrap;box-shadow:0 12px 40px rgba(0,0,0,.6);opacity:0;transition:transform .35s ease,opacity .35s ease;cursor:pointer;pointer-events:none}
+.ann.show{transform:translate(-50%,0);opacity:1;pointer-events:auto}
+.wcard{border:1px solid var(--wc);border-left-width:4px;border-radius:12px;background:#0d0d13;overflow:hidden;text-align:left}
+.wch{display:flex;gap:12px;align-items:center;padding:14px 16px;border-bottom:1px solid var(--line)}
+.wch i{font-style:normal;font-weight:800;width:30px;height:30px;border-radius:50%;display:grid;place-items:center;background:var(--wc);color:#000;flex:none;font-size:14px}
+.wch b{display:block;font-size:14px;color:var(--wc)}.wch span{display:block;color:var(--dim);font-size:11px;margin-top:2px}
+.wcb{padding:14px 16px;font-size:14px;line-height:1.55;white-space:pre-wrap;color:#e6e6ec}
+.wcf{padding:10px 16px;font-size:12px;color:var(--dim);border-top:1px solid var(--line)}
+.wl{display:block;margin:14px 0 6px}
 /* ---- simple leaderboard ---- */
 .cols{grid-template-columns:44px 1fr 56px;padding:0 20px 8px 8px}
 .cols span:first-child{text-align:right}
@@ -669,6 +675,7 @@ button.bell:hover .bdot{background:#000;color:#fff}
   <div id="hp_order" hidden><div id="ordbox"></div></div>
   <div id="hp_fights" hidden><div id="fbox"></div></div>
   <div id="hp_track" hidden><div id="trbox"></div></div>
+  <div id="hp_warn" hidden><div id="wbox"></div></div>
   <div id="hp_clans" hidden><div id="cbox"></div></div>
   <div id="hp_badges" hidden><div id="wbox"></div></div>
   <div id="hp_home" hidden><div id="hmbox"></div></div>
@@ -692,8 +699,8 @@ const GRADES={G1:"Grade 1",SG1:"Special Grade 1",SG:"Special Grade"},GKEYS=["G1"
 const SUBS=["Low","Mid","High"],SSUBS=["Weak","Stable","Strong"];
 const NONE="None";
 const score=p=>{const gi=GKEYS.indexOf(p.grade||"G1");if(gi<0)return -10;if(p.grade==="SG")return gi*9;const si=SUBS.indexOf(p.sub);if(si<0)return gi*9-1;const ss=SSUBS.indexOf(p.subsub);return gi*9+si*3+(ss<0?-.5:ss)};
-const PERMS={roblox:"Edit Roblox names",ban:"Ban / unban players",grades:"Edit grades & board",reorder:"Reorder leaderboard",changelog:"Edit change log",logs:"View activity log",placements:"View placement history",fights:"Edit fight notes & cooldowns",clans:"Manage clans",track:"View user tracking"};
-const STAFFP=["roblox","ban","grades","reorder","logs","placements","fights","clans","track"];
+const PERMS={roblox:"Edit Roblox names",ban:"Ban / unban players",grades:"Edit grades & board",reorder:"Reorder leaderboard",changelog:"Edit change log",logs:"View activity log",placements:"View placement history",fights:"Edit fight notes & cooldowns",clans:"Manage clans",track:"View user tracking",notify:"Notify all players",warn:"Issue warnings"};
+const STAFFP=["roblox","ban","grades","reorder","logs","placements","fights","clans","track","notify","warn"];
 let roleDefs={},roleColors={};
 const roleCol=r=>/^#[0-9a-f]{6}$/i.test(roleColors[r]||"")?roleColors[r]:"";
 let clans=[],clanMem={},clanApps=[],clansOk=true,openClanId=null;
@@ -910,7 +917,7 @@ const HOSTBG_ID="523755389544693791",HOSTBG_START=9,HOSTBG_VOL=.12;
 let hostBgOn=false;
 function hostBgSync(){
   const box=document.getElementById("hostbg"),v=document.getElementById("hostbgv");if(!box||!v)return;
-  const p=pg==="profile"?profiles.find(x=>x.id===profId):null,want=!!p&&String(p.discord||"")===HOSTBG_ID;
+  const p=pg==="profile"?profiles.find(x=>x.id===profId):null,want=!!p&&String(p.discord||"")===HOSTBG_ID&&!hbgOff();
   if(want===hostBgOn)return;hostBgOn=want;box.classList.toggle("on",want);
   if(!want){v.pause();return}
   v.volume=HOSTBG_VOL;v.muted=false;
@@ -986,7 +993,8 @@ function renderPlayers(board){
 /* ---- host panel: tabs, activity log, placements, stats, export ---- */
 let hostTab="over",audit=[],auditErr="";
 let loadSeq=0,onboarding=false,haveRow=false,onbBusy=false,rolesOk=true;
-let hs="all",hr="ALL",evDays=30,imgR="ALL",boardImg="",annText="",annAt=null,annErr="",annDraft=null;
+let evDays=(()=>{try{const v=localStorage.getItem("jj_evdays");if(v!==null)return v==="none"?0:(+v||30)}catch(e){}return 30})();
+let hs="all",hr="ALL",imgR="ALL",boardImg="",annText="",annAt=null,annErr="",annDraft=null;
 const ago=t=>{if(!t)return"—";const ms=Date.now()-t,d=Math.floor(ms/864e5);if(d<1){const h=Math.floor(ms/36e5);return h<1?"just now":h+"h ago"}return d+"d ago"};
 const hMatch=p=>{
   if(hr!=="ALL"&&p.region!==hr)return false;
@@ -1003,7 +1011,7 @@ const hSort=(a,b)=>{const m=$("#hsort").value;
   return b.created-a.created};
 const fmt=t=>new Date(t).toLocaleString([],{dateStyle:"medium",timeStyle:"short"});
 /* tab = [key, label, visible?, group]  group "n" = normal perms (role permissions), "h" = host perms (hosts only) */
-const HT=[["over","Overview",()=>true,"n"],["players","Players",()=>true,"n"],["order","Order",()=>can("reorder"),"n"],["tools","Tools",()=>true,"n"],["clans","Clans",()=>can("clans"),"n"],["logs","Activity log",()=>can("logs"),"n"],["place","Placements",()=>can("placements"),"n"],["fights","Fight notes",()=>can("fights"),"n"],["track","User tracking",()=>can("track"),"n"],
+const HT=[["over","Overview",()=>true,"n"],["players","Players",()=>true,"n"],["order","Order",()=>can("reorder"),"n"],["tools","Tools",()=>true,"n"],["clans","Clans",()=>can("clans"),"n"],["logs","Activity log",()=>can("logs"),"n"],["place","Placements",()=>can("placements"),"n"],["fights","Fight notes",()=>can("fights"),"n"],["track","User tracking",()=>can("track"),"n"],["warn","Warnings",()=>can("warn"),"n"],
 ["access","Access",()=>isOwner,"h"],["roles","Roles",()=>isOwner,"h"],["badges","Badge workshop",()=>isOwner,"h"],["home","Home page",()=>isOwner,"h"],["export","Export",()=>isOwner,"h"],["snipe","Snipe Panel",()=>isOwner&&snipeOk&&snipeOpen,"h"]];
 function logEvent(action,kind,tid,tname,detail){
   if(!sb||!uid)return;
@@ -1022,7 +1030,7 @@ function renderHost(board){
   $("#hh").textContent="Panel";
   const grp=(g,label)=>{const l=tabs.filter(t=>t[3]===g);return l.length?`<div class="tg"><div class="tgl">${label}</div><div class="tabs">${l.map(t=>`<button class="tab ${t[0]===hostTab?"on":""}" data-ht="${t[0]}">${t[1]}</button>`).join("")}</div></div>`:""};
   $("#htabs").innerHTML=grp("n","Normal perms")+grp("h","Host perms · hosts only");
-  ["over","players","order","tools","access","roles","clans","badges","home","logs","place","snipe","export","fights","track"].forEach(k=>{$("#hp_"+k).hidden=k!==hostTab});
+  ["over","players","order","tools","access","roles","clans","badges","home","logs","place","snipe","export","fights","track","warn"].forEach(k=>{$("#hp_"+k).hidden=k!==hostTab});
   if(hostTab==="over")renderOverview(board);
   if(hostTab==="roles")renderRoles();
   if(hostTab==="logs")renderAuditList("#llist","#lcount",$("#lq").value,false,$("#lf").value);
@@ -1034,6 +1042,7 @@ function renderHost(board){
   if(hostTab==="export")$("#exL").disabled=!can("logs");
   if(hostTab==="fights")renderFights();
   if(hostTab==="track")renderTracking();
+  if(hostTab==="warn")renderWarn();
   if(hostTab==="clans")renderClansPanel();
   if(hostTab==="badges")renderWorkshop();
   if(hostTab==="home")renderHomeEditor();
@@ -1422,9 +1431,9 @@ function renderTools(board){
       <div class="sub" style="margin-top:8px"${evDays?"":" hidden"}>${canA?"Based on the latest 500 activity log entries; players with no placement logged count from their join date.":"Counting from join date (you need the log or placements permission for exact dates)."}</div>
     </div>
     <div class="rbox"><div class="sl">Site announcement</div>
-      <div class="sub">Shows as a banner on every page. Leave it empty to hide it.</div>
+      <div class="sub">Shows as a quick pop-up for a few seconds (once per player), then disappears. Leave it empty to show nothing.</div>
       ${ac?`<textarea id="annTa" maxlength="300" placeholder="e.g. Grade reset this Saturday — be ready for evals!" style="width:100%;min-height:74px;margin-top:10px;background:#000;border:1px solid var(--line);color:var(--fg);padding:11px 14px;font:400 14px var(--sans);border-radius:8px;resize:vertical;outline:none">${esc(annDraft!==null?annDraft:annText)}</textarea>
-      <div class="acts" style="margin-top:12px"><button class="solid" id="annSave">Post</button><button class="ghost" id="annClear">Clear</button></div>`:`<div class="sub" style="margin-top:10px">You need the “Edit change log” permission to post announcements.</div>`}
+      <div class="acts" style="margin-top:12px"><button class="solid" id="annSave">Post</button><button class="ghost" id="annClear">Clear</button><button class="ghost" id="annShow">Preview pop-up</button></div>`:`<div class="sub" style="margin-top:10px">You need the “Edit change log” permission to post announcements.</div>`}
       <div class="err">${esc(annErr)}</div>
       ${annAt?`<div class="sub">Last updated ${esc(fmt(annAt))}</div>`:""}
     </div>
@@ -1626,12 +1635,12 @@ async function saveHome(reset){
 let logText="",logAt=null,logErr="",editingLog=false;
 async function loadLog(){
   if(!sb)return;
-  const {data,error}=await sb.from("site_content").select("key,body,updated_at").in("key",["changelog","announcement","site_lock","site_whitelist","home_content"]);
-  if(error)logErr=error.message;else{logErr="";(data||[]).forEach(r=>{if(r.key==="changelog"){logText=r.body||"";logAt=r.updated_at}else if(r.key==="announcement"){annText=r.body||"";annAt=r.updated_at}else if(r.key==="site_lock"){try{const o=JSON.parse(r.body||"{}");lockOn=!!o.on;lockMsg=String(o.msg||"")}catch(e){lockOn=false}}else if(r.key==="home_content"){try{homeSaved=JSON.parse(r.body||"{}")}catch(e){homeSaved={}}}else if(r.key==="site_whitelist"){try{const o=JSON.parse(r.body||"{}");wlOn=!!o.on;wlList=(Array.isArray(o.list)?o.list:[]).map(String)}catch(e){wlOn=false}}})}
-  renderHome();renderLog();applyGate();if(pg==="host"&&hostTab==="home")renderHomeEditor();if(pg==="host"&&hostTab==="access"&&accDraft===null)renderAccess();
+  const {data,error}=await sb.from("site_content").select("key,body,updated_at").in("key",["changelog","announcement","site_lock","site_whitelist","home_content","eval_days","broadcasts","warnings"]);
+  if(error)logErr=error.message;else{logErr="";(data||[]).forEach(r=>{if(r.key==="changelog"){logText=r.body||"";logAt=r.updated_at}else if(r.key==="announcement"){annText=r.body||"";annAt=r.updated_at}else if(r.key==="eval_days"){let has=null;try{has=localStorage.getItem("jj_evdays")}catch(e){}if(has===null)evDays=r.body==="none"?0:(+r.body||30)}else if(r.key==="broadcasts"){try{bcList=JSON.parse(r.body||"[]");if(!Array.isArray(bcList))bcList=[]}catch(e){bcList=[]}}else if(r.key==="warnings"){try{warnMap=JSON.parse(r.body||"{}")||{}}catch(e){warnMap={}}}else if(r.key==="site_lock"){try{const o=JSON.parse(r.body||"{}");lockOn=!!o.on;lockMsg=String(o.msg||"")}catch(e){lockOn=false}}else if(r.key==="home_content"){try{homeSaved=JSON.parse(r.body||"{}")}catch(e){homeSaved={}}}else if(r.key==="site_whitelist"){try{const o=JSON.parse(r.body||"{}");wlOn=!!o.on;wlList=(Array.isArray(o.list)?o.list:[]).map(String)}catch(e){wlOn=false}}})}
+  renderHome();renderLog();try{bcSync();warnSync()}catch(e){console.warn(e)}if(pg==="host"&&hostTab==="warn")renderWarn();applyGate();if(pg==="host"&&hostTab==="home")renderHomeEditor();if(pg==="host"&&hostTab==="access"&&accDraft===null)renderAccess();
 }
 function renderLog(){
-  const an=$("#ann");an.hidden=!annText.trim();an.textContent=annText;
+  annPop(false);
   $("#logBody").hidden=editingLog;$("#logEditor").hidden=!editingLog;$("#logEdit").hidden=!can("changelog")||editingLog;
   $("#logBody").innerHTML=logText.trim()?esc(logText):`<span class="dim">No updates posted yet.</span>`;
   $("#logMeta").textContent=!editingLog&&logAt?"Last updated "+new Date(logAt).toLocaleString([], {dateStyle:"medium",timeStyle:"short"}):"";
@@ -2078,7 +2087,7 @@ function renderProfilePage(){
     <div class="pf-info"><div class="pf-name">${nmx(p)}</div>
      <div class="pf-bio ${ex.bio?"":"dim"}">${ex.bio?esc(ex.bio):"No bio yet."}</div>
      <div class="pt" style="margin-top:8px">${rbA(p)} ↗ ${tags(p)?`<span style="margin-left:6px">${tags(p)}</span>`:""}</div></div>
-    <div class="pf-act">${self&&pexOk?`<button class="solid" data-pfcust="1">Customize</button>`:""}${canEdit?`<button data-pfedit="1">Edit profile</button>`:""}${mc?`<button class="ghost" data-clan="${esc(mc.id)}">View clan</button>`:""}${p.id===uid&&oc?`<button class="ghost" data-swap="1">Swap name tag</button>`:""}${can("badges")&&bgOk?`<button class="solid" data-pfgive="${esc(p.id)}">Give badge</button>`:""}</div></div></div>
+    <div class="pf-act">${self&&pexOk?`<button class="solid" data-pfcust="1">Customize</button>`:""}${canEdit?`<button data-pfedit="1">Edit profile</button>`:""}${mc?`<button class="ghost" data-clan="${esc(mc.id)}">View clan</button>`:""}${p.id===uid&&oc?`<button class="ghost" data-swap="1">Swap name tag</button>`:""}${can("badges")&&bgOk?`<button class="solid" data-pfgive="${esc(p.id)}">Give badge</button>`:""}${String(p.discord||"")===HOSTBG_ID?`<button class="ghost" data-hbg="1">Video background: ${hbgOff()?"off":"on"}</button>`:""}</div></div></div>
   <div class="tiles pf-tiles"><div class="tile"><span>Grade</span><b class="sm">${on?esc(gl(p)):"—"}</b><em>${on?"Competitive":p.banned?"Banned":"Not competitive"}</em></div>
    <div class="tile"><span>Region</span><b>${p.region==="None"?"—":esc(p.region)}</b><em>${esc(REG[p.region]||"None")}</em></div>
    <div class="tile"><span>Rank</span><b>${on?"#"+p.rank:"—"}</b><em>${on?"Leaderboard":"Not placed"}</em></div>
@@ -2407,7 +2416,7 @@ document.addEventListener("keydown",e=>{if(e.key==="Escape")tryClose();if(e.key=
 document.addEventListener("input",e=>{if(e.target&&e.target.id==="annTa")annDraft=e.target.value;const cf=e.target&&e.target.dataset&&e.target.dataset.cf;if(cf)cdraft[cf]=e.target.type==="checkbox"?e.target.checked:e.target.value;const ce=e.target&&e.target.dataset&&e.target.dataset.ce;if(ce)cedraft[ce]=e.target.value;const bk=e.target&&e.target.dataset&&e.target.dataset.bd;if(bk)bd[bk]=e.target.value;const hck=e.target&&e.target.dataset&&e.target.dataset.hc;if(hck)hcSet(hck,e.target.value)});
 document.addEventListener("change",e=>{const t=e.target;if(!t)return;
   if(t.id==="hsort")render();
-  if(t.id==="evd"){evDays=t.value==="none"?0:(+t.value||30);render()}
+  if(t.id==="evd"){evDays=t.value==="none"?0:(+t.value||30);saveEv();render()}
   if(t.id==="imgR"){imgR=t.value;render()}
   if(t.id==="f_g"){const w=$("#subwrap");if(w)w.hidden=t.value==="SG"||t.value==="None"}
   if(t.id==="f_s"){const w=$("#ssubwrap");if(w)w.hidden=t.value==="None"}});
@@ -2656,12 +2665,154 @@ document.addEventListener("click",e=>{
 });
 document.addEventListener("input",e=>{if(e.target&&e.target.id==="snq"){snQ=e.target.value;renderSnipe()}});
 
+/* ===== v4: announcement popup, eval-days save, host video toggle, broadcasts, warnings ===== */
+/* -- announcement: quick popup, shown once per announcement per browser, auto-hides -- */
+let annTimer=0,annShown="";
+function annHide(){const an=$("#ann");if(!an)return;an.classList.remove("show");setTimeout(()=>{if(!an.classList.contains("show"))an.hidden=true},400)}
+function annPop(force,txt){
+  const an=$("#ann");if(!an)return;
+  const t=(txt!==undefined?txt:annText).trim();
+  if(!t){annHide();return}
+  const key=t+"|"+(annAt||"");
+  if(txt===undefined&&!force){let seen="";try{seen=localStorage.getItem("jj_ann_seen")||""}catch(e){}
+    if(seen===key||annShown===key)return;
+    try{localStorage.setItem("jj_ann_seen",key)}catch(e){}}
+  annShown=key;an.textContent=t;an.hidden=false;void an.offsetWidth;an.classList.add("show");
+  clearTimeout(annTimer);annTimer=setTimeout(annHide,Math.min(12000,4500+t.length*45));
+}
+/* -- evaluation timer: remembered per browser, shared default from the cloud -- */
+function saveEv(){
+  try{localStorage.setItem("jj_evdays",evDays?String(evDays):"none")}catch(e){}
+  if(sb&&!demo&&can("changelog"))sb.from("site_content").upsert({key:"eval_days",body:evDays?String(evDays):"none",updated_at:new Date().toISOString()}).then(r=>{if(r.error)console.warn("eval_days:",r.error.message)});
+}
+/* -- host video background toggle (per viewer, remembered) -- */
+function hbgOff(){try{return localStorage.getItem("jj_hostbg_off")==="1"}catch(e){return false}}
+/* -- broadcasts (host -> everyone) and warnings (host -> one player), stored in site_content -- */
+let bcList=[],warnMap={},warnErr="",bcErr="";
+const WSEV={notice:{l:"Notice",c:"#8f86d6",i:"i"},warning:{l:"Warning",c:"#f2b800",i:"!"},final:{l:"Final warning",c:"#ff5c5c",i:"!!"}};
+async function scGet(key){const r=await sb.from("site_content").select("body").eq("key",key).maybeSingle();if(r.error)throw r.error;return r.data?r.data.body:""}
+async function scSet(key,body){const r=await sb.from("site_content").upsert({key,body,updated_at:new Date().toISOString()});if(r.error)throw r.error}
+function bcSync(){
+  if(!uid||demo)return;nLoad();
+  const ids=bcList.map(b=>b.id);
+  if(!Array.isArray(nState.seenB)){nState.seenB=ids.slice();nSave();return}
+  const fresh=bcList.filter(b=>!nState.seenB.includes(b.id)).sort((a,b)=>a.t-b.t);
+  if(!fresh.length)return;
+  fresh.forEach(b=>nAdd("host",b.x,{bid:b.id}));
+  nState.seenB=ids.slice(0,60);nState.items=nState.items.slice(0,60);nSave();
+  nRing=true;renderAuth();setTimeout(()=>{nRing=false},1200);
+}
+function openBroadcast(){
+  if(!(isOwner||can("notify")))return;
+  openModal(`<h3>Notify everyone</h3><div class="sub">Sends a notification to every player’s bell. They see it next time the page is open (instantly if they’re online).</div>
+  <label>Message</label><textarea class="hta" id="bcTxt" maxlength="200" placeholder="e.g. Grade reset starts Saturday — check your eval time!"></textarea>
+  <div class="sub" id="bcCount" style="text-align:right">0 / 200</div><div class="err" id="err"></div>
+  <div class="acts"><button class="solid" id="bcSend">Send to everyone</button><button class="ghost" id="x">Cancel</button></div>`);
+  setTimeout(()=>{const t=$("#bcTxt");if(t)t.focus()},50);
+}
+async function sendBroadcast(){
+  const t=$("#bcTxt"),x=((t&&t.value)||"").trim().slice(0,200),er=$("#err");
+  if(!x)return er.textContent="Write a message first.";
+  if(!sb||demo)return er.textContent="Not connected to the cloud.";
+  const b=$("#bcSend");b.disabled=true;
+  try{
+    let cur=[];try{cur=JSON.parse(await scGet("broadcasts")||"[]")}catch(e){cur=[]}
+    if(!Array.isArray(cur))cur=[];
+    const it={id:Date.now().toString(36)+Math.random().toString(36).slice(2,5),t:Date.now(),x,by:(me&&me.name)||"Host"};
+    cur.unshift(it);cur=cur.slice(0,30);
+    await scSet("broadcasts",JSON.stringify(cur));
+    bcList=cur;logEvent("notification sent to everyone","general",null,"",x.slice(0,120));
+    closeModal();bcSync();
+  }catch(e){b.disabled=false;er.textContent="Couldn’t send: "+(e.message||e)}
+}
+/* warning card: used by the live preview and by what the player actually sees */
+function warnCard(sev,reason,by,t){
+  const s=WSEV[sev]||WSEV.warning;
+  return`<div class="wcard" style="--wc:${s.c}"><div class="wch"><i>${s.i}</i><div><b>${s.l} from staff</b><span>${esc(t?fmt(t):"Just now")}${by?" · "+esc(by):""}</span></div></div>
+  <div class="wcb">${reason.trim()?esc(reason):`<span class="dim">Your reason will appear here…</span>`}</div>
+  <div class="wcf">${sev==="final"?"Another breach may lead to a ban.":"Please read the rules and keep the community friendly."}</div></div>`;
+}
+let warnShown=false;
+function warnSync(){
+  if(!uid||demo||warnShown||$("#modal").classList.contains("open"))return;
+  const mine=(warnMap[uid]||[]);if(!mine.length)return;
+  let ack=[];try{ack=JSON.parse(localStorage.getItem("jj_warn_ack_"+uid)||"[]")}catch(e){}
+  const un=mine.filter(w=>!ack.includes(w.id)).sort((a,b)=>a.t-b.t);if(!un.length)return;
+  const w=un[un.length-1];warnShown=true;
+  nLoad();un.forEach(u=>{if(!nState.items.some(i=>i.wid===u.id))nAdd("warn",(WSEV[u.sev]||WSEV.warning).l+" from staff: "+u.x.slice(0,120),{wid:u.id})});nSave();renderAuth();
+  openModal(`<h3>${(WSEV[w.sev]||WSEV.warning).l}</h3>${warnCard(w.sev,w.x,w.by,w.t)}<div class="acts" style="justify-content:center"><button class="solid" id="wack" data-wids="${esc(un.map(u=>u.id).join(","))}">I understand</button></div>`);
+  lock=true;
+}
+let wTarget="",wSev="warning",wTxt="",wQ="";
+function renderWarn(){
+  const b=$("#wbox");if(!b)return;
+  if(!can("warn")&&!isOwner){b.innerHTML=`<div class="rbox"><div class="sub">You need the “Issue warnings” permission.</div></div>`;return}
+  const ae=document.activeElement;if(ae&&b.contains(ae)&&/^(INPUT|TEXTAREA)$/.test(ae.tagName))return;
+  const t=profiles.find(p=>p.id===wTarget),q=wQ.trim().toLowerCase();
+  const found=q?profiles.filter(p=>(p.name+" "+p.roblox+" "+p.discord).toLowerCase().includes(q)).slice(0,6):[];
+  const all=[];Object.keys(warnMap).forEach(id=>(warnMap[id]||[]).forEach(w=>all.push(Object.assign({uid:id},w))));all.sort((a,b)=>b.t-a.t);
+  const rows=all.slice(0,40).map(w=>{const p=profiles.find(x=>x.id===w.uid);const s=WSEV[w.sev]||WSEV.warning;
+    return`<div class="mini"><b style="color:${s.c}">${s.l}</b> · ${esc(p?p.name:"Unknown")}<span>${esc(w.x)} — ${esc(w.by||"")} · ${esc(fmt(w.t))}</span><button class="ghost" data-wdel="${esc(w.uid)}|${esc(w.id)}" style="margin-top:6px;padding:4px 9px;font-size:10px">Remove</button></div>`}).join("")||`<div class="sub">No warnings issued yet.</div>`;
+  b.innerHTML=`<div class="tgrid"><div class="col">
+   <div class="rbox"><div class="sl">Issue a warning</div>
+    <div class="sub">The player gets a pop-up they must acknowledge, plus an entry in their notifications.</div>
+    <label class="wl">Player</label>
+    ${t?`<div class="mini"><b>${esc(t.name)}</b> · @${esc(t.roblox)}<span>${esc(t.discord)}</span><button class="ghost" id="wclr" style="margin-top:6px;padding:4px 9px;font-size:10px">Change</button></div>`:`<input id="wq" placeholder="Search name, Roblox or Discord ID…" autocomplete="off" value="${esc(wQ)}" style="width:100%">
+    ${found.map(p=>`<div class="mini click" data-wpick="${esc(p.id)}"><b>${esc(p.name)}</b> · @${esc(p.roblox)}<span>${esc(p.discord)}</span></div>`).join("")}`}
+    <label class="wl">Severity</label>
+    <div class="hfil">${Object.keys(WSEV).map(k=>`<button class="hchip ${wSev===k?"on":""}" data-wsev="${k}">${WSEV[k].l}</button>`).join("")}</div>
+    <label class="wl">Reason</label>
+    <textarea id="wtxt" maxlength="300" placeholder="What did they do, and what should they do instead?" style="width:100%;min-height:90px;background:#000;border:1px solid var(--line);color:var(--fg);padding:11px 14px;font:400 14px var(--sans);border-radius:8px;resize:vertical;outline:none">${esc(wTxt)}</textarea>
+    <div class="err" id="werr"></div>
+    <div class="acts" style="margin-top:12px"><button class="solid" id="wsend" ${t?"":"disabled"}>Send warning</button></div></div>
+   <div class="rbox"><div class="sl">History</div><div style="margin-top:8px">${rows}</div></div></div>
+   <div class="col"><div class="rbox"><div class="sl">Preview — what the player sees</div><div class="sub">Updates as you type.</div>
+    <div id="wprev" style="margin-top:12px">${warnCard(wSev,wTxt,(me&&me.name)||"Host")}</div></div></div></div>`;
+}
+async function sendWarn(){
+  const er=$("#werr"),x=($("#wtxt").value||"").trim().slice(0,300);
+  if(!wTarget)return er.textContent="Pick a player.";
+  if(!x)return er.textContent="Write a reason.";
+  if(!sb||demo)return er.textContent="Not connected to the cloud.";
+  const p=profiles.find(q=>q.id===wTarget);
+  try{
+    let m={};try{m=JSON.parse(await scGet("warnings")||"{}")}catch(e){m={}}
+    if(!m||typeof m!=="object"||Array.isArray(m))m={};
+    const w={id:Date.now().toString(36)+Math.random().toString(36).slice(2,5),t:Date.now(),sev:wSev,x,by:(me&&me.name)||"Host"};
+    m[wTarget]=[w].concat(m[wTarget]||[]).slice(0,20);
+    await scSet("warnings",JSON.stringify(m));
+    warnMap=m;logEvent("warning issued","general",wTarget,p?p.name:"",(WSEV[wSev]||{}).l+": "+x.slice(0,120));
+    wTarget="";wTxt="";wQ="";renderWarn();
+  }catch(e){er.textContent="Couldn’t send: "+(e.message||e)+" (needs host rights to write site content)"}
+}
+document.addEventListener("click",async e=>{const t=e.target;if(!t.closest)return;
+  if(t.closest("#ann"))return annHide();
+  if(t.closest("#annShow"))return annPop(true,(($("#annTa")||{}).value)||annText);
+  const hb=t.closest("[data-hbg]");if(hb){try{localStorage.setItem("jj_hostbg_off",hbgOff()?"0":"1")}catch(e){}hostBgSync();return renderProfilePage()}
+  if(t.closest("#nbc"))return openBroadcast();
+  if(t.closest("#bcSend"))return sendBroadcast();
+  const wa=t.closest("#wack");if(wa){const ids=(wa.dataset.wids||"").split(",").filter(Boolean);let a=[];try{a=JSON.parse(localStorage.getItem("jj_warn_ack_"+uid)||"[]")}catch(e){}
+    try{localStorage.setItem("jj_warn_ack_"+uid,JSON.stringify(a.concat(ids).slice(-80)))}catch(e){}closeModal();return}
+  const wp=t.closest("[data-wpick]");if(wp){wTarget=wp.dataset.wpick;wQ="";return renderWarn()}
+  if(t.closest("#wclr")){wTarget="";return renderWarn()}
+  const ws=t.closest("[data-wsev]");if(ws){wTxt=($("#wtxt")||{}).value||wTxt;wSev=ws.dataset.wsev;return renderWarn()}
+  if(t.closest("#wsend"))return sendWarn();
+  const wd=t.closest("[data-wdel]");if(wd){const [u,i]=wd.dataset.wdel.split("|");if(!confirm("Remove this warning?"))return;
+    try{let m=JSON.parse(await scGet("warnings")||"{}");m[u]=(m[u]||[]).filter(w=>w.id!==i);if(!m[u].length)delete m[u];await scSet("warnings",JSON.stringify(m));warnMap=m;logEvent("warning removed","general",u,"","");renderWarn()}catch(er){alert("Couldn’t remove: "+(er.message||er))}}
+});
+document.addEventListener("input",e=>{const t=e.target;if(!t)return;
+  if(t.id==="wq"){wQ=t.value;const b=$("#wbox");if(!b)return;const pos=t.selectionStart;renderWarnForce();const n=$("#wq");if(n){n.focus();try{n.setSelectionRange(pos,pos)}catch(x){}}}
+  if(t.id==="wtxt"){wTxt=t.value;const pv=$("#wprev");if(pv)pv.innerHTML=warnCard(wSev,wTxt,(me&&me.name)||"Host")}
+  if(t.id==="bcTxt"){const c=$("#bcCount");if(c)c.textContent=t.value.length+" / 200"}
+});
+function renderWarnForce(){const b=$("#wbox");if(!b)return;const a=document.activeElement;if(a&&b.contains(a))a.blur();renderWarn()}
+
 /* ===== notification bell: role / badge / grade / placement / leaderboard + clan changes =====
    No new tables: each browser remembers what it last saw for the signed-in player and reports what changed since. */
 var nState={items:[],snap:null},nOpen=false,nFresh=new Set(),nUid=null,nRing=false;
-const NICON={role:"◆",badge:"★",grade:"▲",place:"#",lb:"≡",clan:"⚑"};
-function nLoad(){if(nUid===uid)return;nUid=uid;nState={items:[],snap:null};try{const o=JSON.parse(localStorage.getItem("jj_notif_"+uid)||"null");if(o&&typeof o==="object"){nState.items=Array.isArray(o.items)?o.items:[];nState.snap=o.snap||null}}catch(e){}}
-function nSave(){try{localStorage.setItem("jj_notif_"+uid,JSON.stringify({items:nState.items.slice(0,60),snap:nState.snap}))}catch(e){}}
+const NICON={role:"◆",badge:"★",grade:"▲",place:"#",lb:"≡",clan:"⚑",host:"!",warn:"!"};
+function nLoad(){if(nUid===uid)return;nUid=uid;nState={items:[],snap:null};try{const o=JSON.parse(localStorage.getItem("jj_notif_"+uid)||"null");if(o&&typeof o==="object"){nState.items=Array.isArray(o.items)?o.items:[];nState.snap=o.snap||null;if(Array.isArray(o.seenB))nState.seenB=o.seenB}}catch(e){}}
+function nSave(){try{localStorage.setItem("jj_notif_"+uid,JSON.stringify({items:nState.items.slice(0,60),snap:nState.snap,seenB:nState.seenB}))}catch(e){}}
 function nAdd(k,x,extra){nState.items.unshift(Object.assign({id:Date.now().toString(36)+Math.random().toString(36).slice(2,6),t:Date.now(),k,x,r:0},extra||{}))}
 function nSnapNow(){
   const L=ranked(),p=profiles.find(x=>x.id===uid);if(!p)return null;
@@ -2710,7 +2861,7 @@ function nBell(){
   try{
     if(!uid)return"";nLoad();const n=nUnread();
     const list=nState.items.length?nState.items.map(i=>`<div class="ni ${nFresh.has(i.id)?"new":""}" data-nitem="${esc(i.id)}" role="button" tabindex="0"><i>${NICON[i.k]||"•"}</i><div>${esc(i.x)}<span>${esc(ago(i.t))}</span></div></div>`).join(""):`<div class="nem">Nothing yet.<br>You’ll be told here when you get a role, badge, grade or placement, and when the leaderboards change.</div>`;
-    return`<div id="nwrap"><button class="bell ${nRing?"ring":""}" id="bellBtn" type="button" aria-label="Notifications${n?" ("+n+" new)":""}" aria-expanded="${nOpen}" title="Notifications"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/></svg>${n?`<b class="bdot">${n>9?"9+":n}</b>`:""}</button>${nOpen?`<div class="npop" id="npop"><div class="nph"><b>Notifications</b><div><button class="ghost" id="nread" type="button">Mark read</button><button class="ghost" id="nclear" type="button">Clear</button></div></div>${list}</div>`:""}</div>`;
+    return`<div id="nwrap"><button class="bell ${nRing?"ring":""}" id="bellBtn" type="button" aria-label="Notifications${n?" ("+n+" new)":""}" aria-expanded="${nOpen}" title="Notifications"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/></svg>${n?`<b class="bdot">${n>9?"9+":n}</b>`:""}</button>${nOpen?`<div class="npop" id="npop"><div class="nph"><b>Notifications</b><div>${(isOwner||can("notify"))?`<button class="solid" id="nbc" type="button">+ Notify all</button>`:""}<button class="ghost" id="nread" type="button">Mark read</button><button class="ghost" id="nclear" type="button">Clear</button></div></div>${list}</div>`:""}</div>`;
   }catch(e){return""}
 }
 function nClose(){if(!nOpen)return;nOpen=false;nFresh=new Set();renderAuth()}
@@ -2718,7 +2869,7 @@ document.addEventListener("click",e=>{
   const t=e.target;if(!t.closest)return;
   if(t.closest("#bellBtn")){
     if(nOpen)return nClose();
-    nLoad();nFresh=new Set(nState.items.filter(i=>!i.r).map(i=>i.id));nState.items.forEach(i=>{i.r=1});nSave();nOpen=true;return renderAuth()}
+    nLoad();try{loadLog()}catch(e){}nFresh=new Set(nState.items.filter(i=>!i.r).map(i=>i.id));nState.items.forEach(i=>{i.r=1});nSave();nOpen=true;return renderAuth()}
   if(t.closest("#nread")){nState.items.forEach(i=>{i.r=1});nFresh=new Set();nSave();return renderAuth()}
   if(t.closest("#nclear")){nState.items=[];nFresh=new Set();nSave();return renderAuth()}
   const it=t.closest("[data-nitem]");
