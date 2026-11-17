@@ -1404,7 +1404,9 @@ async function makeBoardImage(region){
   return c.toDataURL("image/png");
 }
 /* ---- discord embed sender (3 webhooks) ---- */
-const EMB_LINE="https://placehold.co/1000x4/ffffff/ffffff.png"; /* white divider image under each embed; swap for your own hosted image if you like */
+const EMB_LINE="line.gif"; /* animated divider shown under each embed; keep line.gif in the same folder as index.html. It's uploaded with the webhook message and referenced as attachment://line.gif */
+let embLineBlob=null;
+async function embLineGet(){if(embLineBlob)return embLineBlob;try{const r=await fetch(EMB_LINE);if(!r.ok)return null;embLineBlob=await r.blob();return embLineBlob}catch(e){return null}}
 const EMB_KEY="jj_webhooks3",EMB_DEF=[{n:"North America",u:"",r:"NA"},{n:"Europe",u:"",r:"EU"},{n:"Asia",u:"",r:"AS"}];
 let embMsg=["","",""],embBusy=false;
 const embLoad=()=>{try{const a=JSON.parse(localStorage.getItem(EMB_KEY)||"[]");return EMB_DEF.map((d,i)=>Object.assign({},d,a[i]||{}))}catch(e){return EMB_DEF.map(d=>Object.assign({},d))}};
@@ -1425,29 +1427,43 @@ async function embAvatars(list){
   }
   return p=>{const k=RB[rbKey(p.roblox)]||{};return map[k.id]||(/^https:\/\//.test(k.u||"")?k.u:"")||(/^https:\/\//.test(p.avatar||"")?p.avatar:"")};
 }
-async function buildEmbeds(region){
+async function buildEmbeds(region,useLine){
   const b=ranked().filter(p=>region==="ALL"||p.region===region).slice(0,10),av=await embAvatars(b);
   return b.map((p,i)=>{
     const cls=[mainClan(p.id),otherClan(p.id)].filter((c,k,ar)=>c&&!isS3(c)&&ar.findIndex(x=>x&&x.id===c.id)===k);
-    const clan=cls.length?cls.map(c=>"["+dEsc(c.tag)+"] "+dEsc(c.name)).join("  ·  "):"None";
+    const clan=cls.length?cls.map(c=>"["+dEsc(c.tag)+"] "+dEsc(c.name)).join("  ·  "):"No Clan";
     const un=String(p.uname||p.name).slice(0,60);
+    const disc=/^\d{15,25}$/.test(String(p.discord||""))?"<@"+p.discord+">":(dEsc(p.uname)||"—");
+    const grade=String(gl(p)).replace(/\s*·\s*/g," ");
     const e={
-      author:{name:(["🥇","🥈","🥉"][i]||"▸")+"  RANK "+String(i+1).padStart(2,"0")},
-      title:un,color:0xffffff,
-      description:"## "+dEsc(gl(p))+"\n`ROBLOX` "+(dEsc(p.roblox)||"—")+"　`REGION` "+(REG[p.region]||"None")+"\n`CLAN` "+clan,
-      image:{url:EMB_LINE}};
+      title:(i+1)+". "+un,color:0x2b2d31,
+      fields:[
+        {name:"Discord",value:disc,inline:true},
+        {name:"Roblox",value:dEsc(p.roblox)||"—",inline:true},
+        {name:"Grade",value:grade,inline:true},
+        {name:"Region",value:"🌐 "+(REG[p.region]||"None"),inline:true},
+        {name:"Clan",value:clan,inline:true}
+      ]};
+    if(useLine)e.image={url:"attachment://"+EMB_LINE};
     const img=av(p);if(img)e.thumbnail={url:img};
-    if(i===b.length-1){e.footer={text:"JJSGC"};e.timestamp=new Date().toISOString()}
     return e;
   });
 }
 async function embSendOne(c,i){
   if(!embOk(c.u)){embMsg[i]="Add a valid webhook URL.";return false}
   try{
-    const embeds=await buildEmbeds(c.r);
+    const gif=await embLineGet();
+    const embeds=await buildEmbeds(c.r,!!gif);
     if(!embeds.length){embMsg[i]="No players to send.";return false}
-    const r=await fetch(c.u+"?wait=true",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({username:"JJSGC",
-      content:"**JJSGC "+REG[c.r]+" Leaderboard** · "+new Date().toLocaleDateString([],{dateStyle:"long"}),embeds,allowed_mentions:{parse:[]}})});
+    const payload={username:"JJSGC",content:"**JJSGC "+REG[c.r]+" Leaderboard** · "+new Date().toLocaleDateString([],{dateStyle:"long"}),embeds,allowed_mentions:{parse:[]}};
+    let r;
+    if(gif){
+      payload.attachments=[{id:0,filename:EMB_LINE}];
+      const fd=new FormData();fd.append("payload_json",JSON.stringify(payload));fd.append("files[0]",gif,EMB_LINE);
+      r=await fetch(c.u+"?wait=true",{method:"POST",body:fd});
+    }else{
+      r=await fetch(c.u+"?wait=true",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(payload)});
+    }
     if(!r.ok){let d="";try{d=(await r.json()).message||""}catch(e){}throw new Error(r.status+(d?" "+d:""))}
     embMsg[i]="Sent ✓";logEvent("sent leaderboard embed","general",null,"",c.n+" · "+c.r);return true;
   }catch(e){embMsg[i]="Couldn’t send: "+e.message;return false}
