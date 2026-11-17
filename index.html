@@ -1403,6 +1403,39 @@ async function makeBoardImage(region){
   x.textAlign="center";x.fillStyle="#4a4a56";x.font='600 18px Archivo,sans-serif';x.fillText("JJSGC",W/2,H-40);
   return c.toDataURL("image/png");
 }
+/* ---- discord embed sender ---- */
+let embMsg="",embBusy=false;
+const EMB_KEY="jj_webhook";
+const embUrl=()=>{try{return localStorage.getItem(EMB_KEY)||""}catch(e){return""}};
+const embOk=u=>/^https:\/\/(?:(?:canary|ptb)\.)?discord(?:app)?\.com\/api\/webhooks\/\d+\/[\w-]+$/.test(u);
+const dEsc=t=>String(t==null?"":t).replace(/([\\*_~`|>])/g,"\\$1").replace(/@/g,"@\u200b");
+function buildEmbed(region){
+  const b=ranked().filter(p=>region==="ALL"||p.region===region).slice(0,10);
+  const medal=["🥇","🥈","🥉"];
+  const lines=b.map((p,i)=>{
+    const m=medal[i]||"`"+String(i+1).padStart(2," ")+"`";
+    return m+" **"+dEsc(String(p.name).slice(0,28))+"**  `"+p.region+"`\n"+"\u2003"+"-# "+dEsc(gl(p))+" · @"+dEsc(p.roblox);
+  });
+  return {
+    title:"✦ JJSGC ✦  "+(region==="ALL"?"Overall":REG[region])+" Leaderboard",
+    description:b.length?lines.join("\n"):"No competitive players yet.",
+    color:0x6d5dfc,
+    footer:{text:"JJSGC · Top "+Math.max(b.length,1)},
+    timestamp:new Date().toISOString()
+  };
+}
+async function sendEmbed(region){
+  const u=embUrl();
+  if(!embOk(u)){embMsg="Paste a valid Discord webhook URL first.";return render()}
+  embBusy=true;embMsg="Sending…";render();
+  try{
+    const r=await fetch(u+"?wait=true",{method:"POST",headers:{"Content-Type":"application/json"},
+      body:JSON.stringify({username:"JJSGC",embeds:[buildEmbed(region)],allowed_mentions:{parse:[]}})});
+    if(!r.ok){let d="";try{d=(await r.json()).message||""}catch(e){}throw new Error("Discord said "+r.status+(d?": "+d:""))}
+    embMsg="Sent ✓";logEvent("sent leaderboard embed","general",null,"",region);
+  }catch(e){embMsg="Couldn’t send: "+e.message}
+  embBusy=false;render();
+}
 async function saveAnn(clear){
   if(!sb||!can("changelog"))return;
   const body=clear?"":($("#annTa").value||"").slice(0,300).trim(),at=new Date().toISOString();
@@ -1443,6 +1476,12 @@ function renderTools(board){
       <div class="sub">A ready-to-post PNG of the top 10 for Discord.</div>
       <div class="trow"><select id="imgR">${regOpts}</select><button class="solid" id="imgGo" ${ex?"":"disabled"}>Generate</button>${boardImg?`<button id="imgDl">Download</button>`:""}</div>
       ${boardImg?`<img class="imgprev" alt="Leaderboard preview" src="${boardImg}">`:""}
+    </div>
+    <div class="rbox"><div class="sl">Send to Discord (embed)</div>
+      <div class="sub">Posts a clean leaderboard embed straight to your channel through a webhook. The URL is saved only in this browser.</div>
+      <div class="trow"><input id="embUrl" type="password" autocomplete="off" placeholder="https://discord.com/api/webhooks/…" value="${esc(embUrl())}" style="flex:1;min-width:0;background:#000;border:1px solid var(--line);color:var(--fg);padding:11px 14px;font:400 14px var(--sans);border-radius:8px;outline:none"><button id="embSave">Save</button></div>
+      <div class="trow"><select id="embR">${regOpts}</select><button class="solid" id="embSend" ${ex&&!embBusy?"":"disabled"}>Send embed</button></div>
+      <div class="sub">${esc(embMsg)}</div>
     </div>
     <div class="rbox"><div class="sl">Copy for Discord</div>
       <div class="sub">Top 25 overall, top 10 per region, as formatted text.</div>
@@ -2365,6 +2404,8 @@ document.addEventListener("click",async e=>{
   const hsb=t.closest("[data-hs]");if(hsb){hs=hsb.dataset.hs;return render()}
   const hrb=t.closest("[data-hr]");if(hrb){hr=hrb.dataset.hr;return render()}
   const cp=t.closest("[data-copy]");if(cp){const v=cp.dataset.copy,o=cp.textContent;const ok=()=>{cp.textContent="✓";setTimeout(()=>cp.textContent=o,1200)};(navigator.clipboard?navigator.clipboard.writeText(v):Promise.reject()).then(ok).catch(()=>{const ta=document.createElement("textarea");ta.value=v;document.body.appendChild(ta);ta.select();try{document.execCommand("copy");ok()}catch(e){}ta.remove()});return}
+  if(t.closest("#embSave")){const v=($("#embUrl").value||"").trim();if(v&&!embOk(v)){embMsg="That doesn’t look like a Discord webhook URL.";return render()}try{v?localStorage.setItem(EMB_KEY,v):localStorage.removeItem(EMB_KEY)}catch(e){}embMsg=v?"Webhook saved.":"Webhook removed.";return render()}
+  if(t.closest("#embSend")){if(!can("export")||embBusy)return;const r=($("#embR")||{}).value||"ALL";return sendEmbed(r)}
   if(t.closest("#imgGo")){if(!can("export"))return;boardImg=await makeBoardImage(imgR);logEvent("generated leaderboard image","general",null,"",imgR);return render()}
   if(t.closest("#imgDl")&&boardImg){const a=document.createElement("a");a.href=boardImg;a.download="jjsgc-leaderboard-"+imgR.toLowerCase()+".png";document.body.appendChild(a);a.click();a.remove();return}
   if(t.closest("#acLock")){if(!await saveSetting("site_lock",{on:!lockOn,msg:lockMsg}))return;lockOn=!lockOn;logEvent(lockOn?"site locked":"site unlocked","general",null,"","");accMsg="";renderAccess();applyGate();return}
