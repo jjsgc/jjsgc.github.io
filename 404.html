@@ -1,0 +1,9 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8"><title>JJSGC</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>html,body{background:#07070a;margin:0}</style>
+<script>
+/* GitHub Pages has no server-side routing: send /clans etc. to the app, which restores the clean URL. */
+var l=location;
+l.replace(l.protocol+"//"+l.host+"/?/"+l.pathname.slice(1).replace(/&/g,"~and~")+(l.search?"&"+l.search.slice(1).replace(/&/g,"~and~"):"")+l.hash);
+</script></head><body></body></html>

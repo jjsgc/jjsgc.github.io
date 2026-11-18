@@ -2,6 +2,8 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
+<base href="/">
+<script>(function(l){if(l.search[1]==="/"){var d=l.search.slice(1).split("&").map(function(x){return x.replace(/~and~/g,"&")}).join("?");history.replaceState(null,null,l.pathname.slice(0,-1)+d+l.hash)}}(window.location))</script>
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>JJSGC · Competitive</title>
 <meta name="description" content="Leaderboard, players and clans.">
@@ -583,6 +585,28 @@ details.fxm summary{display:flex;align-items:center;gap:12px;cursor:pointer;list
 .fxw{font-size:12px;color:var(--dim)}
 .fxl{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin:10px 0 2px 36px}
 @media(max-width:720px){.fxl{grid-template-columns:1fr;margin-left:0}}
+
+.cwtabs{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 16px;align-items:center}
+.cwtop{padding-bottom:14px}.cwtop .cwtabs{margin-bottom:10px}
+.vwk{font-size:15px;font-weight:800;letter-spacing:.06em;margin:2px 2px 14px;text-transform:uppercase}
+.vsw{margin:0 0 14px}
+.vsc{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:14px;padding:16px 18px;background:linear-gradient(180deg,rgba(255,255,255,.04),transparent),var(--row);border:1px solid var(--line);border-radius:14px}
+.vsc.wa{box-shadow:inset 3px 0 0 #6fd08c}.vsc.wb{box-shadow:inset -3px 0 0 #6fd08c}
+.vss{display:flex;align-items:center;gap:12px;min-width:0}.vss.r{flex-direction:row-reverse;text-align:right}
+.vsn{font-weight:700;font-size:14px;word-break:break-word}.vss small{font-size:12px}
+.vsm{display:flex;flex-direction:column;align-items:center;gap:5px;text-align:center}
+.vsm b{font-size:11px;letter-spacing:.22em;color:var(--dim)}.vsm span{font-size:11px;color:var(--dim);white-space:nowrap}
+.cwscr{font-size:28px;font-weight:800;letter-spacing:.05em;color:var(--dim)}.cwscr .cwwn{color:#6fd08c}.cwscr.xs{font-size:15px}
+.vdt{margin:6px 4px 0}.vdt summary{display:flex;gap:10px;align-items:center;cursor:pointer;list-style:none;font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--dim);padding:8px 2px}
+.vdt summary::-webkit-details-marker{display:none}.vdt summary::before{content:"▸";font-size:10px}.vdt[open] summary::before{content:"▾"}
+.vdt summary em{font-style:normal;color:var(--fg);font-weight:700;letter-spacing:.06em}
+.cwrf{display:flex;align-items:center;gap:10px;padding:7px 12px;margin:4px 0;background:var(--row);border:1px solid var(--line);border-radius:9px;font-size:13px}
+.cwrf .rwn{font-weight:700;color:#6fd08c}.cwrf .rln{color:var(--dim)}.cwrf i{font-style:normal;color:var(--dim)}
+.cwl .lb{display:inline-block;min-width:34px;font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--dim)}
+.rdb{margin:12px 0 0;padding:12px;background:rgba(255,255,255,.02);border:1px solid var(--line);border-radius:10px}
+.rdh{display:flex;align-items:center;gap:10px;margin-bottom:8px}.rdh b{font-size:12px;letter-spacing:.14em;text-transform:uppercase}.rdh .ghost{margin-left:auto}
+.rfrow{display:flex;align-items:center;gap:8px;margin:6px 0}.rfrow select{flex:1;min-width:0;margin:0;width:auto}.rfrow i{font-style:normal;color:var(--dim);font-size:11px}
+button.xs{padding:6px 10px;font-size:11px}
 </style>
 </head>
 <body>
@@ -961,12 +985,63 @@ function hostBgSync(){
 }
 (()=>{const v=document.getElementById("hostbgv");if(v)v.addEventListener("timeupdate",()=>{if(!hostBgOn)return;if(v.currentTime<HOSTBG_START-.5||(v.duration&&v.currentTime>=v.duration-.25))v.currentTime=HOSTBG_START});
   if(v)v.addEventListener("ended",()=>{v.currentTime=HOSTBG_START;v.play().catch(()=>{})})})();
+/* ---- page URLs: /clans, /clans/<tag>, /players/<roblox>, /leaderboard, /panel/<tab> ---- */
+let routeReady=false,routeQuiet=false,routeStarted=false;
+const jjOauth=o=>{try{sessionStorage.setItem("jj_ret",location.pathname)}catch(_){}return sb.auth.signInWithOAuth(o)};
+const rSlug=s=>String(s||"").trim().toLowerCase();
+function clanSeg(c){const t=rSlug(c.tag);return(!t||clans.filter(x=>rSlug(x.tag)===t).length>1)?c.id:t}
+function routePath(){
+  if(pg==="board")return "/leaderboard";
+  if(pg==="players")return "/players";
+  if(pg==="clans")return "/clans";
+  if(pg==="clan"){const c=clanById(openClanId);return c?"/clans/"+encodeURIComponent(clanSeg(c)):"/clans"}
+  if(pg==="profile"){const p=profiles.find(x=>x.id===profId);return p&&p.roblox?"/players/"+encodeURIComponent(p.roblox):"/players"}
+  if(pg==="host")return "/panel"+(hostTab&&hostTab!=="over"?"/"+hostTab:"");
+  return "/";
+}
+function routeTitle(){
+  const B="JJSGC · Competitive";let t=B;
+  if(pg==="board")t="Leaderboard · JJSGC";else if(pg==="players")t="Players · JJSGC";else if(pg==="clans")t="Clans · JJSGC";else if(pg==="host")t="Panel · JJSGC";
+  else if(pg==="clan"){const c=clanById(openClanId);t=c?"["+c.tag+"] "+c.name+" · JJSGC":"Clans · JJSGC"}
+  else if(pg==="profile"){const p=profiles.find(x=>x.id===profId);t=p?p.name+" · JJSGC":"Players · JJSGC"}
+  document.title=t;
+}
+function routeSync(){
+  try{routeTitle()}catch(e){}
+  if(!routeReady||routeQuiet)return;
+  const to=routePath();
+  if(to!==location.pathname)try{history.pushState(null,"",to)}catch(e){}
+}
+function routeApply(path){
+  const seg=String(path||"/").replace(/^\/+|\/+$/g,"").split("/").map(x=>{try{return decodeURIComponent(x)}catch(e){return x}}),a=(seg[0]||"").toLowerCase(),b=seg[1];
+  if(a==="leaderboard")return go("board");
+  if(a==="players"){if(b){const p=profiles.find(x=>rSlug(x.roblox)===rSlug(b));if(p){profBack="players";profId=p.id;return go("profile")}}return go("players")}
+  if(a==="clans"){if(b){const c=clans.find(x=>rSlug(x.tag)===rSlug(b))||clans.find(x=>x.id===b);if(c){clanBack="clans";openClanId=c.id;return go("clan")}}return go("clans")}
+  if(a==="panel"){if(b&&HT.some(t=>t[0]===b))hostTab=b;return go("host")}
+  return go("home");
+}
+function routeInit(){
+  if(routeStarted)return;routeStarted=true;
+  let path=location.pathname;
+  try{const r=sessionStorage.getItem("jj_ret");if(r){sessionStorage.removeItem("jj_ret");if(path==="/"||path==="")path=r}}catch(e){}
+  let tries=0;
+  const fin=()=>{routeQuiet=false;routeReady=true;try{history.replaceState(null,"",routePath())}catch(e){}routeTitle()};
+  const run=()=>{
+    routeQuiet=true;
+    try{routeApply(path)}catch(e){console.warn("route:",e)}
+    if(/^\/panel/i.test(path)&&pg!=="host"&&tries++<8){setTimeout(run,500);return}
+    fin();
+  };
+  run();
+}
+window.addEventListener("popstate",()=>{if(!routeReady)return;routeQuiet=true;try{routeApply(location.pathname)}catch(e){}routeQuiet=false});
+setTimeout(()=>routeInit(),5000);
 function go(v){
   if(v==="myclan"){const mc=uid&&clanMem[uid];if(mc){clanBack=pg==="clan"?clanBack:pg;openClanId=mc;v="clan"}else v="home"}
   if(v==="host"&&!staff())v="home";pg=v;
   const show=v==="board"?"list":v;
   ["home","list","players","clans","clan","host","profile"].forEach(k=>{const el=$("#v_"+k),on=k===show;el.hidden=!on;if(on){el.classList.remove("view");void el.offsetWidth;el.classList.add("view")}});
-    if(v==="host")loadAudit();render();window.scrollTo(0,0);hostBgSync();
+    if(v==="host")loadAudit();render();window.scrollTo(0,0);hostBgSync();routeSync();
 }
 function render(){try{hostCheck()}catch(e){}
   if(pg==="host"&&!staff())return go("home");
@@ -1749,8 +1824,8 @@ async function saveHome(reset){
 let logText="",logAt=null,logErr="",editingLog=false;
 async function loadLog(){
   if(!sb)return;
-  const {data,error}=await sb.from("site_content").select("key,body,updated_at").in("key",["cw_results","cw_fixtures","cw_fixtures2","changelog","announcement","site_lock","site_whitelist","home_content","eval_days","broadcasts","warnings"]);
-  if(error)logErr=error.message;else{logErr="";(data||[]).forEach(r=>{if(r.key==="changelog"){logText=r.body||"";logAt=r.updated_at}else if(r.key==="announcement"){annText=r.body||"";annAt=r.updated_at}else if(r.key==="eval_days"){let has=null;try{has=localStorage.getItem("jj_evdays")}catch(e){}if(has===null)evDays=r.body==="none"?0:(+r.body||30)}else if(r.key==="cw_results"){cwRes=r.body||""}else if(r.key==="cw_fixtures"){cwFix=r.body||""}else if(r.key==="cw_fixtures2"){cwFx=fxParse(r.body)}else if(r.key==="broadcasts"){try{bcList=JSON.parse(r.body||"[]");if(!Array.isArray(bcList))bcList=[]}catch(e){bcList=[]}}else if(r.key==="warnings"){try{warnMap=JSON.parse(r.body||"{}")||{}}catch(e){warnMap={}}}else if(r.key==="site_lock"){try{const o=JSON.parse(r.body||"{}");lockOn=!!o.on;lockMsg=String(o.msg||"")}catch(e){lockOn=false}}else if(r.key==="home_content"){try{homeSaved=JSON.parse(r.body||"{}")}catch(e){homeSaved={}}}else if(r.key==="site_whitelist"){try{const o=JSON.parse(r.body||"{}");wlOn=!!o.on;wlList=(Array.isArray(o.list)?o.list:[]).map(String)}catch(e){wlOn=false}}})}
+  const {data,error}=await sb.from("site_content").select("key,body,updated_at").in("key",["cw_results","cw_results2","cw_fixtures","cw_fixtures2","changelog","announcement","site_lock","site_whitelist","home_content","eval_days","broadcasts","warnings"]);
+  if(error)logErr=error.message;else{logErr="";(data||[]).forEach(r=>{if(r.key==="changelog"){logText=r.body||"";logAt=r.updated_at}else if(r.key==="announcement"){annText=r.body||"";annAt=r.updated_at}else if(r.key==="eval_days"){let has=null;try{has=localStorage.getItem("jj_evdays")}catch(e){}if(has===null)evDays=r.body==="none"?0:(+r.body||30)}else if(r.key==="cw_results"){cwRes=r.body||""}else if(r.key==="cw_fixtures"){cwFix=r.body||""}else if(r.key==="cw_fixtures2"){cwFx=fxParse(r.body)}else if(r.key==="cw_results2"){cwRs=fxParse(r.body)}else if(r.key==="broadcasts"){try{bcList=JSON.parse(r.body||"[]");if(!Array.isArray(bcList))bcList=[]}catch(e){bcList=[]}}else if(r.key==="warnings"){try{warnMap=JSON.parse(r.body||"{}")||{}}catch(e){warnMap={}}}else if(r.key==="site_lock"){try{const o=JSON.parse(r.body||"{}");lockOn=!!o.on;lockMsg=String(o.msg||"")}catch(e){lockOn=false}}else if(r.key==="home_content"){try{homeSaved=JSON.parse(r.body||"{}")}catch(e){homeSaved={}}}else if(r.key==="site_whitelist"){try{const o=JSON.parse(r.body||"{}");wlOn=!!o.on;wlList=(Array.isArray(o.list)?o.list:[]).map(String)}catch(e){wlOn=false}}})}
   renderHome();renderLog();try{bcSync();warnSync()}catch(e){console.warn(e)}if(pg==="host"&&hostTab==="warn")renderWarn();applyGate();if(pg==="host"&&hostTab==="home")renderHomeEditor();if(pg==="host"&&hostTab==="access"&&accDraft===null)renderAccess();
 }
 function renderLog(){
@@ -1767,7 +1842,7 @@ async function saveLog(){
   if(error)return $("#logErr").textContent="Couldn’t save: "+error.message+" (has the site_content table been created? see site_content.sql)";
   logEvent("changelog edited","general",null,"",body.length+" characters");logText=body;logAt=at;editingLog=false;$("#logErr").textContent="";renderLog();
 }
-function openModal(h){$("#panel").innerHTML=h;$("#modal").classList.add("open")}
+function openModal(h){$("#panel").style.width="";$("#panel").style.maxWidth="";$("#panel").innerHTML=h;$("#modal").classList.add("open")}
 function closeModal(){lock=false;onboarding=false;$("#modal").classList.remove("open")}
 function tryClose(){if(!lock)closeModal()}
 let linkedRoblox=null,lnkErr="",reopen=false;
@@ -1898,7 +1973,7 @@ async function loadProfiles(){
   profiles=data.filter(p=>REG[p.region]||p.region===NONE).map(p=>({id:p.user_id,name:p.name,roblox:p.roblox,region:p.region,grade:p.grade,sub:(SUBS.includes(p.sub)||p.sub===NONE)?p.sub:"Low",subsub:(SSUBS.includes(p.subsub)||p.subsub===NONE)?p.subsub:"Weak",ranked:!!p.ranked,banned:!!p.banned,reason:p.ban_reason||"",roles:(p.roles||"").split(",").map(x=>x.trim()).filter(Boolean),discord:p.discord_id||"",uname:p.discord_username||"",avatar:p.custom_avatar||p.avatar_url,custom:p.custom_avatar||"",created:Date.parse(p.created_at)||0,pos:(p.board_pos==null?null:+p.board_pos)}));
   loaded=true;
   if(onboarding&&uid&&profiles.some(p=>p.id===uid))closeModal();
-  syncOwnName();renderAuth();render();applyGate();maybeOnboard();if(staff()&&!audit.length&&!auditErr)loadAudit();rbLoad();hostSync();
+  syncOwnName();renderAuth();render();applyGate();maybeOnboard();routeInit();if(staff()&&!audit.length&&!auditErr)loadAudit();rbLoad();hostSync();
   try{notifyDiff()}catch(e){console.warn("notify:",e)}
   if(reopen&&uid){reopen=false;openOwn()}
 }
@@ -2000,71 +2075,82 @@ async function clanRpc(fn,args){
 }
 function reopenClan(){}
 /* ---- Clan wars (results + fixtures) and clan line-ups ---- */
-let cwRes="",cwFix="",cwFx={weeks:[]},fxd=null,cwDraft=null,cwMsg="",cwBad=false,LU={},luOk=true,luLoaded=false,luMsg="";
+let cwRes="",cwFix="",cwFx={weeks:[]},cwRs={weeks:[]},fxd=null,rsd=null,cwTab="fix",selW={fix:0,res:0},cwView={k:"fix",w:0},cwMsg="",cwBad=false,LU={},luOk=true,luLoaded=false,luMsg="";
 function fxParse(t){try{const o=JSON.parse(t||"{}");return{weeks:Array.isArray(o.weeks)?o.weeks:[]}}catch(e){return{weeks:[]}}}
 const uid8=()=>Math.random().toString(36).slice(2,9);
 const cwCards=t=>String(t||"").replace(/\r/g,"").split(/^\s*-{3,}\s*$/m).map(b=>b.split("\n").map(l=>l.trim())).map(a=>{while(a.length&&!a[0])a.shift();while(a.length&&!a[a.length-1])a.pop();return a}).filter(a=>a.length);
-const cwLine=l=>{
-  if(!l)return `<div class="cwg"></div>`;
-  if(/^round\b/i.test(l))return `<div class="cwr">${esc(l)}</div>`;
-  if(/\d+\s*[-–:]\s*\d+/.test(l)&&!/->|→/.test(l))return `<div class="cws">${esc(l)}</div>`;
-  const m=l.match(/^(.*?)\s+(vs\.?|->|→)\s+(.*)$/i);
-  return m?`<div class="cwl">${esc(m[1])}<i>${esc(m[2])}</i>${esc(m[3])}</div>`:`<div class="cwl">${esc(l)}</div>`};
+const cwLine=l=>l?`<div class="cwl">${esc(l)}</div>`:`<div class="cwg"></div>`;
 const cwCard=a=>`<div class="cwc"><h3>${esc(a[0])}</h3>${a.slice(1).map(cwLine).join("")}</div>`;
 const clName=id=>{const c=clanById(id);return c?c.name:"TBD"};
-const clTag=id=>{const c=clanById(id);return c?`<span style="color:${clanCol(c)};font-weight:800">[${esc(c.tag)}]</span> `:""};
+const clSide=(id,cls)=>{const c=clanById(id);return c?`<div class="vss ${cls||""}">${cav(c)}<div style="min-width:0"><div class="vsn">${esc(c.name)}</div><small style="color:${clanCol(c)};font-weight:800">[${esc(c.tag)}]</small></div></div>`:`<div class="vss ${cls||""}"><div class="vsn" style="color:var(--dim)">TBD</div></div>`};
 const fxWhen=iso=>{const d=new Date(iso);return isNaN(d)?"":d.toLocaleString([],{weekday:"short",day:"numeric",month:"short",hour:"2-digit",minute:"2-digit"})};
 const toLocalInput=iso=>{const d=new Date(iso);if(!iso||isNaN(d))return"";const p=n=>String(n).padStart(2,"0");return `${d.getFullYear()}-${p(d.getMonth()+1)}-${p(d.getDate())}T${p(d.getHours())}:${p(d.getMinutes())}`};
 const fxNames=ids=>(ids||[]).map(i=>pName(i)).join(", ")||"—";
-function fxView(){
-  const side=(cid,mn,sb2)=>`<div><b>${clTag(cid)}${esc(clName(cid))}</b><div class="cwl">Main: ${esc(fxNames(mn))}</div><div class="cwl">Sub: ${esc(fxNames(sb2))}</div></div>`;
-  return cwFx.weeks.map(w=>`<div class="cwc"><h3>${esc(w.title||"Week")}</h3>${(w.matches||[]).map((m,i)=>`<details class="fxm"><summary><span class="fxn">${String(i+1).padStart(2,"0")}</span><span class="fxt">${clTag(m.a)}${esc(clName(m.a))}<i>vs</i>${clTag(m.b)}${esc(clName(m.b))}</span>${m.at?`<span class="fxw">${esc(fxWhen(m.at))}</span>`:""}</summary><div class="fxl">${side(m.a,m.mainA,m.subA)}${side(m.b,m.mainB,m.subB)}</div></details>`).join("")||`<div class="sub">No matches yet.</div>`}</div>`).join("");
+const rCount=(r,w)=>(r.fights||[]).filter(f=>f.w===w).length;
+const rScore=m=>{let a=0,b=0,fa=0,fb=0;(m.rounds||[]).forEach(r=>{const x=rCount(r,"A"),y=rCount(r,"B");fa+=x;fb+=y;if(x>y)a++;else if(y>x)b++});return{a,b,fa,fb}};
+function fxMatchView(m){
+  const side=(cid,mn,sb2)=>`<div><div class="cwr" style="margin-top:0">${esc(clName(cid))}</div><div class="cwl"><span class="lb">Main</span> ${esc(fxNames(mn))}</div><div class="cwl"><span class="lb">Sub</span> ${esc(fxNames(sb2))}</div></div>`;
+  const has=(m.mainA||[]).length+(m.subA||[]).length+(m.mainB||[]).length+(m.subB||[]).length;
+  return `<div class="vsw"><div class="vsc">${clSide(m.a)}<div class="vsm"><b>VS</b><span>${m.at?esc(fxWhen(m.at)):"Time TBD"}</span></div>${clSide(m.b,"r")}</div>${has?`<details class="vdt"><summary>Line-ups</summary><div class="fxl" style="margin:6px 0 0">${side(m.a,m.mainA,m.subA)}${side(m.b,m.mainB,m.subB)}</div></details>`:""}</div>`;
 }
-function cwOpen(kind){
-  const empty=`<div class="empty">Nothing posted yet.</div>`;
+function rsMatchView(m){
+  const s=rScore(m),aw=s.a>s.b,bw=s.b>s.a,R=m.rounds||[];
+  const rounds=R.map((r,i)=>{
+    const rows=(r.fights||[]).filter(f=>f.w).map(f=>`<div class="cwrf"><span class="rwn">${esc(pName(f.w==="A"?f.pa:f.pb))}</span><i>→</i><span class="rln">${esc(pName(f.w==="A"?f.pb:f.pa))}</span></div>`).join("");
+    return `<details class="vdt" ${i===R.length-1?"open":""}><summary>Round ${i+1} <em>${rCount(r,"A")} – ${rCount(r,"B")}</em></summary>${rows||`<div class="sub" style="margin:4px 0 8px">No fights yet.</div>`}</details>`}).join("");
+  return `<div class="vsw"><div class="vsc ${aw?"wa":bw?"wb":""}">${clSide(m.a)}<div class="vsm"><div class="cwscr"><span class="${aw?"cwwn":""}">${s.a}</span> – <span class="${bw?"cwwn":""}">${s.b}</span></div><span>Fights ${s.fa} – ${s.fb}</span></div>${clSide(m.b,"r")}</div>${rounds}</div>`;
+}
+function cwFutureWeek(){const now=Date.now(),i=cwFx.weeks.findIndex(w=>(w.matches||[]).some(m=>m.at&&Date.parse(m.at)>now));return i>=0?i:Math.max(0,cwFx.weeks.length-1)}
+function cwOpen(kind,w){
+  const L=kind==="res"?cwRs:cwFx,n=L.weeks.length,wi=Math.min(w!==undefined?w:(kind==="res"?n-1:cwFutureWeek()),n-1);
+  cwView={k:kind,w:Math.max(0,wi)};
   let body;
-  if(kind==="res"){const c=cwCards(cwRes);body=c.length?c.map(cwCard).join(""):empty}
-  else{const c=cwCards(cwFix);body=cwFx.weeks.length?fxView():c.length?c.map(cwCard).join(""):empty}
+  if(n){const wk=L.weeks[cwView.w];
+    body=`<div class="cwtabs">${L.weeks.map((x,i)=>`<button class="tab ${i===cwView.w?"on":""}" data-vw="${kind}:${i}">Week ${i+1}</button>`).join("")}</div><div class="vwk">${esc(wk.title||"Week")}</div>${(wk.matches||[]).map(kind==="res"?rsMatchView:fxMatchView).join("")||`<div class="empty">No matches yet.</div>`}`;
+  }else{const c=cwCards(kind==="res"?cwRes:cwFix);body=c.length?c.map(cwCard).join(""):`<div class="empty">Nothing posted yet.</div>`}
   openModal(`<div class="cwh"><h2>${kind==="res"?"Clan wars · Results":"Clan wars · Fixtures"}</h2><button class="ghost" data-cwx="1">Close</button></div><div class="cwbody">${body}</div>${can("clans")?`<div class="acts" style="margin-top:14px"><button class="ghost" data-cwedit="1">Edit in panel</button></div>`:""}`);
+  $("#panel").style.width="min(760px,94vw)";$("#panel").style.maxWidth="760px";
 }
 function renderCwPanel(){
   const box=$("#cwbox");if(!box)return;
   const ae=document.activeElement;if(ae&&box.contains(ae)&&/^(INPUT|TEXTAREA|SELECT)$/.test(ae.tagName))return;
   if(!luLoaded)luLoad();
   if(!fxd)fxd=JSON.parse(JSON.stringify(cwFx));
-  if(!cwDraft)cwDraft={res:cwRes};
+  if(!rsd)rsd=JSON.parse(JSON.stringify(cwRs));
+  const k=cwTab,L=k==="fix"?fxd:rsd;
+  if(selW[k]>=L.weeks.length)selW[k]=Math.max(0,L.weeks.length-1);
+  const wi=selW[k],wk=L.weeks[wi];
   const ord=clans.slice().sort(byName);
   const copt=sel=>`<option value="">— Pick a clan —</option>`+ord.map(c=>`<option value="${esc(c.id)}" ${c.id===sel?"selected":""}>[${esc(c.tag)}] ${esc(c.name)}</option>`).join("");
-  const sideEd=(wi,mi,k)=>{
-    const m=fxd.weeks[wi].matches[mi],cid=k==="A"?m.a:m.b,c=clanById(cid),P=wi+":"+mi;
+  const sideEd=(m,P,sd)=>{
+    const cid=sd==="A"?m.a:m.b,c=clanById(cid);
     if(!c)return `<div class="fxs"><div class="sub">Pick the clan first.</div></div>`;
-    const mem=clanMembers(c).sort(byName),taken=[...(m["main"+k]||[]),...(m["sub"+k]||[])],free=mem.filter(p=>!taken.includes(p.id));
-    const list=(t,label)=>{const key=t+k,arr=m[key]||[];
+    const mem=clanMembers(c).sort(byName),taken=[...(m["main"+sd]||[]),...(m["sub"+sd]||[])],free=mem.filter(p=>!taken.includes(p.id));
+    const list=(t,label)=>{const key=t+sd,arr=m[key]||[];
       return `<div class="sl" style="margin-top:12px">${label} · ${arr.length}</div><div class="rchips" style="margin-top:6px">${arr.map(id=>`<span class="bdg">${esc(pName(id))}<button type="button" class="bdx" data-act="rm" data-p="${P}:${key}:${esc(id)}">×</button></span>`).join("")||`<span class="sub">None</span>`}</div>
       <div class="cform" style="grid-template-columns:1fr auto;align-items:end;margin-top:8px"><select data-sel="${P}:${key}"><option value="">— Add player —</option>${free.map(p=>`<option value="${esc(p.id)}">${esc(p.name)}</option>`).join("")}</select><button class="ghost" data-act="add" data-p="${P}:${key}">Add</button></div>`};
-    return `<div class="fxs"><div class="nm">${clTag(cid)}${esc(c.name)}</div><button class="ghost" data-act="use" data-p="${P}:${k}">Use clan’s saved line-up</button>${list("main","Main line-up")}${list("sub","Sub line-up")}</div>`};
-  const mcard=(wi,mi)=>{const m=fxd.weeks[wi].matches[mi],P=wi+":"+mi;
-    return `<div class="fxcard"><div class="fxhead"><span class="fxn">${String(mi+1).padStart(2,"0")}</span><select data-fxc="${P}:a">${copt(m.a)}</select><i>vs</i><select data-fxc="${P}:b">${copt(m.b)}</select><input type="datetime-local" data-at="${P}" value="${esc(toLocalInput(m.at))}" title="Match time (your local time)"><button class="ghost danger" data-act="delm" data-p="${P}">Delete</button></div><div class="lug">${sideEd(wi,mi,"A")}${sideEd(wi,mi,"B")}</div></div>`};
-  const wblock=(w,wi)=>`<div class="rbox"><div class="fxwk"><input data-wt="${wi}" maxlength="60" value="${esc(w.title)}" autocomplete="off"><button class="ghost danger" data-act="delw" data-p="${wi}">Delete week</button></div>${w.matches.map((_,mi)=>mcard(wi,mi)).join("")||`<div class="sub">No matches yet.</div>`}<div class="acts"><button class="solid" data-act="addm" data-p="${wi}">+ Add match</button></div></div>`;
-  box.innerHTML=`<div class="rbox"><div class="sl">Clan wars · Fixtures</div><div class="sub" style="margin-top:8px">Build each week: add matches, choose the two clans, set the time and pick each side’s main and sub line-up from its members. Times show in each visitor’s own time zone.</div>
-    <div class="acts" style="margin-top:14px"><button class="solid" data-act="addw">+ Add week</button><button class="solid" data-act="save">Save fixtures</button></div>
-    <div class="${cwBad?"err":"sub"}" style="margin-top:10px">${esc(cwMsg)}</div></div>
-    ${fxd.weeks.map(wblock).join("")||`<div class="empty">No weeks yet — click “+ Add week”.</div>`}
-    <div class="rbox"><div class="sl">Clan wars · Results</div>
-    <textarea class="cwt" id="cw_res" placeholder="CW — CLAN A VS CLAN B&#10;CLAN A 1 - 0 CLAN B&#10;---&#10;ROUND 1&#10;player -> player">${esc(cwDraft.res)}</textarea>
-    <div class="acts"><button class="solid" data-cwsave="1">Save results</button></div>
-    <div class="sub" style="margin-top:10px">Put <b>---</b> on its own line to start a new card; the first line of a card is its title.</div></div>`;
+    return `<div class="fxs"><div class="vss">${cav(c)}<div class="vsn">${esc(c.name)}</div></div><button class="ghost" data-act="use" data-p="${P}:${sd}">Use clan’s saved line-up</button>${list("main","Main line-up")}${list("sub","Sub line-up")}</div>`};
+  const fcard=(mi)=>{const m=wk.matches[mi],P=wi+":"+mi;
+    return `<div class="fxcard"><div class="fxhead"><span class="fxn">${String(mi+1).padStart(2,"0")}</span><select data-fxc="${P}:a">${copt(m.a)}</select><i>vs</i><select data-fxc="${P}:b">${copt(m.b)}</select><input type="datetime-local" data-at="${P}" value="${esc(toLocalInput(m.at))}" title="Match time (your local time)"><button class="ghost danger" data-act="delm" data-p="${P}">Delete</button></div><div class="lug">${sideEd(m,P,"A")}${sideEd(m,P,"B")}</div></div>`};
+  const rcard=(mi)=>{const m=wk.matches[mi],P=wi+":"+mi,s=rScore(m);
+    const popt=(cid,sel)=>{const c=clanById(cid);return `<option value="">— Player —</option>`+(c?clanMembers(c).sort(byName):[]).map(p=>`<option value="${esc(p.id)}" ${p.id===sel?"selected":""}>${esc(p.name)}</option>`).join("")};
+    const rounds=(m.rounds||[]).map((r,ri)=>{const Q=P+":"+ri;
+      return `<div class="rdb"><div class="rdh"><b>Round ${ri+1}</b><span class="fxw">${rCount(r,"A")} – ${rCount(r,"B")}</span><button class="ghost danger xs" data-act="rdelr" data-p="${Q}">Remove round</button></div>`+
+      (r.fights||[]).map((f,fi)=>{const F=Q+":"+fi;return `<div class="rfrow"><select data-rf="${F}:pa">${popt(m.a,f.pa)}</select><button class="${f.w==="A"?"solid":"ghost"} xs" data-act="rw" data-p="${F}:A" title="Left player won">Won</button><i>vs</i><button class="${f.w==="B"?"solid":"ghost"} xs" data-act="rw" data-p="${F}:B" title="Right player won">Won</button><select data-rf="${F}:pb">${popt(m.b,f.pb)}</select><button class="ghost danger xs" data-act="rdelf" data-p="${F}">×</button></div>`}).join("")+
+      `<button class="ghost xs" data-act="raddf" data-p="${Q}" style="margin-top:6px">+ Add fight</button></div>`}).join("");
+    return `<div class="fxcard"><div class="fxhead"><span class="fxn">${String(mi+1).padStart(2,"0")}</span><select data-rc="${P}:a">${copt(m.a)}</select><span class="cwscr xs">${s.a} – ${s.b}</span><select data-rc="${P}:b">${copt(m.b)}</select><button class="ghost danger" data-act="rdelm" data-p="${P}">Delete</button></div>${rounds}<div class="acts" style="margin-top:12px"><button class="ghost" data-act="raddr" data-p="${P}">+ Add round</button></div></div>`};
+  const imp=k==="res"&&cwFx.weeks.length?`<div class="cform" style="grid-template-columns:1fr auto;align-items:end;margin-bottom:14px"><div><label>Start from a fixtures week</label><select data-sel="imp">${cwFx.weeks.map((w,i)=>`<option value="${i}">${esc(w.title||"Week "+(i+1))}</option>`).join("")}</select></div><button class="ghost" data-act="rimp" data-p="${wi}">Import matchups</button></div>`:"";
+  const weekBody=wk?`<div class="rbox"><div class="fxwk"><input data-wt="${wi}" maxlength="60" value="${esc(wk.title)}" autocomplete="off"><button class="ghost danger" data-act="delw" data-p="${wi}">Delete week</button></div>${imp}${wk.matches.map((_,mi)=>k==="fix"?fcard(mi):rcard(mi)).join("")||`<div class="sub">No matches yet.</div>`}<div class="acts"><button class="solid" data-act="${k==="fix"?"addm":"raddm"}" data-p="${wi}">+ Add match</button></div></div>`:`<div class="empty">No weeks yet — click “+ Week”.</div>`;
+  box.innerHTML=`<div class="rbox cwtop"><div class="cwtabs"><button class="tab ${k==="fix"?"on":""}" data-act="tab" data-p="fix">Fixtures</button><button class="tab ${k==="res"?"on":""}" data-act="tab" data-p="res">Results</button><span style="flex:1"></span><button class="solid" data-act="save">Save ${k==="fix"?"fixtures":"results"}</button></div>
+    <div class="cwtabs" style="margin:0">${L.weeks.map((w,i)=>`<button class="tab ${i===wi?"on":""}" data-act="selw" data-p="${i}">Week ${i+1}</button>`).join("")}<button class="ghost" data-act="addw">+ Week</button></div>
+    <div class="${cwBad?"err":"sub"}" style="margin-top:10px">${esc(cwMsg||(k==="fix"?"Pick clans, set the time and choose each side’s main and sub line-up. Times show in each visitor’s own time zone.":"Add rounds and fights; tick “Won” on the winner. Scores are worked out for you."))}</div></div>${weekBody}`;
 }
-async function cwSave(){
-  try{await scSet("cw_results",cwDraft.res);cwRes=cwDraft.res;cwMsg="Results saved.";cwBad=false}
-  catch(e){cwMsg="Couldn’t save: "+(e.message||"permission denied")+" (only hosts can write site content)";cwBad=true}
-  renderCwPanel();
+async function cwSaveKey(key,obj,okMsg){
+  try{await scSet(key,JSON.stringify(obj));cwMsg=okMsg;cwBad=false;return true}
+  catch(e){cwMsg="Couldn’t save: "+(e.message||"permission denied")+" (only hosts can write site content)";cwBad=true;return false}
 }
-async function fxSave(){
-  try{await scSet("cw_fixtures2",JSON.stringify(fxd));cwFx=JSON.parse(JSON.stringify(fxd));cwMsg="Fixtures saved.";cwBad=false}
-  catch(e){cwMsg="Couldn’t save: "+(e.message||"permission denied")+" (only hosts can write site content)";cwBad=true}
-  renderCwPanel();
-}
+async function fxSave(){if(await cwSaveKey("cw_fixtures2",fxd,"Fixtures saved."))cwFx=JSON.parse(JSON.stringify(fxd));renderCwPanel()}
+async function rsSave(){if(await cwSaveKey("cw_results2",rsd,"Results saved."))cwRs=JSON.parse(JSON.stringify(rsd));renderCwPanel()}
 async function luLoad(){
   luLoaded=true;if(!sb)return;
   const r=await sb.from("clan_lineups").select("*");
@@ -2087,11 +2173,10 @@ function luHtml(c,m){
   return `<div class="lug">${col("main","Main line-up")}${col("sub","Sub line-up")}</div>${luMsg?`<div class="err">${esc(luMsg)}</div>`:""}`;
 }
 document.addEventListener("click",e=>{
-  const t=e.target.closest&&e.target.closest("[data-cw],[data-cwx],[data-cwedit],[data-cwsave],[data-luadd],[data-luup],[data-ludn],[data-lurm]");if(!t)return;
+  const t=e.target.closest&&e.target.closest("[data-cw],[data-cwx],[data-cwedit],[data-luadd],[data-luup],[data-ludn],[data-lurm]");if(!t)return;
   if(t.dataset.cw)return cwOpen(t.dataset.cw);
   if("cwx" in t.dataset)return closeModal();
-  if("cwedit" in t.dataset){closeModal();hostTab="cw";cwDraft=null;fxd=null;return go("host")}
-  if("cwsave" in t.dataset)return cwSave();
+  if("cwedit" in t.dataset){closeModal();hostTab="cw";cwTab=cwView.k;fxd=null;rsd=null;return go("host")}
   const c=clanById(openClanId);if(!c||!canDecide(c)||!sb)return;
   const l=luGet(c),[k,x]=String((t.dataset.luadd||t.dataset.luup||t.dataset.ludn||t.dataset.lurm)).split(":");
   if(t.dataset.luadd){const s=document.querySelector(`[data-lusel="${k}"]`),id=s&&s.value;if(!id||l.main.includes(id)||l.sub.includes(id))return;l[k].push(id)}
@@ -2099,30 +2184,48 @@ document.addEventListener("click",e=>{
   else{const i=+x,j=t.dataset.luup?i-1:i+1;if(j<0||j>=l[k].length)return;[l[k][i],l[k][j]]=[l[k][j],l[k][i]]}
   luSave(c,l);
 });
-document.addEventListener("input",e=>{const t=e.target;if(t&&cwDraft){if(t.id==="cw_res")cwDraft.res=t.value;else if(t.id==="cw_fix")cwDraft.fix=t.value}});
 document.addEventListener("click",e=>{
-  const b=e.target.closest&&e.target.closest("[data-act]");if(!b||!fxd)return;
-  const act=b.dataset.act,P=(b.dataset.p||"").split(":"),wi=+P[0],mi=+P[1],wk=fxd.weeks[wi],m=wk&&wk.matches[mi];
-  if(act==="save")return fxSave();
-  if(act==="addw")fxd.weeks.push({id:uid8(),title:"WEEK "+(fxd.weeks.length+1)+" — CLAN WAR MATCHUPS",matches:[]});
-  else if(act==="delw"){if(!wk||!confirm("Delete this week and all its matches?"))return;fxd.weeks.splice(wi,1)}
+  const v=e.target.closest&&e.target.closest("[data-vw]");
+  if(v){const [kk,ii]=v.dataset.vw.split(":");return cwOpen(kk,+ii)}
+  const b=e.target.closest&&e.target.closest("[data-act]");if(!b||!fxd||!rsd)return;
+  const act=b.dataset.act,P=(b.dataset.p||"").split(":"),k=cwTab,L=k==="fix"?fxd:rsd;
+  if(act==="tab"){cwTab=P[0];return renderCwPanel()}
+  if(act==="selw"){selW[k]=+P[0];return renderCwPanel()}
+  if(act==="save")return k==="fix"?fxSave():rsSave();
+  if(act==="addw"){L.weeks.push({id:uid8(),title:"WEEK "+(L.weeks.length+1)+(k==="fix"?" — CLAN WAR MATCHUPS":" — CLAN WAR RESULTS"),matches:[]});selW[k]=L.weeks.length-1;return renderCwPanel()}
+  const wi=+P[0],mi=+P[1],wk=L.weeks[wi],m=wk&&wk.matches[mi];
+  if(act==="delw"){if(!wk||!confirm("Delete this week and everything in it?"))return;L.weeks.splice(wi,1)}
   else if(act==="addm"){if(!wk)return;wk.matches.push({id:uid8(),a:"",b:"",at:"",mainA:[],subA:[],mainB:[],subB:[]})}
-  else if(act==="delm"){if(!m||!confirm("Delete this match?"))return;wk.matches.splice(mi,1)}
-  else if(act==="add"&&m){const key=P[2],side=key.slice(-1),sel=document.querySelector(`[data-sel="${wi}:${mi}:${key}"]`),id=sel&&sel.value;if(!id||(m["main"+side]||[]).includes(id)||(m["sub"+side]||[]).includes(id))return;(m[key]=m[key]||[]).push(id)}
+  else if(act==="raddm"){if(!wk)return;wk.matches.push({id:uid8(),a:"",b:"",rounds:[]})}
+  else if(act==="delm"||act==="rdelm"){if(!m||!confirm("Delete this match?"))return;wk.matches.splice(mi,1)}
+  else if(act==="add"&&m){const key=P[2],sd=key.slice(-1),sel=document.querySelector(`[data-sel="${wi}:${mi}:${key}"]`),id=sel&&sel.value;if(!id||(m["main"+sd]||[]).includes(id)||(m["sub"+sd]||[]).includes(id))return;(m[key]=m[key]||[]).push(id)}
   else if(act==="rm"&&m){m[P[2]]=(m[P[2]]||[]).filter(i=>i!==P[3])}
-  else if(act==="use"&&m){const side=P[2],c=clanById(side==="A"?m.a:m.b);if(!c)return;const l=luGet(c);m["main"+side]=l.main.slice();m["sub"+side]=l.sub.slice()}
+  else if(act==="use"&&m){const sd=P[2],c=clanById(sd==="A"?m.a:m.b);if(!c)return;const l=luGet(c);m["main"+sd]=l.main.slice();m["sub"+sd]=l.sub.slice()}
+  else if(act==="rimp"&&wk){const sel=document.querySelector('[data-sel="imp"]'),src=sel&&cwFx.weeks[+sel.value];if(!src)return;(src.matches||[]).forEach(x=>{if(!wk.matches.some(y=>y.a===x.a&&y.b===x.b))wk.matches.push({id:uid8(),a:x.a,b:x.b,rounds:[]})})}
+  else if(act==="raddr"&&m){(m.rounds=m.rounds||[]).push({id:uid8(),fights:[]})}
+  else if(act==="rdelr"&&m){m.rounds.splice(+P[2],1)}
+  else if(act==="raddf"&&m){m.rounds[+P[2]].fights.push({id:uid8(),pa:"",pb:"",w:""})}
+  else if(act==="rdelf"&&m){m.rounds[+P[2]].fights.splice(+P[3],1)}
+  else if(act==="rw"&&m){const f=m.rounds[+P[2]].fights[+P[3]];f.w=f.w===P[4]?"":P[4]}
   else return;
   renderCwPanel();
 });
 document.addEventListener("change",e=>{
-  const t=e.target;if(!fxd||!t||!t.dataset||!t.dataset.fxc)return;
-  const [wi,mi,s]=t.dataset.fxc.split(":"),m=fxd.weeks[+wi]&&fxd.weeks[+wi].matches[+mi];if(!m)return;
-  m[s]=t.value;if(s==="a"){m.mainA=[];m.subA=[]}else{m.mainB=[];m.subB=[]}
-  t.blur();renderCwPanel();
+  const t=e.target;if(!fxd||!rsd||!t||!t.dataset)return;
+  if(t.dataset.fxc||t.dataset.rc){
+    const [wi,mi,s]=(t.dataset.fxc||t.dataset.rc).split(":"),L=t.dataset.fxc?fxd:rsd,m=L.weeks[+wi]&&L.weeks[+wi].matches[+mi];if(!m)return;
+    m[s]=t.value;
+    if(t.dataset.fxc){if(s==="a"){m.mainA=[];m.subA=[]}else{m.mainB=[];m.subB=[]}}
+    else(m.rounds||[]).forEach(r=>(r.fights||[]).forEach(f=>{if(s==="a")f.pa="";else f.pb=""}));
+    t.blur();renderCwPanel();
+  }else if(t.dataset.rf){
+    const [wi,mi,ri,fi,key]=t.dataset.rf.split(":"),m=rsd.weeks[+wi]&&rsd.weeks[+wi].matches[+mi],f=m&&m.rounds[+ri]&&m.rounds[+ri].fights[+fi];
+    if(f)f[key]=t.value;
+  }
 });
 document.addEventListener("input",e=>{
-  const t=e.target;if(!fxd||!t||!t.dataset)return;
-  if(t.dataset.wt!==undefined&&fxd.weeks[+t.dataset.wt])fxd.weeks[+t.dataset.wt].title=t.value;
+  const t=e.target;if(!fxd||!rsd||!t||!t.dataset)return;
+  if(t.dataset.wt!==undefined){const w=(cwTab==="fix"?fxd:rsd).weeks[+t.dataset.wt];if(w)w.title=t.value}
   else if(t.dataset.at){const [wi,mi]=t.dataset.at.split(":"),m=fxd.weeks[+wi]&&fxd.weeks[+wi].matches[+mi],d=new Date(t.value);if(m)m.at=t.value&&!isNaN(d)?d.toISOString():""}
 });
 function openClan(id){
@@ -2588,10 +2691,10 @@ document.addEventListener("click",async e=>{
   const pgb=t.closest("[data-purge]");if(pgb)return purgeLog(pgb.dataset.purge);
   const fa=t.closest("[data-fa]");if(fa)return fightAct(fa.dataset.fa,fa.dataset.id);
   const rx=t.closest("[data-rbx]");if(rx){const f=$("#f_rb");if(f)f.value=rx.dataset.rbx;return}
-  if(t.closest("#lnkDisc")){try{sessionStorage.setItem("jj_link","1")}catch(_){}return sb.auth.signInWithOAuth({provider:"discord",options:{scopes:"identify email connections",redirectTo:location.origin+location.pathname}})}
+  if(t.closest("#lnkDisc")){try{sessionStorage.setItem("jj_link","1")}catch(_){}return jjOauth({provider:"discord",options:{scopes:"identify email connections",redirectTo:location.origin+"/"}})}
   if(t.closest("#lbEdit")){lbEdit=true;orderDraft=null;ordMsg="";return render()}
   const gb=t.closest("[data-go]");if(gb)return go(gb.dataset.go);
-  const ht=t.closest("[data-ht]");if(ht){hostTab=ht.dataset.ht;if(hostTab==="fights")loadFights();if(hostTab==="track")loadTrack();if(hostTab==="over"||hostTab==="logs"||hostTab==="place"||hostTab==="snipe"||hostTab==="tools")loadAudit();return render()}
+  const ht=t.closest("[data-ht]");if(ht){hostTab=ht.dataset.ht;routeSync();if(hostTab==="fights")loadFights();if(hostTab==="track")loadTrack();if(hostTab==="over"||hostTab==="logs"||hostTab==="place"||hostTab==="snipe"||hostTab==="tools")loadAudit();return render()}
   if(t.closest("#avpick"))return $("#avfile").click();
   if(t.closest("#avreset"))return resetAvatar();
   if(t.closest("#exP"))return exportPlayers();
@@ -2645,7 +2748,7 @@ document.addEventListener("click",async e=>{
   if(bb){const p=profiles.find(p=>p.id===bb.dataset.ban);if(!p||!can("ban"))return;let r="";if(!p.banned){r=prompt("Ban reason (optional)");if(r===null)return}
     const x=await sb.rpc(isOwner?"admin_ban":"role_ban",{target:p.id,bn:!p.banned,br:(r||"").slice(0,80)});if(x.error)alert(x.error.message);else{logEvent(p.banned?"unbanned":"banned","general",p.id,p.name,(r||"").slice(0,80));loadProfiles()}return}
   if(t.id==="modal"||t.id==="x")return tryClose();
-  if(t.closest("#login")&&sb)return sb.auth.signInWithOAuth({provider:"discord",options:{redirectTo:location.origin+location.pathname}});
+  if(t.closest("#login")&&sb)return jjOauth({provider:"discord",options:{redirectTo:location.origin+"/"}});
   if(t.closest("#logout")){linkedRoblox=null;lnkErr="";await sb.auth.signOut();return}
   if(t.closest("#meBtn")){ranked();const p=profiles.find(p=>p.id===uid);return p?openProfile(p.id):onboard()}
   if(t.id==="skip"){skipped=true;return closeModal()}
