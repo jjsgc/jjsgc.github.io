@@ -17,7 +17,7 @@
 <meta property="og:image" content="https://jjsgc.github.io/og-image.png">
 <meta property="og:image:type" content="image/png">
 <meta property="og:image:width" content="1200">
-<meta property="og:image:height" content="400">
+<meta property="og:image:height" content="630">
 <meta property="og:image:alt" content="JJSGC Competitive">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="JJSGC · Competitive">
@@ -514,29 +514,29 @@ button.btier:hover{background:none;color:var(--fg);border-color:#555}
 /* ---- panel categories ---- */
 .tg{margin-bottom:12px}.tgl{font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--dim);margin:0 0 4px 2px}.tg .tabs{margin-bottom:0;flex-wrap:wrap}
 /* ---- host check + snipe panel ---- */
-#hterm{position:fixed;top:14px;left:14px;z-index:90;width:min(400px,calc(100vw - 28px));background:#07040d;border:1px solid #3a2a63;border-radius:10px;font:12px/1.55 ui-monospace,Menlo,Consolas,monospace;color:#cbbdf5;overflow:hidden;animation:rise .35s both}
-#htbar{display:flex;justify-content:space-between;align-items:center;width:100%;background:#0e0818;border:0;border-bottom:1px solid transparent;border-radius:0;color:#b9a8ff;font:700 11px ui-monospace,Menlo,Consolas,monospace;letter-spacing:.12em;padding:9px 12px;cursor:pointer;text-transform:none}
-#htbar:hover{background:#150d26;color:#ddd3ff}#htbar i{font-style:normal;color:#7d6ba8;letter-spacing:.06em}
-#hterm.open #htbar{border-bottom-color:#3a2a63}
+#hterm{position:fixed;top:14px;left:14px;z-index:90;width:min(400px,calc(100vw - 28px));background:#000;border:1px solid #2b2b2b;border-radius:10px;font:12px/1.55 ui-monospace,Menlo,Consolas,monospace;color:#d4d4d4;overflow:hidden;animation:rise .35s both}
+#htbar{display:flex;justify-content:space-between;align-items:center;width:100%;background:#000;border:0;border-bottom:1px solid transparent;border-radius:0;color:#fff;font:700 11px ui-monospace,Menlo,Consolas,monospace;letter-spacing:.12em;padding:9px 12px;cursor:pointer;text-transform:none}
+#htbar:hover{background:#111;color:#fff}#htbar i{font-style:normal;color:#808080;letter-spacing:.06em}
+#hterm.open #htbar{border-bottom-color:#2b2b2b}
 #htout{max-height:240px;overflow-y:auto;padding:10px 12px;white-space:pre-wrap;word-break:break-word}
-#htout .d{color:#7d6ba8}#htout .ok{color:#b9a8ff}#htout .no{color:#ff8a8a}#htout .wn{color:#e8c56a}#htout .c{color:#fff}
-.htin{display:flex;gap:8px;align-items:center;border-top:1px solid #241640;padding:8px 12px}.htin span{color:#b9a8ff}
-#htcmd{flex:1;background:transparent;border:0;outline:0;color:#efe9ff;caret-color:#b9a8ff;font:12px ui-monospace,Menlo,Consolas,monospace;padding:0;min-width:0}
-#htcmd::placeholder{color:#55447c}#htcmd:disabled{opacity:.4}
+#htout .d{color:#808080}#htout .ok{color:#fff}#htout .no{color:#ff8a8a}#htout .wn{color:#e8c56a}#htout .c{color:#fff}
+.htin{display:flex;gap:8px;align-items:center;border-top:1px solid #1c1c1c;padding:8px 12px}.htin span{color:#fff}
+#htcmd{flex:1;background:transparent;border:0;outline:0;color:#fff;caret-color:#fff;font:12px ui-monospace,Menlo,Consolas,monospace;padding:0;min-width:0}
+#htcmd::placeholder{color:#555}#htcmd:disabled{opacity:.4}
 .snt{display:inline-block;font-size:10px;letter-spacing:.08em;text-transform:uppercase;padding:2px 7px;border-radius:999px;border:1px solid #444;color:#cfcfd6;margin-left:6px;vertical-align:middle}
 .snt.r{color:#ff8a8a;border-color:#7a2f2f}.snt.y{color:#e8c56a;border-color:#6b5a22}
 .lg.sn-r{border-left-color:#e5484d}.lg.sn-y{border-left-color:#d6a93a}
 .sn-act{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}.sn-act button{padding:5px 10px;font-size:11px}
 .snc{padding:7px 13px;font-size:12px}.snc.on{background:#fff;color:#000}.snc small{margin-left:6px;opacity:.6}
 /* snipe panel: purple theme */
-.tab[data-ht="snipe"]{color:#b9a8ff}.tab[data-ht="snipe"].on{color:#e3dbff;border-color:#b9a8ff}
-#hp_snipe .rbox{border-color:#32245a;background:linear-gradient(180deg,rgba(150,120,255,.07),transparent),var(--panel)}
-#hp_snipe .sl{color:#b9a8ff}#hp_snipe .tile b{color:#e3dbff}#hp_snipe .tile{border-color:#32245a}
-#hp_snipe .lg{border-color:#2a1f4a;border-left-color:#6b55c7}
+.tab[data-ht="snipe"]{color:#fff}.tab[data-ht="snipe"].on{color:#fff;border-color:#fff}
+#hp_snipe .rbox{border-color:#2b2b2b;background:linear-gradient(180deg,rgba(255,255,255,.04),transparent),var(--panel)}
+#hp_snipe .sl{color:#fff}#hp_snipe .tile b{color:#fff}#hp_snipe .tile{border-color:#2b2b2b}
+#hp_snipe .lg{border-color:#1c1c1c;border-left-color:#777}
 #hp_snipe .lg.sn-r{border-left-color:#e5484d}#hp_snipe .lg.sn-y{border-left-color:#d6a93a}
-#hp_snipe .snt{border-color:#4b3a85;color:#cbbdf5}#hp_snipe .snt.r{color:#ff8a8a;border-color:#7a2f2f}#hp_snipe .snt.y{color:#e8c56a;border-color:#6b5a22}
-#hp_snipe .snc{border-color:#3a2a63}#hp_snipe .snc.on{background:#b9a8ff;color:#12081f;border-color:#b9a8ff}
-#hp_snipe input:focus{border-color:#8b74e6}#hp_snipe .solid{background:#b9a8ff;color:#12081f;border-color:#b9a8ff}
+#hp_snipe .snt{border-color:#444;color:#d4d4d4}#hp_snipe .snt.r{color:#ff8a8a;border-color:#7a2f2f}#hp_snipe .snt.y{color:#e8c56a;border-color:#6b5a22}
+#hp_snipe .snc{border-color:#2b2b2b}#hp_snipe .snc.on{background:#fff;color:#000;border-color:#fff}
+#hp_snipe input:focus{border-color:#999}#hp_snipe .solid{background:#fff;color:#000;border-color:#fff}
 /* notification bell */
 #nwrap{position:relative}
 button.bell{position:relative;display:grid;place-items:center;width:44px;height:44px;padding:0;border-radius:10px;border:1px solid #555;line-height:0}
@@ -591,22 +591,22 @@ details.fxm summary{display:flex;align-items:center;gap:12px;cursor:pointer;list
 .vwk{font-size:15px;font-weight:800;letter-spacing:.06em;margin:2px 2px 14px;text-transform:uppercase}
 .vsw{margin:0 0 14px}
 .vsc{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:14px;padding:16px 18px;background:linear-gradient(180deg,rgba(255,255,255,.04),transparent),var(--row);border:1px solid var(--line);border-radius:14px}
-.vsc.wa{box-shadow:inset 3px 0 0 #6fd08c}.vsc.wb{box-shadow:inset -3px 0 0 #6fd08c}
+.vsc.wa{box-shadow:inset 3px 0 0 #fff}.vsc.wb{box-shadow:inset -3px 0 0 #fff}
 .vss{display:flex;align-items:center;gap:12px;min-width:0}.vss.r{flex-direction:row-reverse;text-align:right}
 .vsn{font-weight:700;font-size:14px;word-break:break-word}.vss small{font-size:12px}
 .vsm{display:flex;flex-direction:column;align-items:center;gap:5px;text-align:center}
 .vsm b{font-size:11px;letter-spacing:.22em;color:var(--dim)}.vsm span{font-size:11px;color:var(--dim);white-space:nowrap}
-.cwscr{font-size:28px;font-weight:800;letter-spacing:.05em;color:var(--dim)}.cwscr .cwwn{color:#6fd08c}.cwscr.xs{font-size:15px}
+.sc2{display:inline-flex;gap:12px;align-items:center}.cwscr{display:flex;gap:22px;align-items:center;justify-content:center;font-size:28px;font-weight:800;letter-spacing:.05em;color:var(--dim)}.cwscr .cwwn{color:#fff}.cwscr.xs{font-size:15px}
 .vdt{margin:6px 4px 0}.vdt summary{display:flex;gap:10px;align-items:center;cursor:pointer;list-style:none;font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--dim);padding:8px 2px}
 .vdt summary::-webkit-details-marker{display:none}.vdt summary::before{content:"▸";font-size:10px}.vdt[open] summary::before{content:"▾"}
 .vdt summary em{font-style:normal;color:var(--fg);font-weight:700;letter-spacing:.06em}
 .cwrf{display:flex;align-items:center;gap:10px;padding:7px 12px;margin:4px 0;background:var(--row);border:1px solid var(--line);border-radius:9px;font-size:13px}
-.cwrf .rwn{font-weight:700;color:#6fd08c}.cwrf .rln{color:var(--dim)}.cwrf i{font-style:normal;color:var(--dim)}
+.cwrf .rwn{font-weight:700;color:#fff}.cwrf .rln{color:var(--dim)}.cwrf i{font-style:normal;color:var(--dim)}
 .cwl .lb{display:inline-block;min-width:34px;font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--dim)}
 .rdb{margin:12px 0 0;padding:12px;background:rgba(255,255,255,.02);border:1px solid var(--line);border-radius:10px}
 .rdh{display:flex;align-items:center;gap:10px;margin-bottom:8px}.rdh b{font-size:12px;letter-spacing:.14em;text-transform:uppercase}.rdh .ghost{margin-left:auto}
 .rfrow{display:flex;align-items:center;gap:8px;margin:6px 0}.rfrow select{flex:1;min-width:0;margin:0;width:auto}.rfrow i{font-style:normal;color:var(--dim);font-size:11px}
-button.xs{padding:6px 10px;font-size:11px}
+button.xs{padding:6px 10px;font-size:11px}.cwscr.xs{gap:10px}
 </style>
 </head>
 <body>
@@ -2097,8 +2097,8 @@ function rsMatchView(m){
   const s=rScore(m),aw=s.a>s.b,bw=s.b>s.a,R=m.rounds||[];
   const rounds=R.map((r,i)=>{
     const rows=(r.fights||[]).filter(f=>f.w).map(f=>`<div class="cwrf"><span class="rwn">${esc(pName(f.w==="A"?f.pa:f.pb))}</span><i>→</i><span class="rln">${esc(pName(f.w==="A"?f.pb:f.pa))}</span></div>`).join("");
-    return `<details class="vdt" ${i===R.length-1?"open":""}><summary>Round ${i+1} <em>${rCount(r,"A")} – ${rCount(r,"B")}</em></summary>${rows||`<div class="sub" style="margin:4px 0 8px">No fights yet.</div>`}</details>`}).join("");
-  return `<div class="vsw"><div class="vsc ${aw?"wa":bw?"wb":""}">${clSide(m.a)}<div class="vsm"><div class="cwscr"><span class="${aw?"cwwn":""}">${s.a}</span> – <span class="${bw?"cwwn":""}">${s.b}</span></div><span>Fights ${s.fa} – ${s.fb}</span></div>${clSide(m.b,"r")}</div>${rounds}</div>`;
+    return `<details class="vdt" ${i===R.length-1?"open":""}><summary>Round ${i+1} <em class="sc2"><span>${rCount(r,"A")}</span><span>${rCount(r,"B")}</span></em></summary>${rows||`<div class="sub" style="margin:4px 0 8px">No fights yet.</div>`}</details>`}).join("");
+  return `<div class="vsw"><div class="vsc ${aw?"wa":bw?"wb":""}">${clSide(m.a)}<div class="vsm"><div class="cwscr"><span class="${aw?"cwwn":""}">${s.a}</span><span class="${bw?"cwwn":""}">${s.b}</span></div><span class="sc2">Fights <span>${s.fa}</span><span>${s.fb}</span></span></div>${clSide(m.b,"r")}</div>${rounds}</div>`;
 }
 function cwFutureWeek(){const now=Date.now(),i=cwFx.weeks.findIndex(w=>(w.matches||[]).some(m=>m.at&&Date.parse(m.at)>now));return i>=0?i:Math.max(0,cwFx.weeks.length-1)}
 function cwOpen(kind,w){
@@ -2135,10 +2135,10 @@ function renderCwPanel(){
   const rcard=(mi)=>{const m=wk.matches[mi],P=wi+":"+mi,s=rScore(m);
     const popt=(cid,sel)=>{const c=clanById(cid);return `<option value="">— Player —</option>`+(c?clanMembers(c).sort(byName):[]).map(p=>`<option value="${esc(p.id)}" ${p.id===sel?"selected":""}>${esc(p.name)}</option>`).join("")};
     const rounds=(m.rounds||[]).map((r,ri)=>{const Q=P+":"+ri;
-      return `<div class="rdb"><div class="rdh"><b>Round ${ri+1}</b><span class="fxw">${rCount(r,"A")} – ${rCount(r,"B")}</span><button class="ghost danger xs" data-act="rdelr" data-p="${Q}">Remove round</button></div>`+
+      return `<div class="rdb"><div class="rdh"><b>Round ${ri+1}</b><span class="fxw sc2"><span>${rCount(r,"A")}</span><span>${rCount(r,"B")}</span></span><button class="ghost danger xs" data-act="rdelr" data-p="${Q}">Remove round</button></div>`+
       (r.fights||[]).map((f,fi)=>{const F=Q+":"+fi;return `<div class="rfrow"><select data-rf="${F}:pa">${popt(m.a,f.pa)}</select><button class="${f.w==="A"?"solid":"ghost"} xs" data-act="rw" data-p="${F}:A" title="Left player won">Won</button><i>vs</i><button class="${f.w==="B"?"solid":"ghost"} xs" data-act="rw" data-p="${F}:B" title="Right player won">Won</button><select data-rf="${F}:pb">${popt(m.b,f.pb)}</select><button class="ghost danger xs" data-act="rdelf" data-p="${F}">×</button></div>`}).join("")+
       `<button class="ghost xs" data-act="raddf" data-p="${Q}" style="margin-top:6px">+ Add fight</button></div>`}).join("");
-    return `<div class="fxcard"><div class="fxhead"><span class="fxn">${String(mi+1).padStart(2,"0")}</span><select data-rc="${P}:a">${copt(m.a)}</select><span class="cwscr xs">${s.a} – ${s.b}</span><select data-rc="${P}:b">${copt(m.b)}</select><button class="ghost danger" data-act="rdelm" data-p="${P}">Delete</button></div>${rounds}<div class="acts" style="margin-top:12px"><button class="ghost" data-act="raddr" data-p="${P}">+ Add round</button></div></div>`};
+    return `<div class="fxcard"><div class="fxhead"><span class="fxn">${String(mi+1).padStart(2,"0")}</span><select data-rc="${P}:a">${copt(m.a)}</select><span class="cwscr xs"><span>${s.a}</span><span>${s.b}</span></span><select data-rc="${P}:b">${copt(m.b)}</select><button class="ghost danger" data-act="rdelm" data-p="${P}">Delete</button></div>${rounds}<div class="acts" style="margin-top:12px"><button class="ghost" data-act="raddr" data-p="${P}">+ Add round</button></div></div>`};
   const imp=k==="res"&&cwFx.weeks.length?`<div class="cform" style="grid-template-columns:1fr auto;align-items:end;margin-bottom:14px"><div><label>Start from a fixtures week</label><select data-sel="imp">${cwFx.weeks.map((w,i)=>`<option value="${i}">${esc(w.title||"Week "+(i+1))}</option>`).join("")}</select></div><button class="ghost" data-act="rimp" data-p="${wi}">Import matchups</button></div>`:"";
   const weekBody=wk?`<div class="rbox"><div class="fxwk"><input data-wt="${wi}" maxlength="60" value="${esc(wk.title)}" autocomplete="off"><button class="ghost danger" data-act="delw" data-p="${wi}">Delete week</button></div>${imp}${wk.matches.map((_,mi)=>k==="fix"?fcard(mi):rcard(mi)).join("")||`<div class="sub">No matches yet.</div>`}<div class="acts"><button class="solid" data-act="${k==="fix"?"addm":"raddm"}" data-p="${wi}">+ Add match</button></div></div>`:`<div class="empty">No weeks yet — click “+ Week”.</div>`;
   box.innerHTML=`<div class="rbox cwtop"><div class="cwtabs"><button class="tab ${k==="fix"?"on":""}" data-act="tab" data-p="fix">Fixtures</button><button class="tab ${k==="res"?"on":""}" data-act="tab" data-p="res">Results</button><span style="flex:1"></span><button class="solid" data-act="save">Save ${k==="fix"?"fixtures":"results"}</button></div>
@@ -2939,7 +2939,7 @@ async function hostCheck(){
     if(pass)isOwner=true;
   }catch(e){pass=false}
   const inp=$("#htcmd");
-  if(pass){snipeOk=true;hcOut("ACCESS GRANTED","ok");hcOut("type ?snipe to open the Snipe Panel · ?help for commands","d");hcSt("verified");if(inp){inp.disabled=false;inp.focus()}renderAuth();render()}
+  if(pass){snipeOk=true;hcOut("Running ?snipe; ?help · to run js.console ?console","d");hcSt("verified");if(inp){inp.disabled=false;inp.focus()}renderAuth();render()}
   else{snipeOk=false;hcOut("ACCESS DENIED · server did not confirm host","no");hcSt("denied");logEvent("host check failed","general",uid,(me&&me.name)||"","server did not confirm host")}
 }
 
