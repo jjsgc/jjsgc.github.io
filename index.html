@@ -733,7 +733,7 @@ button.xs{padding:6px 10px;font-size:11px}.cwscr.xs{gap:10px}
   <div id="hp_warn" hidden><div id="wbox"></div></div>
   <div id="hp_clans" hidden><div id="cbox"></div></div>
   <div id="hp_cw" hidden><div id="cwbox"></div></div>
-  <div id="hp_badges" hidden><div id="wbox"></div></div>
+  <div id="hp_badges" hidden><div id="bwbox"></div></div>
   <div id="hp_home" hidden><div id="hmbox"></div></div>
   <div id="hp_export" hidden>
     <div class="rbox"><div class="sl" style="margin-bottom:10px">Export</div>
@@ -2529,7 +2529,7 @@ function wtiers(){
     <div><label>Symbol</label><input data-wt="${i}:g" maxlength="4" value="${esc(t.g)}" placeholder="${esc(wk.ic||"🏅")}" autocomplete="off"></div></div>
    <div style="margin-top:8px"><label>Description for this tier</label><input data-wt="${i}:d" maxlength="60" value="${esc(t.d)}" placeholder="How to reach this tier" autocomplete="off"></div></div>`).join("")}
 function renderWorkshop(){
-  const box=$("#wbox");if(!box)return;const ae=document.activeElement;
+  const box=$("#bwbox");if(!box)return;const ae=document.activeElement;
   if(ae&&box.contains(ae)&&/^(INPUT|TEXTAREA|SELECT)$/.test(ae.tagName))return;
   if(!bgOk){box.innerHTML=`<div class="rbox"><div class="sl">Badge workshop</div><div class="sub" style="margin-top:8px">Badges aren’t set up yet. Run <b>badges_profiles.sql</b> in the Supabase SQL editor, then reload the page.</div></div>`;return}
   const pl=profiles.slice().sort(byName),cnt=id=>bawards.filter(a=>a.badge_id===id).length;
