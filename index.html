@@ -1577,16 +1577,14 @@ function cwhEmbeds(kind,wk,line){
         if(mn.length||sb2.length)e.fields.push({name:dTrunc(c?c.name:"TBD",200),value:"**Main:** "+cwhNames(mn)+"\n**Sub:** "+cwhNames(sb2),inline:true});
       });
       if(!e.fields.length)delete e.fields;
-      const th=cwhThumb(ca)||cwhThumb(cb);if(th)e.thumbnail={url:th};
       return cwhFin(e,line);
     }
     const s=rScore(m),win=s.a>s.b?ca:s.b>s.a?cb:null;
     const lines=(m.rounds||[]).map((r,i)=>{
-      const f=(r.fights||[]).filter(x=>x.w).map(x=>"> "+dEsc(pName(x.w==="A"?x.pa:x.pb))+" → "+dEsc(pName(x.w==="A"?x.pb:x.pa))).join("\n");
+      const f=(r.fights||[]).filter(x=>x.w).map(x=>"> **"+dEsc(pName(x.w==="A"?x.pa:x.pb))+"** → **"+dEsc(pName(x.w==="A"?x.pb:x.pa))+"**").join("\n");
       return "**Round "+(i+1)+"** · "+rCount(r,"A")+"–"+rCount(r,"B")+(f?"\n"+f:"");
     }).join("\n\n");
-    const e={title:dTrunc(cwhClan(m.a)+"  "+s.a+" – "+s.b+"  "+cwhClan(m.b),250),color:CWH_WHITE,description:dTrunc(lines||"No fights yet.",4000),footer:{text:"Fights "+s.fa+" – "+s.fb+(win?" · Winner: "+win.name:s.a===s.b&&(s.a||s.b)?" · Draw":"")}};
-    const th=cwhThumb(win)||cwhThumb(ca)||cwhThumb(cb);if(th)e.thumbnail={url:th};
+    const e={color:CWH_WHITE,description:dTrunc("**"+cwhClan(m.a)+"**  "+s.a+" – "+s.b+"  **"+cwhClan(m.b)+"**\n\n"+(lines||"No fights yet."),4000),footer:{text:"Fights "+s.fa+" – "+s.fb+(win?" · Winner: "+win.name:s.a===s.b&&(s.a||s.b)?" · Draw":"")}};
     return cwhFin(e,line);
   });
 }
@@ -1601,7 +1599,6 @@ function cwhRecords(){
   return rec;
 }
 const cwhPrev=()=>{try{return JSON.parse(localStorage.getItem(CWH_PREV)||"null")}catch(e){return null}};
-const CWH_MEDAL=["🥇","🥈","🥉","4️⃣","5️⃣","6️⃣","7️⃣","8️⃣","9️⃣","🔟"];
 function cwhTop(){return clans.filter(c=>c.place).sort((a,b)=>(a.place-b.place)||byName(a,b)).slice(0,10)}
 function cwhTopEmbeds(list,line){
   const rec=cwhRecords(),prev=cwhPrev();
@@ -1611,7 +1608,7 @@ function cwhTopEmbeds(list,line){
     const r=rec[c.id]||{w:0,l:0};
     let st="→ Stable";
     if(prev){const o=prev[c.id];if(o==null)st="🆕 New";else if(+c.place<o)st="▲ Up "+(o-c.place);else if(+c.place>o)st="▼ Down "+(c.place-o)}
-    const e={title:dTrunc(CWH_MEDAL[i]+" | "+dEsc(c.name),250),color:CWH_WHITE,description:dTrunc("**"+names+"**",4000),
+    const e={title:dTrunc((i+1)+" | "+dEsc(c.name),250),color:CWH_WHITE,description:dTrunc("**"+names+"**",4000),
       fields:[{name:"Record",value:"`W: "+r.w+" | L: "+r.l+"`",inline:true},{name:"Status",value:"`"+st+"`",inline:true}]};
     const th=cwhThumb(c);if(th)e.thumbnail={url:th};
     return cwhFin(e,line);
@@ -1636,14 +1633,14 @@ async function cwhPostEmbeds(u,embeds,head,uname){
 async function cwhPost(u,kind,wk){
   const gif=await embLineGet(),embeds=cwhEmbeds(kind,wk,!!gif);
   if(!embeds.length)return "Nothing to send.";
-  await cwhPostEmbeds(u,embeds,"**Clan wars · "+CWH_NAMES[kind]+" — "+dEsc(wk.title||"Week")+"**","Clan Wars");
+  await cwhPostEmbeds(u,embeds,"**Clan wars · "+CWH_NAMES[kind]+" — "+dEsc(wk.title||"Week")+"**","[Clan Wars]");
   return "";
 }
 async function cwhPostTop(u){
   const list=cwhTop();
   if(!list.length)return "No placed clans yet.";
   const gif=await embLineGet();
-  await cwhPostEmbeds(u,cwhTopEmbeds(list,!!gif),"","Clan Rankings");
+  await cwhPostEmbeds(u,cwhTopEmbeds(list,!!gif),"","[Clan Wars]");
   const m={};list.forEach(c=>m[c.id]=+c.place);
   try{localStorage.setItem(CWH_PREV,JSON.stringify(m))}catch(e){}
   return "";
