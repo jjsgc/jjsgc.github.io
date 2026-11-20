@@ -1919,9 +1919,9 @@ async function saveHome(reset){
 let logText="",logAt=null,logErr="",editingLog=false;
 async function loadLog(){
   if(!sb)return;
-  const {data,error}=await sb.from("site_content").select("key,body,updated_at").in("key",["cw_results","cw_results2","cw_fixtures","cw_fixtures2","changelog","announcement","site_lock","site_whitelist","home_content","eval_days","broadcasts","warnings"]);
-  if(error)logErr=error.message;else{logErr="";(data||[]).forEach(r=>{if(r.key==="changelog"){logText=r.body||"";logAt=r.updated_at}else if(r.key==="announcement"){annText=r.body||"";annAt=r.updated_at}else if(r.key==="eval_days"){let has=null;try{has=localStorage.getItem("jj_evdays")}catch(e){}if(has===null)evDays=r.body==="none"?0:(+r.body||30)}else if(r.key==="cw_results"){cwRes=r.body||""}else if(r.key==="cw_fixtures"){cwFix=r.body||""}else if(r.key==="cw_fixtures2"){cwFx=fxParse(r.body)}else if(r.key==="cw_results2"){cwRs=fxParse(r.body)}else if(r.key==="broadcasts"){try{bcList=JSON.parse(r.body||"[]");if(!Array.isArray(bcList))bcList=[]}catch(e){bcList=[]}}else if(r.key==="warnings"){try{warnMap=JSON.parse(r.body||"{}")||{}}catch(e){warnMap={}}}else if(r.key==="site_lock"){try{const o=JSON.parse(r.body||"{}");lockOn=!!o.on;lockMsg=String(o.msg||"")}catch(e){lockOn=false}}else if(r.key==="home_content"){try{homeSaved=JSON.parse(r.body||"{}")}catch(e){homeSaved={}}}else if(r.key==="site_whitelist"){try{const o=JSON.parse(r.body||"{}");wlOn=!!o.on;wlList=(Array.isArray(o.list)?o.list:[]).map(String)}catch(e){wlOn=false}}})}
-  renderHome();renderLog();try{bcSync();warnSync()}catch(e){console.warn(e)}if(pg==="host"&&hostTab==="warn")renderWarn();applyGate();if(pg==="host"&&hostTab==="home")renderHomeEditor();if(pg==="host"&&hostTab==="access"&&accDraft===null)renderAccess();
+  const {data,error}=await sb.from("site_content").select("key,body,updated_at").in("key",["cw_results","cw_results2","cw_fixtures","cw_fixtures2","changelog","announcement","site_lock","site_whitelist","home_content","eval_days","broadcasts","warnings","hostbg_off"]);
+  if(error)logErr=error.message;else{logErr="";(data||[]).forEach(r=>{if(r.key==="changelog"){logText=r.body||"";logAt=r.updated_at}else if(r.key==="announcement"){annText=r.body||"";annAt=r.updated_at}else if(r.key==="eval_days"){let has=null;try{has=localStorage.getItem("jj_evdays")}catch(e){}if(has===null)evDays=r.body==="none"?0:(+r.body||30)}else if(r.key==="cw_results"){cwRes=r.body||""}else if(r.key==="cw_fixtures"){cwFix=r.body||""}else if(r.key==="cw_fixtures2"){cwFx=fxParse(r.body)}else if(r.key==="cw_results2"){cwRs=fxParse(r.body)}else if(r.key==="broadcasts"){try{bcList=JSON.parse(r.body||"[]");if(!Array.isArray(bcList))bcList=[]}catch(e){bcList=[]}}else if(r.key==="hostbg_off"){hbgCloud=String(r.body||"")}else if(r.key==="warnings"){try{warnMap=JSON.parse(r.body||"{}")||{}}catch(e){warnMap={}}}else if(r.key==="site_lock"){try{const o=JSON.parse(r.body||"{}");lockOn=!!o.on;lockMsg=String(o.msg||"")}catch(e){lockOn=false}}else if(r.key==="home_content"){try{homeSaved=JSON.parse(r.body||"{}")}catch(e){homeSaved={}}}else if(r.key==="site_whitelist"){try{const o=JSON.parse(r.body||"{}");wlOn=!!o.on;wlList=(Array.isArray(o.list)?o.list:[]).map(String)}catch(e){wlOn=false}}})}
+  if(!error&&hbgCloud===null)hbgCloud="";renderHome();renderLog();try{hostBgSync()}catch(e){}try{bcSync();warnSync()}catch(e){console.warn(e)}if(pg==="host"&&hostTab==="warn")renderWarn();applyGate();if(pg==="host"&&hostTab==="home")renderHomeEditor();if(pg==="host"&&hostTab==="access"&&accDraft===null)renderAccess();
 }
 function renderLog(){
   annPop(false);
@@ -2448,7 +2448,7 @@ function renderProfilePage(){
     <div class="pf-info"><div class="pf-name">${nmx(p)}</div>
      <div class="pf-bio ${ex.bio?"":"dim"}">${ex.bio?esc(ex.bio):"No bio yet."}</div>
      <div class="pt" style="margin-top:8px">${rbA(p)} ↗ ${tags(p)?`<span style="margin-left:6px">${tags(p)}</span>`:""}</div></div>
-    <div class="pf-act">${self&&pexOk?`<button class="solid" data-pfcust="1">Customize</button>`:""}${canEdit?`<button data-pfedit="1">Edit profile</button>`:""}${mc?`<button class="ghost" data-clan="${esc(mc.id)}">View clan</button>`:""}${p.id===uid&&oc?`<button class="ghost" data-swap="1">Swap name tag</button>`:""}${String(p.discord||"")===HOSTBG_ID?`<button class="ghost" data-hbg="1">Video background: ${hbgOff()?"off":"on"}</button>`:""}</div></div></div>
+    <div class="pf-act">${self&&pexOk?`<button class="solid" data-pfcust="1">Customize</button>`:""}${canEdit?`<button data-pfedit="1">Edit profile</button>`:""}${mc?`<button class="ghost" data-clan="${esc(mc.id)}">View clan</button>`:""}${p.id===uid&&oc?`<button class="ghost" data-swap="1">Swap name tag</button>`:""}${String(p.discord||"")===HOSTBG_ID&&hbgMine()?`<button class="ghost" data-hbg="1">Video background: ${hbgOff()?"off":"on"}</button>`:""}</div></div></div>
   <div class="tiles pf-tiles"><div class="tile"><span>Grade</span><b class="sm">${on?esc(gl(p)):"—"}</b><em>${on?"Competitive":p.banned?"Banned":"Not competitive"}</em></div>
    <div class="tile"><span>Region</span><b>${p.region==="None"?"—":esc(p.region)}</b><em>${esc(REG[p.region]||"None")}</em></div>
    <div class="tile"><span>Rank</span><b>${on?"#"+p.rank:"—"}</b><em>${on?"Leaderboard":"Not placed"}</em></div>
@@ -2927,7 +2927,9 @@ function saveEv(){
   if(sb&&!demo&&can("changelog"))sb.from("site_content").upsert({key:"eval_days",body:evDays?String(evDays):"none",updated_at:new Date().toISOString()}).then(r=>{if(r.error)console.warn("eval_days:",r.error.message)});
 }
 /* -- host video background toggle (per viewer, remembered) -- */
-function hbgOff(){try{return localStorage.getItem("jj_hostbg_off")==="1"}catch(e){return false}}
+let hbgCloud=null;
+function hbgOff(){if(hbgCloud!==null)return hbgCloud==="1";try{return localStorage.getItem("jj_hostbg_off")==="1"}catch(e){return false}}
+const hbgMine=()=>String(myDiscord||((profiles.find(x=>x.id===uid)||{}).discord)||"")===HOSTBG_ID;
 /* -- broadcasts (host -> everyone) and warnings (host -> one player), stored in site_content -- */
 let bcList=[],warnMap={},warnErr="",bcErr="";
 const WSEV={notice:{l:"Notice",c:"#8f86d6",i:"i"},warning:{l:"Warning",c:"#f2b800",i:"!"},final:{l:"Final warning",c:"#ff5c5c",i:"!!"}};
@@ -3029,7 +3031,9 @@ async function sendWarn(){
 document.addEventListener("click",async e=>{const t=e.target;if(!t.closest)return;
   if(t.closest("#ann"))return annHide();
   if(t.closest("#annShow"))return annPop(true,(($("#annTa")||{}).value)||annText);
-  const hb=t.closest("[data-hbg]");if(hb){try{localStorage.setItem("jj_hostbg_off",hbgOff()?"0":"1")}catch(e){}hostBgSync();return renderProfilePage()}
+  const hb=t.closest("[data-hbg]");if(hb){if(!hbgMine())return;const nv=hbgOff()?"0":"1";
+    if(sb&&!demo){try{await scSet("hostbg_off",nv)}catch(e){alert("Couldn’t save: "+(e.message||"permission denied"));return}}
+    hbgCloud=nv;try{localStorage.setItem("jj_hostbg_off",nv)}catch(e){}hostBgSync();return renderProfilePage()}
   if(t.closest("#nbc"))return openBroadcast();
   if(t.closest("#bcSend"))return sendBroadcast();
   const wa=t.closest("#wack");if(wa){const ids=(wa.dataset.wids||"").split(",").filter(Boolean);let a=[];try{a=JSON.parse(localStorage.getItem("jj_warn_ack_"+uid)||"[]")}catch(e){}
