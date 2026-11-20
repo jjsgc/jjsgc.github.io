@@ -438,7 +438,7 @@ body.gated .wrap{visibility:hidden}
 #clan_box .cmrow{padding:14px 8px}
 #clan_box .cmrow .av{width:44px;height:44px}
 #clan_box h2{margin:16px 0 0}
-/* ---- S3 member badges (clan page only) ---- */
+/* ---- chips ---- */
 .cmrow .nm{white-space:normal;overflow:visible}
 .bdg{display:inline-flex;align-items:center;gap:6px;margin-left:10px;vertical-align:middle;font:800 10px var(--sans);letter-spacing:.35em;text-transform:uppercase;color:#cfcfd6}
 .bdg .bdx{padding:0 4px;border:0;background:none;color:var(--dim);font:700 13px var(--sans);letter-spacing:0;line-height:1;border-radius:4px}
@@ -486,30 +486,6 @@ header{justify-content:flex-start}
 .pf-h{margin:30px 0 12px;font:800 19px var(--sans)}
 .pbar{height:8px;border-radius:8px;background:#1a1a20;overflow:hidden}.pbar i{display:block;height:100%;background:linear-gradient(90deg,#777,#fff);border-radius:8px;transition:width .5s}
 .pf-tiles{grid-template-columns:repeat(auto-fit,minmax(150px,1fr));margin-top:14px}
-.bgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(118px,1fr));gap:10px}
-.bgc{background:var(--row);border:1px solid var(--line);border-radius:14px;padding:14px 8px 12px;text-align:center;transition:.15s}
-.bgc:hover{border-color:#555}
-.bic{width:54px;height:54px;margin:0 auto 8px;border-radius:50%;display:grid;place-items:center;font-size:26px;line-height:1;border:2px solid var(--bc,#888);background:color-mix(in srgb,var(--bc,#888) 16%,transparent)}
-.bgc b{display:block;font-size:12.5px}
-.bgc span{display:block;color:var(--dim);font-size:10.5px;margin-top:3px;line-height:1.35}
-.bgc em{display:block;margin-top:7px;font-style:normal;font-size:9px;letter-spacing:.22em;text-transform:uppercase;color:var(--bc,var(--dim))}
-.bgc.lock{opacity:.38;filter:grayscale(1)}.bgc.lock em{color:var(--dim)}
-/* tiered hex badges */
-.hex{display:block;margin:0 auto;flex:none;overflow:visible}.hex.lk{opacity:.38;filter:grayscale(.9)}
-@keyframes dpulse{0%,100%{filter:drop-shadow(0 0 3px rgba(var(--g1),.55)) drop-shadow(0 0 9px rgba(var(--g2),.35))}50%{filter:drop-shadow(0 0 7px rgba(var(--g1),.95)) drop-shadow(0 0 18px rgba(var(--g2),.65))}}
-@keyframes twk{0%,100%{opacity:0;transform:scale(.2) rotate(0deg)}50%{opacity:1;transform:scale(1) rotate(45deg)}}
-.hex.dia{--g1:200,244,255;--g2:70,150,255;animation:dpulse 2.4s ease-in-out infinite}
-@keyframes gpulse{0%,100%{filter:drop-shadow(0 0 4px rgba(255,236,150,.9)) drop-shadow(0 0 15px rgba(255,170,60,.65))}33%{filter:drop-shadow(0 0 6px rgba(255,150,220,.95)) drop-shadow(0 0 22px rgba(190,100,255,.7))}66%{filter:drop-shadow(0 0 6px rgba(140,230,255,.95)) drop-shadow(0 0 22px rgba(60,160,255,.7))}}
-.hex.god{animation:gpulse 3.6s linear infinite}
-.dsp{transform-box:fill-box;transform-origin:center;opacity:0;animation:twk 2.2s ease-in-out infinite}
-@media (prefers-reduced-motion:reduce){.hex.dia,.hex.god,.dsp{animation:none}}
-.bgrid{grid-template-columns:repeat(auto-fill,minmax(128px,1fr))}
-.bgc{cursor:pointer;padding:16px 8px 12px}.bgc:hover{border-color:#777;transform:translateY(-2px)}
-.bgc b{margin-top:9px}.bgc em{color:var(--dim)}
-.btiers{display:flex;gap:6px;justify-content:center;flex-wrap:wrap;margin-top:18px;padding-top:16px;border-top:1px solid var(--line)}
-.btier{display:flex;flex-direction:column;align-items:center;gap:6px;min-width:76px;padding:8px;border:1px solid transparent;border-radius:12px;background:none;color:var(--fg);font:600 11px var(--sans);text-transform:none;letter-spacing:0}
-button.btier:hover{background:none;color:var(--fg);border-color:#555}
-.btier.on{border-color:#7a6224;background:rgba(255,200,80,.08)}
 
 /* ---- panel categories ---- */
 .tg{margin-bottom:12px}.tgl{font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--dim);margin:0 0 4px 2px}.tg .tabs{margin-bottom:0;flex-wrap:wrap}
@@ -611,7 +587,7 @@ button.xs{padding:6px 10px;font-size:11px}.cwscr.xs{gap:10px}
 </head>
 <body>
 <div id="gate" hidden></div>
-<div id="boot"><div class="bootlogo">✦ JJSGC</div><div class="bootbar"><i></i></div></div>
+<div id="boot"><div class="bootlogo">JJSGC</div><div class="bootbar"><i></i></div></div>
 <div class="fog"></div><div class="stars"></div>
 <div class="wrap">
 <header>
@@ -733,7 +709,6 @@ button.xs{padding:6px 10px;font-size:11px}.cwscr.xs{gap:10px}
   <div id="hp_warn" hidden><div id="wbox"></div></div>
   <div id="hp_clans" hidden><div id="cbox"></div></div>
   <div id="hp_cw" hidden><div id="cwbox"></div></div>
-  <div id="hp_badges" hidden><div id="bwbox"></div></div>
   <div id="hp_home" hidden><div id="hmbox"></div></div>
   <div id="hp_export" hidden>
     <div class="rbox"><div class="sl" style="margin-bottom:10px">Export</div>
@@ -755,8 +730,8 @@ const GRADES={G1:"Grade 1",SG1:"Special Grade 1",SG:"Special Grade"},GKEYS=["G1"
 const SUBS=["Low","Mid","High"],SSUBS=["Weak","Stable","Strong"];
 const NONE="None";
 const score=p=>{const gi=GKEYS.indexOf(p.grade||"G1");if(gi<0)return -10;if(p.grade==="SG")return gi*9;const si=SUBS.indexOf(p.sub);if(si<0)return gi*9-1;const ss=SSUBS.indexOf(p.subsub);return gi*9+si*3+(ss<0?-.5:ss)};
-const PERMS={roblox:"Edit Roblox names",ban:"Ban / unban players",grades:"Edit grades & board",reorder:"Reorder leaderboard",changelog:"Edit change log",logs:"View activity log",placements:"View placement history",fights:"Edit fight notes & cooldowns",clans:"Manage clans",track:"View user tracking",notify:"Notify all players",warn:"Issue warnings"};
-const STAFFP=["roblox","ban","grades","reorder","logs","placements","fights","clans","track","notify","warn"];
+const PERMS={roblox:"Edit Roblox names",ban:"Ban / unban players",grades:"Edit grades & board",reorder:"Reorder leaderboard",changelog:"Edit change log",logs:"View activity log",placements:"View placement history",fights:"Edit fight notes & cooldowns",clans:"Manage clans",cw:"Clan war panel",track:"View user tracking",notify:"Notify all players",warn:"Issue warnings"};
+const STAFFP=["roblox","ban","grades","reorder","logs","placements","fights","clans","cw","track","notify","warn"];
 let roleDefs={},roleColors={};
 const roleCol=r=>/^#[0-9a-f]{6}$/i.test(roleColors[r]||"")?roleColors[r]:"";
 let clans=[],clanMem={},clanApps=[],clansOk=true,openClanId=null;
@@ -780,12 +755,8 @@ const myApps=()=>clanApps.filter(a=>a.user_id===uid);
 const byName=(a,b)=>String(a.name).localeCompare(String(b.name));
 let clanBack="board",cavMsg="";
 const cav=(c,cls)=>{const col=clanCol(c);return `<div class="av cav${cls?" "+cls:""}" style="border-color:${col};color:${col}">${c.avatar?`<img src="${esc(c.avatar)}" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.remove()">`:""}<span>${esc((c.tag||"").slice(0,3))}</span></div>`};
-const BADGE_OWNER="523755389544693791";
-let badges=[],badgeGrants=[],badgesOk=true,manageOpen=false,bd={name:"",pm:"",pb:""};
+let manageOpen=false;
 const isS3=c=>!!c&&String(c.tag||"").toUpperCase()==="S3";
-const canBadge=()=>!!uid&&[myDiscord,(profiles.find(x=>x.id===uid)||{}).discord].filter(Boolean).map(String).includes(BADGE_OWNER);
-const badgesOf=id=>badgeGrants.filter(g=>g.user_id===id).map(g=>badges.find(b=>b.id===g.badge_id)).filter(Boolean);
-const bdgHtml=id=>badgesOf(id).map(b=>`<span class="bdg">${esc(b.name)}${canBadge()?`<button type="button" class="bdx" data-bdrev="${esc(b.id)}" data-bu="${esc(id)}" title="Remove badge">\u00d7</button>`:""}</span>`).join("");
 const nmCol=p=>{for(const r of (p.roles||[])){const c=roleCol(r);if(c)return c}return""};
 const roleTip=r=>(roleDefs[r]||[]).map(k=>PERMS[k]).filter(Boolean).join(" · ");
 const badge=r=>{const c=roleCol(r);return `<span class="host" title="${esc(roleTip(r))}"${c?` style="color:${c};border-color:${c}"`:""}>${esc(r)}</span>`};
@@ -1118,8 +1089,8 @@ const hSort=(a,b)=>{const m=$("#hsort").value;
   return b.created-a.created};
 const fmt=t=>new Date(t).toLocaleString([],{dateStyle:"medium",timeStyle:"short"});
 /* tab = [key, label, visible?, group]  group "n" = normal perms (role permissions), "h" = host perms (hosts only) */
-const HT=[["over","Overview",()=>true,"n"],["players","Players",()=>true,"n"],["order","Order",()=>can("reorder"),"n"],["tools","Tools",()=>true,"n"],["clans","Clans",()=>can("clans"),"n"],["cw","Clan wars",()=>can("clans"),"n"],["logs","Activity log",()=>can("logs"),"n"],["place","Placements",()=>can("placements"),"n"],["fights","Fight notes",()=>can("fights"),"n"],["track","User tracking",()=>can("track"),"n"],["warn","Warnings",()=>can("warn"),"n"],
-["access","Access",()=>isOwner,"h"],["roles","Roles",()=>isOwner,"h"],["badges","Badge workshop",()=>isOwner,"h"],["home","Home page",()=>isOwner,"h"],["export","Export",()=>isOwner,"h"],["snipe","Snipe Panel",()=>isOwner&&snipeOk&&snipeOpen,"h"]];
+const HT=[["over","Overview",()=>true,"n"],["players","Players",()=>true,"n"],["order","Order",()=>can("reorder"),"n"],["tools","Tools",()=>true,"n"],["clans","Clans",()=>can("clans"),"n"],["cw","Clan wars",()=>can("cw"),"n"],["logs","Activity log",()=>can("logs"),"n"],["place","Placements",()=>can("placements"),"n"],["fights","Fight notes",()=>can("fights"),"n"],["track","User tracking",()=>can("track"),"n"],["warn","Warnings",()=>can("warn"),"n"],
+["access","Access",()=>isOwner,"h"],["roles","Roles",()=>isOwner,"h"],["home","Home page",()=>isOwner,"h"],["export","Export",()=>isOwner,"h"],["snipe","Snipe Panel",()=>isOwner&&snipeOk&&snipeOpen,"h"]];
 function logEvent(action,kind,tid,tname,detail){
   if(!sb||!uid)return;
   sb.from("audit_log").insert({actor:uid,actor_name:(me&&me.name)||"?",action:String(action).slice(0,60),kind,target:tid||null,target_name:String(tname||"").slice(0,60),detail:String(detail||"").slice(0,300)})
@@ -1137,7 +1108,7 @@ function renderHost(board){
   $("#hh").textContent="Panel";
   const grp=(g,label)=>{const l=tabs.filter(t=>t[3]===g);return l.length?`<div class="tg"><div class="tgl">${label}</div><div class="tabs">${l.map(t=>`<button class="tab ${t[0]===hostTab?"on":""}" data-ht="${t[0]}">${t[1]}</button>`).join("")}</div></div>`:""};
   $("#htabs").innerHTML=grp("n","Normal perms")+grp("h","Host perms · hosts only");
-  ["over","players","order","tools","access","roles","clans","cw","badges","home","logs","place","snipe","export","fights","track","warn"].forEach(k=>{$("#hp_"+k).hidden=k!==hostTab});
+  ["over","players","order","tools","access","roles","clans","cw","home","logs","place","snipe","export","fights","track","warn"].forEach(k=>{$("#hp_"+k).hidden=k!==hostTab});
   if(hostTab==="over")renderOverview(board);
   if(hostTab==="roles")renderRoles();
   if(hostTab==="logs")renderAuditList("#llist","#lcount",$("#lq").value,false,$("#lf").value);
@@ -1152,7 +1123,6 @@ function renderHost(board){
   if(hostTab==="warn")renderWarn();
   if(hostTab==="clans")renderClansPanel();
   if(hostTab==="cw")renderCwPanel();
-  if(hostTab==="badges")renderWorkshop();
   if(hostTab==="home")renderHomeEditor();
   document.querySelectorAll("[data-own]").forEach(x=>x.hidden=!isOwner);
 }
@@ -1585,6 +1555,75 @@ async function embSend(which){
   for(const i of idx){await embSendOne(c[i],i);render()}
   embBusy=false;render();
 }
+/* ---- clan wars webhook (fixtures / results) ---- */
+const CWH_KEY="jj_cwhook";
+const cwhLoad=()=>{try{return Object.assign({u:"",auto:true},JSON.parse(localStorage.getItem(CWH_KEY)||"{}"))}catch(e){return{u:"",auto:true}}};
+function cwhRead(){const o=cwhLoad(),u=$("#cwU"),a=$("#cwAuto");if(u)o.u=(u.value||"").trim();if(a)o.auto=a.checked;try{localStorage.setItem(CWH_KEY,JSON.stringify(o))}catch(e){}return o}
+let cwhMsg="",cwhBusy=false;
+const dTrunc=(t,n)=>{t=String(t);return t.length>n?t.slice(0,n-1)+"…":t};
+const cwhNames=ids=>dTrunc((ids||[]).map(i=>dEsc(pName(i))).join(", ")||"—",1000);
+const cwhClan=id=>{const c=clanById(id);return c?dEsc(c.name):"TBD"};
+const cwhThumb=c=>c&&/^https:\/\//.test(c.avatar||"")?c.avatar:"";
+function cwhEmbeds(kind,wk){
+  return (wk.matches||[]).filter(m=>m.a||m.b).map(m=>{
+    const ca=clanById(m.a),cb=clanById(m.b),vs=cwhClan(m.a)+" vs "+cwhClan(m.b);
+    if(kind==="fix"){
+      const t=m.at?Date.parse(m.at):NaN,u=Math.floor(t/1000);
+      const e={title:dTrunc(vs,250),color:0x2b2d31,description:isNaN(t)?"Time TBD":"<t:"+u+":F> · <t:"+u+":R>",fields:[]};
+      [["A",ca],["B",cb]].forEach(([sd,c])=>{
+        const mn=m["main"+sd]||[],sb2=m["sub"+sd]||[];
+        if(mn.length||sb2.length)e.fields.push({name:dTrunc(c?c.name:"TBD",200),value:"**Main:** "+cwhNames(mn)+"\n**Sub:** "+cwhNames(sb2),inline:true});
+      });
+      if(!e.fields.length)delete e.fields;
+      const th=cwhThumb(ca)||cwhThumb(cb);if(th)e.thumbnail={url:th};
+      return e;
+    }
+    const s=rScore(m),win=s.a>s.b?ca:s.b>s.a?cb:null;
+    const col=win?parseInt(clanCol(win).slice(1),16):0x2b2d31;
+    const lines=(m.rounds||[]).map((r,i)=>{
+      const f=(r.fights||[]).filter(x=>x.w).map(x=>"> "+dEsc(pName(x.w==="A"?x.pa:x.pb))+" → "+dEsc(pName(x.w==="A"?x.pb:x.pa))).join("\n");
+      return "**Round "+(i+1)+"** · "+rCount(r,"A")+"–"+rCount(r,"B")+(f?"\n"+f:"");
+    }).join("\n\n");
+    const e={title:dTrunc(cwhClan(m.a)+"  "+s.a+" – "+s.b+"  "+cwhClan(m.b),250),color:col,description:dTrunc(lines||"No fights yet.",4000),footer:{text:"Fights "+s.fa+" – "+s.fb+(win?" · Winner: "+win.name:s.a===s.b&&(s.a||s.b)?" · Draw":"")}};
+    const th=cwhThumb(win)||cwhThumb(ca)||cwhThumb(cb);if(th)e.thumbnail={url:th};
+    return e;
+  });
+}
+async function cwhPost(u,kind,wk){
+  const embeds=cwhEmbeds(kind,wk);
+  if(!embeds.length)return "Nothing to send.";
+  const head="**Clan wars · "+(kind==="fix"?"Fixtures":"Results")+" — "+dEsc(wk.title||"Week")+"**";
+  for(let i=0;i<embeds.length;i+=10){
+    const payload={username:"Clan Wars",embeds:embeds.slice(i,i+10),allowed_mentions:{parse:[]}};
+    if(!i)payload.content=head;
+    const r=await fetch(u+"?wait=true",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(payload)});
+    if(!r.ok){let d="";try{d=(await r.json()).message||""}catch(e){}throw new Error(r.status+(d?" "+d:""))}
+  }
+  return "";
+}
+async function cwhAuto(kind,old,nw){
+  const h=cwhLoad();if(!h.auto||!embOk(h.u))return "";
+  const ow=(old&&old.weeks)||[];
+  const ch=nw.weeks.map((w,i)=>({w,i})).filter(x=>JSON.stringify(x.w)!==JSON.stringify(ow[x.i])).slice(-3);
+  if(!ch.length)return "";
+  try{
+    for(const x of ch)await cwhPost(h.u,kind,Object.assign({},x.w,{title:x.w.title||"Week "+(x.i+1)}));
+    logEvent("posted clan wars "+(kind==="fix"?"fixtures":"results"),"general",null,"",ch.map(x=>x.w.title||"Week "+(x.i+1)).join(", "));
+    return " Posted to Discord ✓";
+  }catch(e){return " Discord post failed: "+e.message}
+}
+async function cwhSend(kind){
+  if(cwhBusy)return;
+  const h=cwhRead();
+  if(!embOk(h.u)){cwhMsg="Add a valid webhook URL.";return render()}
+  const L=kind==="fix"?cwFx:cwRs;
+  if(!L.weeks.length){cwhMsg="Nothing posted yet.";return render()}
+  const i=kind==="fix"?cwFutureWeek():L.weeks.length-1;
+  cwhBusy=true;cwhMsg="Sending…";render();
+  try{const m=await cwhPost(h.u,kind,Object.assign({},L.weeks[i],{title:L.weeks[i].title||"Week "+(i+1)}));cwhMsg=m||"Sent ✓"}
+  catch(e){cwhMsg="Couldn’t send: "+e.message}
+  cwhBusy=false;render();
+}
 async function saveAnn(clear){
   if(!sb||!can("changelog"))return;
   const body=clear?"":($("#annTa").value||"").slice(0,300).trim(),at=new Date().toISOString();
@@ -1632,6 +1671,13 @@ function renderTools(board){
       <div class="trow"><input id="embU${i}" type="password" autocomplete="off" placeholder="https://discord.com/api/webhooks/…" value="${esc(c.u)}" style="flex:1;min-width:0;background:#000;border:1px solid var(--line);color:var(--fg);padding:11px 14px;font:400 14px var(--sans);border-radius:8px;outline:none"><button data-emb="${i}" ${can("export")&&!embBusy?"":"disabled"}>Send</button></div>
       <div class="sub" style="margin:4px 0 0">${esc(embMsg[i])}</div></div>`).join("")}
       <div class="trow" style="margin-top:14px"><button id="embSave">Save</button><button class="solid" data-emb="all" ${can("export")&&!embBusy?"":"disabled"}>Send to all</button></div>
+    </div>
+    <div class="rbox"><div class="sl">Clan wars webhook</div>
+      <div class="sub">Posts clan wars fixtures or results to a Discord channel. The URL is saved only in this browser, so auto-posting works when you save from this browser.</div>
+      ${(()=>{const h=cwhLoad(),ok=(can("export")||can("cw"))&&!cwhBusy?"":"disabled";return `<div class="trow" style="margin-top:14px"><input id="cwU" type="password" autocomplete="off" placeholder="https://discord.com/api/webhooks/…" value="${esc(h.u)}" style="flex:1;min-width:0;background:#000;border:1px solid var(--line);color:var(--fg);padding:11px 14px;font:400 14px var(--sans);border-radius:8px;outline:none"><button id="cwhSave">Save</button></div>
+      <label class="trow" style="margin-top:10px;gap:8px;align-items:center;cursor:pointer"><input type="checkbox" id="cwAuto" ${h.auto?"checked":""}><span class="sub" style="margin:0">Post automatically when fixtures or results are saved (changed weeks only)</span></label>
+      <div class="trow" style="margin-top:10px"><button id="cwhFix" ${ok}>Send fixtures now</button><button id="cwhRes" ${ok}>Send results now</button></div>
+      <div class="sub" style="margin:4px 0 0">${esc(cwhMsg)}</div>`})()}
     </div>
     <div class="rbox"><div class="sl">Copy for Discord</div>
       <div class="sub">Top 25 overall, top 10 per region, as formatted text.</div>
@@ -1958,7 +2004,7 @@ async function loadProfiles(){
   const {data,error}=await sb.from("profiles").select("*");
   if(my!==loadSeq)return;
   if(error){demo=true;reason="Couldn’t load profiles: "+error.message;render();return}
-  const [rr,rc,cl,cm,ca,bgr,bgg,cs,bdf,baw,px]=await Promise.all([sb.from("roles").select("name,perms"),sb.rpc("registered_count"),sb.from("clans").select("*"),sb.from("clan_members").select("*"),sb.from("clan_apps").select("*"),sb.from("s3_badges").select("*"),sb.from("s3_badge_grants").select("*"),sb.from("clan_side").select("*"),sb.from("badge_defs").select("*"),sb.from("badge_awards").select("*"),sb.from("profile_extra").select("*")]);
+  const [rr,rc,cl,cm,ca,cs,px]=await Promise.all([sb.from("roles").select("name,perms"),sb.rpc("registered_count"),sb.from("clans").select("*"),sb.from("clan_members").select("*"),sb.from("clan_apps").select("*"),sb.from("clan_side").select("*"),sb.from("profile_extra").select("*")]);
   if(my!==loadSeq)return;
   demo=false;reason="";
   rolesOk=!rr.error;
@@ -1966,8 +2012,7 @@ async function loadProfiles(){
   if(!rr.error)roleColors=Object.fromEntries(rr.data.map(r=>[r.name,((r.perms||"").split(",").map(x=>x.trim()).find(x=>x.startsWith("c="))||"").slice(2)]));
   clansOk=!cl.error&&!cm.error;
   sideOk=!cs.error;sideMem=sideOk?Object.fromEntries((cs.data||[]).map(m=>[m.user_id,m.clan_id])):{};sideSwap=sideOk?Object.fromEntries((cs.data||[]).map(m=>[m.user_id,!!m.swap])):{};
-  bgOk=!bdf.error&&!baw.error;bdefs=bgOk?(bdf.data||[]):[];bawards=bgOk?(baw.data||[]):[];pexOk=!px.error;pex=pexOk?Object.fromEntries((px.data||[]).map(r=>[r.user_id,r])):{};
-  badgesOk=!bgr.error&&!bgg.error;badges=badgesOk?(bgr.data||[]).slice().sort((a,b)=>String(a.created_at).localeCompare(String(b.created_at))):[];badgeGrants=badgesOk?(bgg.data||[]):[];
+  pexOk=!px.error;pex=pexOk?Object.fromEntries((px.data||[]).map(r=>[r.user_id,r])):{};
   if(clansOk){clans=cl.data||[];clanMem=Object.fromEntries((cm.data||[]).map(m=>[m.user_id,m.clan_id]));clanApps=ca.error?[]:(ca.data||[])}else{clans=[];clanMem={};clanApps=[]}
   regN=(!rc.error&&typeof rc.data==="number")?rc.data:null;
   profiles=data.filter(p=>REG[p.region]||p.region===NONE).map(p=>({id:p.user_id,name:p.name,roblox:p.roblox,region:p.region,grade:p.grade,sub:(SUBS.includes(p.sub)||p.sub===NONE)?p.sub:"Low",subsub:(SSUBS.includes(p.subsub)||p.subsub===NONE)?p.subsub:"Weak",ranked:!!p.ranked,banned:!!p.banned,reason:p.ban_reason||"",roles:(p.roles||"").split(",").map(x=>x.trim()).filter(Boolean),discord:p.discord_id||"",uname:p.discord_username||"",avatar:p.custom_avatar||p.avatar_url,custom:p.custom_avatar||"",created:Date.parse(p.created_at)||0,pos:(p.board_pos==null?null:+p.board_pos)}));
@@ -2108,7 +2153,7 @@ function cwOpen(kind,w){
   if(n){const wk=L.weeks[cwView.w];
     body=`<div class="cwtabs">${L.weeks.map((x,i)=>`<button class="tab ${i===cwView.w?"on":""}" data-vw="${kind}:${i}">Week ${i+1}</button>`).join("")}</div><div class="vwk">${esc(wk.title||"Week")}</div>${(wk.matches||[]).map(kind==="res"?rsMatchView:fxMatchView).join("")||`<div class="empty">No matches yet.</div>`}`;
   }else{const c=cwCards(kind==="res"?cwRes:cwFix);body=c.length?c.map(cwCard).join(""):`<div class="empty">Nothing posted yet.</div>`}
-  openModal(`<div class="cwh"><h2>${kind==="res"?"Clan wars · Results":"Clan wars · Fixtures"}</h2><button class="ghost" data-cwx="1">Close</button></div><div class="cwbody">${body}</div>${can("clans")?`<div class="acts" style="margin-top:14px"><button class="ghost" data-cwedit="1">Edit in panel</button></div>`:""}`);
+  openModal(`<div class="cwh"><h2>${kind==="res"?"Clan wars · Results":"Clan wars · Fixtures"}</h2><button class="ghost" data-cwx="1">Close</button></div><div class="cwbody">${body}</div>${can("cw")?`<div class="acts" style="margin-top:14px"><button class="ghost" data-cwedit="1">Edit in panel</button></div>`:""}`);
   $("#panel").style.width="min(760px,94vw)";$("#panel").style.maxWidth="760px";
 }
 function renderCwPanel(){
@@ -2149,8 +2194,8 @@ async function cwSaveKey(key,obj,okMsg){
   try{await scSet(key,JSON.stringify(obj));cwMsg=okMsg;cwBad=false;return true}
   catch(e){cwMsg="Couldn’t save: "+(e.message||"permission denied")+" (only hosts can write site content)";cwBad=true;return false}
 }
-async function fxSave(){if(await cwSaveKey("cw_fixtures2",fxd,"Fixtures saved."))cwFx=JSON.parse(JSON.stringify(fxd));renderCwPanel()}
-async function rsSave(){if(await cwSaveKey("cw_results2",rsd,"Results saved."))cwRs=JSON.parse(JSON.stringify(rsd));renderCwPanel()}
+async function fxSave(){const old=cwFx;if(await cwSaveKey("cw_fixtures2",fxd,"Fixtures saved.")){cwFx=JSON.parse(JSON.stringify(fxd));cwMsg+=await cwhAuto("fix",old,cwFx)}renderCwPanel()}
+async function rsSave(){const old=cwRs;if(await cwSaveKey("cw_results2",rsd,"Results saved.")){cwRs=JSON.parse(JSON.stringify(rsd));cwMsg+=await cwhAuto("res",old,cwRs)}renderCwPanel()}
 async function luLoad(){
   luLoaded=true;if(!sb)return;
   const r=await sb.from("clan_lineups").select("*");
@@ -2263,12 +2308,8 @@ function renderClanPage(){
   const meP=profiles.find(p=>p.id===uid),inClan=!!clanMem[uid],mine=clanMem[uid]===c.id,pend=myApps().find(a=>a.clan_id===c.id),sideMine=sideMem[uid]===c.id,s3m=sideOk&&!!clanMem[uid]&&isS3(clanById(clanMem[uid])),canSide=s3m&&!sideMem[uid]&&!isS3(c)&&!mine;
   const apps=canDecide(c)?appsFor(c):[],own=c.owner?profiles.find(p=>p.id===c.owner):null;
   const canRem=p=>canDecide(c)&&(c.owner!==p.id||can("clans"));
-  const mrow=p=>`<div class="cmrow" data-id="${esc(p.id)}">${av(p)}<div style="min-width:0;flex:1"><div class="nm">${nmx(p,1)}${c.owner===p.id?'<span class="host">Leader</span>':""}${banTag(p)}${isS3(c)?bdgHtml(p.id):""}</div><div class="pt">${esc(gl(p))}${onB(p)?" · #"+p.rank:""} · @${esc(p.roblox)}</div></div>${canRem(p)?`<button class="ghost" ${sideMem[p.id]===c.id?"data-srem":"data-crem"}="${esc(p.id)}">Remove</button>`:""}</div>`;
+  const mrow=p=>`<div class="cmrow" data-id="${esc(p.id)}">${av(p)}<div style="min-width:0;flex:1"><div class="nm">${nmx(p,1)}${c.owner===p.id?'<span class="host">Leader</span>':""}${banTag(p)}</div><div class="pt">${esc(gl(p))}${onB(p)?" · #"+p.rank:""} · @${esc(p.roblox)}</div></div>${canRem(p)?`<button class="ghost" ${sideMem[p.id]===c.id?"data-srem":"data-crem"}="${esc(p.id)}">Remove</button>`:""}</div>`;
   const arow=a=>{const p=profiles.find(x=>x.id===a.user_id);return `<div class="cmrow" data-id="${esc(a.user_id)}">${p?av(p):""}<div style="min-width:0;flex:1"><div class="nm">${p?nmx(p,1):"Unknown player"}</div><div class="pt">${p?esc(gl(p)):""}</div></div><button class="solid" data-cacc="${esc(a.id)}">Accept</button><button class="ghost" data-cdec="${esc(a.id)}">Decline</button></div>`};
-  const bm=isS3(c)&&canBadge()?`<div class="rbox" style="margin-top:22px"><div class="sl">S3 badges</div>${badgesOk?`<div class="cform" style="grid-template-columns:1fr auto;align-items:end"><div><label>New badge name</label><input data-bd="name" maxlength="20" value="${esc(bd.name)}" placeholder="e.g. Founder" autocomplete="off"></div><button class="solid" data-bdnew="1">Create badge</button></div>
-    <div class="cform" style="grid-template-columns:1fr 1fr auto;align-items:end;margin-top:12px"><div><label>Member</label><select data-bd="pm"><option value="">\u2014 Pick a member \u2014</option>${m.map(p=>`<option value="${esc(p.id)}" ${p.id===bd.pm?"selected":""}>${esc(p.name)}</option>`).join("")}</select></div><div><label>Badge</label><select data-bd="pb"><option value="">\u2014 Pick a badge \u2014</option>${badges.map(b=>`<option value="${esc(b.id)}" ${b.id===bd.pb?"selected":""}>${esc(b.name)}</option>`).join("")}</select></div><button class="solid" data-bdgive="1">Give</button></div>
-    <div class="rchips" style="margin-top:14px">${badges.map(b=>`<span class="bdg">${esc(b.name)}<button type="button" class="bdx" data-bddel="${esc(b.id)}" title="Delete badge">\u00d7</button></span>`).join("")||`<span class="sub">No badges yet.</span>`}</div>
-    <div class="sub" style="margin-top:10px">Badges show on members\u2019 names on this page only. Use \u00d7 on a member\u2019s badge to take it away.</div>`:`<div class="err">Badges aren\u2019t set up yet. Run s3_badges.sql in Supabase, then reload.</div>`}</div>`:"";
   let note="";
   if(isS3(c)&&!mine)note="rich";
   else if(!uid)note="Sign in with Discord to apply.";
@@ -2301,7 +2342,6 @@ function renderClanPage(){
     <div class="acts"><button class="solid" data-cesave="${esc(c.id)}">Save changes</button></div>
     <div class="cform" style="grid-template-columns:1fr auto;align-items:end;margin-top:18px"><div><label>Add a member</label><select data-ce="pick"><option value="">— Pick a player —</option>${profiles.filter(p=>!clanMem[p.id]&&!p.banned).sort(byName).map(p=>`<option value="${esc(p.id)}" ${p.id===cedraft.pick?"selected":""}>${esc(p.name)} (@${esc(p.roblox)})</option>`).join("")}</select></div><button class="solid" data-ceadd="${esc(c.id)}">Add</button></div></div>`:""}
   ${luHtml(c,m)}
-  ${bm}
   ${apps.length?`<div class="sl" style="margin:26px 0 6px">Applications · ${apps.length}</div>${apps.map(arow).join("")}`:""}
   <div class="sl" style="margin:26px 0 6px">Members · ${m.length}</div>
   <div>${m.map(mrow).join("")||`<div class="empty">No members yet.</div>`}</div>`;
@@ -2337,79 +2377,8 @@ function renderClansPanel(){
   <div class="rbox"><div class="sl">Clans · ${clans.length}</div>
     ${ord.map(c=>{const ow=profiles.find(q=>q.id===c.owner);return `<div class="rrow"><span>${ctag(c)}<b>${esc(c.name)}</b></span><span class="sub" style="margin:0;flex:1">${clanMembers(c).length} member(s)${c.place?" · placement #"+c.place:""}${c.closed?" · closed":""}${ow?" · owner "+esc(ow.name):""}</span><div class="obtn"><button class="ghost" data-clan="${esc(c.id)}">View</button><button class="ghost" data-cedit="${esc(c.id)}">Edit</button><button class="ghost danger" data-cdel="${esc(c.id)}">Delete</button></div></div>`}).join("")||`<div class="sub">No clans yet.</div>`}</div>`;
 }
-/* ---- profile page + badges ---- */
-let bdefs=[],bawards=[],bgOk=true,pex={},pexOk=true,profId=null,profBack="board";
-const BCOL="#b9a8ff";
-/* tier metals: bronze, silver, gold, platinum, diamond (+ pink, same effects as diamond) */
-const METAL=["Bronze","Silver","Gold","Platinum","Diamond","Pink","GODLY"],MORDER=[0,1,2,3,4,6,5];
-const PAL=[["#e0a46a","#7d4f24"],["#eef0f4","#848d9d"],["#ffe27a","#c07f0c"],["#c9f2e8","#3f9c8c"],["#8fdcff","#2a78d1"],["#ffb3dc","#d6338f"],["#fff1a8","#ff9a1f"]];
-let hid=0;
-const EMO=/\p{Extended_Pictographic}/u,h2c=h=>[1,3,5].map(i=>parseInt(h.substr(i,2),16));
-function hex(glyph,pi,sz,lock){
-  const id="hx"+(hid++),k=Math.max(0,Math.min(6,pi|0)),pal=PAL[k],a=pal[0],b=pal[1],g=String(glyph||""),n=[...g].length,emo=EMO.test(g),dia=(k===4||k===5)&&!lock,god=k===6&&!lock;
-  const fs=n>=4?15:n===3?22:n===2?30:38;
-  let defs="",fa="",back="";
-  if(emo){/* emoji are re-coloured to the tier's metal (light/dark duotone) */
-    const L=h2c(a).map(v=>Math.min(1,(v/255)*.85+.15)),D=h2c(b).map(v=>v/255*.9),W=[.2126,.7152,.0722],row=c=>W.map(x=>(x*(L[c]-D[c])).toFixed(4)).join(" ")+" 0 "+D[c].toFixed(4);
-    defs+=`<filter id="${id}f" color-interpolation-filters="sRGB"><feColorMatrix type="matrix" values="${row(0)} ${row(1)} ${row(2)} 0 0 0 1 0"/></filter>`;fa=` filter="url(#${id}f)"`}
-  const rgb=h2c(a).join(","),gl=Math.max(3,Math.round(sz*.09)),st=lock?"":` style="filter:drop-shadow(0 0 ${gl}px rgba(${rgb},.6))${k===5?";--g1:255,170,215;--g2:255,70,160":""}"`;
-  let fx="";
-  const star=(x,y,d,z)=>`<g transform="translate(${x},${y}) scale(${z})"><path class="dsp" style="animation-delay:${d}s" d="M0,-6 L1.6,-1.6 L6,0 L1.6,1.6 L0,6 L-1.6,1.6 L-6,0 L-1.6,-1.6Z" fill="#fff"/></g>`;
-  if(dia||god){
-    defs+=`<clipPath id="${id}c"><polygon points="50,3 91,26.5 91,73.5 50,97 9,73.5 9,26.5"/></clipPath><linearGradient id="${id}s" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#fff" stop-opacity="0"/><stop offset=".5" stop-color="#fff" stop-opacity="${god?.9:.7}"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></linearGradient>`;
-    fx=`<g clip-path="url(#${id}c)"><rect x="-40" y="-10" width="${god?30:24}" height="120" fill="url(#${id}s)" transform="skewX(-20)"><animate attributeName="x" values="-40;140" dur="${god?1.9:2.8}s" repeatCount="indefinite"/></rect></g>`+star(88,20,0,1.3)+star(10,66,.8,1)+star(70,95,1.5,1.1)+star(26,10,2,.8)}
-  if(god){
-    /* GODLY: rainbow foil sweep, rotating light rays, colour-shifting rim, extra sparkles */
-    defs+=`<linearGradient id="${id}w" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#ff6ad5" stop-opacity="0"/><stop offset=".25" stop-color="#ff6ad5" stop-opacity=".5"/><stop offset=".5" stop-color="#fff176" stop-opacity=".55"/><stop offset=".75" stop-color="#4dd8ff" stop-opacity=".5"/><stop offset="1" stop-color="#4dd8ff" stop-opacity="0"/></linearGradient><radialGradient id="${id}r" gradientUnits="userSpaceOnUse" cx="50" cy="50" r="62"><stop offset=".6" stop-color="#fff6c0" stop-opacity=".85"/><stop offset="1" stop-color="#fff6c0" stop-opacity="0"/></radialGradient>`;
-    let rays="";for(let i=0;i<8;i++)rays+=`<polygon points="50,50 43,-12 57,-12" fill="url(#${id}r)" transform="rotate(${i*45} 50 50)"/>`;
-    back=`<g opacity=".85">${rays}<animateTransform attributeName="transform" type="rotate" from="0 50 50" to="360 50 50" dur="9s" repeatCount="indefinite"/></g>`;
-    fx+=`<g clip-path="url(#${id}c)"><rect x="-50" y="-10" width="34" height="120" fill="url(#${id}w)" transform="skewX(-20)"><animate attributeName="x" values="-50;150" dur="3.2s" begin="-1s" repeatCount="indefinite"/></rect></g>`+star(50,2,.3,1.2)+star(94,50,1.1,1)+star(50,98,1.8,1.2)+star(6,40,.6,.9)+star(80,80,2.3,.8)+star(20,86,1.4,.8)}
-  const c0=god?`<animate attributeName="stop-color" values="#fff1a8;#ffb3f0;#a8e8ff;#b8ffd0;#fff1a8" dur="4s" repeatCount="indefinite"/>`:dia?`<animate attributeName="stop-color" values="${a};#ffffff;${a}" dur="3s" repeatCount="indefinite"/>`:"",c1=god?`<animate attributeName="stop-color" values="#ff9a1f;#c34bff;#2a8dff;#1fcf7a;#ff9a1f" dur="4s" repeatCount="indefinite"/>`:"";
-  return `<svg class="hex${lock?" lk":""}${dia?" dia":""}${god?" god":""}" width="${sz}" height="${sz}" viewBox="0 0 100 100" aria-hidden="true"${st}><defs><linearGradient id="${id}" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="${a}">${c0}</stop><stop offset="1" stop-color="${b}">${c1}</stop></linearGradient>${defs}</defs>${back}<polygon points="50,3 91,26.5 91,73.5 50,97 9,73.5 9,26.5" fill="url(#${id})"/><polygon points="50,11 84,30.5 84,69.5 50,89 16,69.5 16,30.5" fill="#15151c"/><polygon points="50,11 84,30.5 84,69.5 50,89 16,69.5 16,30.5" fill="none" stroke="${a}" stroke-opacity=".4"/><text x="50" y="${(50+fs*0.34).toFixed(1)}" text-anchor="middle" font-size="${fs}" font-weight="800" fill="${a}"${fa} font-family="Archivo,system-ui,sans-serif">${esc(g)}</text>${fx}</svg>`;
-}
-const rk5=n=>!n||n>10?0:n===1?5:n===2?4:n<=3?3:n<=5?2:1;
-const bestPlace=p=>{const a=[clanOf(p.id),sideOf(p.id)].filter(c=>c&&c.place).map(c=>+c.place);return a.length?Math.min(...a):0};
-/* automatic badges: worked out live from the site's data, nobody has to award them */
-const AUTO=[
- {key:"a_board",name:"Leaderboard",desc:"Get on the leaderboard and climb the placements",glyph:()=>"🏆",
-  tiers:[{n:"Bronze",s:"On the board",d:"Get placed on the leaderboard",pal:0},{n:"Silver",s:"Top 25",d:"Reach the top 25 of the leaderboard",pal:1},{n:"Gold",s:"Top 10",d:"Reach the top 10 of the leaderboard",pal:2},{n:"Platinum",s:"Top 5",d:"Reach the top 5 of the leaderboard",pal:3},{n:"Diamond",s:"#1",d:"Hold the #1 spot on the leaderboard",pal:4}],
-  tier:p=>{if(!onB(p))return 0;const r=+p.rank||0;return r===1?5:r&&r<=5?4:r&&r<=10?3:r&&r<=25?2:1}}
-];
-const palFor=(i,n)=>n===1?2:Math.round(i*4/(n-1));
-/* tiers are stored as JSON in badge_defs.tiers: [{m:metal 0-4,n:name,d:description,g:symbol}] (old comma lists still read) */
-const parseTiers=s=>{s=String(s||"").trim();let a=[];
-  if(s[0]==="["){try{a=JSON.parse(s).map(t=>({m:Math.max(0,Math.min(6,(+t.m)|0)),n:String(t.n||"").slice(0,18),d:String(t.d||"").slice(0,60),g:String(t.g||"").slice(0,4)}))}catch(_){a=[]}}
-  else a=s.split(",").map(x=>x.trim()).filter(Boolean).map((x,i,r)=>({m:palFor(i,r.length),n:x,d:"",g:""}));
-  a=a.slice(0,5).map(t=>({m:t.m,n:t.n||METAL[t.m],d:t.d,g:t.g}));
-  return a.length?a:[{m:0,n:METAL[0],d:"",g:""}]};
-function allDefs(){
-  const M=bdefs.slice().sort((a,b)=>String(a.created_at).localeCompare(String(b.created_at))).map(b=>{
-    const tn=parseTiers(b.tiers),n=tn.length;
-    return {key:"m_"+b.id,id:b.id,manual:true,name:b.name,desc:b.descr,glyph:()=>b.icon,
-      tiers:tn.map(t=>({n:t.n,d:t.d||b.descr||b.name,pal:t.m,g:t.g})),
-      tier:p=>{const a=bawards.find(a=>a.user_id===p.id&&a.badge_id===b.id);return a?Math.min(n,Math.max(1,+a.tier||1)):0}};
-  });
-  return AUTO.concat(M);
-}
-const defByKey=k=>allDefs().find(d=>d.key===k);
-const earned=p=>allDefs().map(d=>({d,t:d.tier(p)})).filter(x=>x.t>0);
-function bcard(d,t,p){const ti=d.tiers[t-1];return `<div class="bgc" data-bk="${esc(d.key)}" data-bp="${esc(p.id)}" role="button" tabindex="0" title="${esc(d.name)}">${hex(ti.g||d.glyph(p),ti.pal,76)}<b>${esc(d.name)}</b><em>${esc(ti.n)}</em></div>`}
-function openBadge(key,pid,sel){
-  const d=defByKey(key),p=profiles.find(x=>x.id===pid);if(!d||!p)return;ranked();
-  const cur=d.tier(p),t=Math.min(d.tiers.length,Math.max(1,sel||cur||1)),ti=d.tiers[t-1];
-  const total=Math.max(regN||0,profiles.length),holdN=k=>d.manual?new Set(bawards.filter(a=>a.badge_id===d.id&&Math.min(d.tiers.length,Math.max(1,+a.tier||1))>=k).map(a=>a.user_id)).size:profiles.filter(q=>d.tier(q)>=k).length,
-    pctTxt=k=>{const h=holdN(k);if(!total||!h)return"0%";const v=100*h/total;return v<1?"<1%":v<10?v.toFixed(1).replace(/\.0$/,"")+"%":Math.round(v)+"%"},have=holdN(t);
-  let when="";
-  if(d.manual&&cur){const a=bawards.find(a=>a.user_id===p.id&&a.badge_id===d.id);if(a&&a.created_at)when="Earned "+new Date(a.created_at).toLocaleString()}
-  else if(cur)when="Current tier: "+d.tiers[cur-1].n;
-  openModal(`<div style="text-align:center"><div style="display:flex;justify-content:center">${hex(ti.g||d.glyph(p),ti.pal,128,t>cur)}</div>
-  <h3 style="margin-top:14px">${esc(d.name)}${d.tiers.length>1?" · "+esc(ti.n):""}</h3>
-  <div style="color:#cfcfd6;font-size:15px;margin-top:10px">${esc(ti.d)}</div>
-  ${when?`<div style="font-weight:700;font-size:13px;margin-top:16px">${esc(when)}</div>`:""}
-  <div class="sub" style="margin-top:12px">${pctTxt(t)} of players have earned this (${have} of ${total})</div>
-  ${d.tiers.length>=1?`<div class="btiers">${d.tiers.map((x,i)=>`<button type="button" class="btier ${i+1===t?"on":""}" data-bt="${i+1}" data-bk2="${esc(key)}" data-bp2="${esc(pid)}">${hex(x.g||d.glyph(p),x.pal,54,i+1>cur)}<span>${esc(x.n)}</span></button>`).join("")}</div>`:""}
-  <div class="acts" style="justify-content:center"><button class="ghost" id="x">Close</button></div></div>`);
-}
+/* ---- profile page ---- */
+let pex={},pexOk=true,profId=null,profBack="board";
 function openProfile(id){
   if(!profiles.some(p=>p.id===id))return;
   if($("#modal").classList.contains("open"))closeModal();
@@ -2421,7 +2390,6 @@ function renderProfilePage(){
   ranked();
   const ex=pex[p.id]||{},on=onB(p),mc=mainClan(p.id),oc=otherClan(p.id);
   const self=(p.id===uid&&!p.banned)||isOwner,canEdit=self||can("grades")||can("ban");
-  const E=earned(p).sort((a,b)=>b.t-a.t);
   const col=mc?clanCol(mc):"#8f86d6";
   const bn=ex.banner?`background-image:url('${esc(ex.banner)}')`:`background:linear-gradient(120deg,${col}66,#0b0b12 60%,${col}33)`;
   const clanTxt=mc?ctag(mc)+esc(mc.name)+(oc?`<div style="margin-top:4px">${ctag(oc)}${esc(oc.name)}</div>`:""):"—";
@@ -2431,13 +2399,12 @@ function renderProfilePage(){
     <div class="pf-info"><div class="pf-name">${nmx(p)}</div>
      <div class="pf-bio ${ex.bio?"":"dim"}">${ex.bio?esc(ex.bio):"No bio yet."}</div>
      <div class="pt" style="margin-top:8px">${rbA(p)} ↗ ${tags(p)?`<span style="margin-left:6px">${tags(p)}</span>`:""}</div></div>
-    <div class="pf-act">${self&&pexOk?`<button class="solid" data-pfcust="1">Customize</button>`:""}${canEdit?`<button data-pfedit="1">Edit profile</button>`:""}${mc?`<button class="ghost" data-clan="${esc(mc.id)}">View clan</button>`:""}${p.id===uid&&oc?`<button class="ghost" data-swap="1">Swap name tag</button>`:""}${can("badges")&&bgOk?`<button class="solid" data-pfgive="${esc(p.id)}">Give badge</button>`:""}${String(p.discord||"")===HOSTBG_ID?`<button class="ghost" data-hbg="1">Video background: ${hbgOff()?"off":"on"}</button>`:""}</div></div></div>
+    <div class="pf-act">${self&&pexOk?`<button class="solid" data-pfcust="1">Customize</button>`:""}${canEdit?`<button data-pfedit="1">Edit profile</button>`:""}${mc?`<button class="ghost" data-clan="${esc(mc.id)}">View clan</button>`:""}${p.id===uid&&oc?`<button class="ghost" data-swap="1">Swap name tag</button>`:""}${String(p.discord||"")===HOSTBG_ID?`<button class="ghost" data-hbg="1">Video background: ${hbgOff()?"off":"on"}</button>`:""}</div></div></div>
   <div class="tiles pf-tiles"><div class="tile"><span>Grade</span><b class="sm">${on?esc(gl(p)):"—"}</b><em>${on?"Competitive":p.banned?"Banned":"Not competitive"}</em></div>
    <div class="tile"><span>Region</span><b>${p.region==="None"?"—":esc(p.region)}</b><em>${esc(REG[p.region]||"None")}</em></div>
    <div class="tile"><span>Rank</span><b>${on?"#"+p.rank:"—"}</b><em>${on?"Leaderboard":"Not placed"}</em></div>
    <div class="tile"><span>Clan</span><b class="sm" style="white-space:normal">${clanTxt}</b></div>
-   <div class="tile"><span>Badges</span><b>${E.length}</b><em>earned</em></div></div>
-  <h3 class="pf-h">Badges</h3>${E.length?`<div class="bgrid">${E.map(x=>bcard(x.d,x.t,p)).join("")}</div>`:`<div class="empty">No badges earned yet.</div>`}`;
+   </div>`;
 }
 function openCustomize(p){
   if(!p)return;const ex=pex[p.id]||{};
@@ -2483,132 +2450,14 @@ async function resetBanner(){
 }
 document.addEventListener("change",e=>{if(e.target&&e.target.id==="bnfile"){const f=e.target.files[0];e.target.value="";setBanner(f)}});
 
-/* ---- give / take badges straight from a profile (needs "Manage badges") ---- */
-let gv={b:"",t:"1",msg:""};
-function openGive(pid){
-  const p=profiles.find(x=>x.id===pid);if(!p||!can("badges")||!bgOk)return;
-  const defs=bdefs.slice().sort((a,b)=>String(a.created_at).localeCompare(String(b.created_at))),sel=defs.find(b=>b.id===gv.b),tn=sel?parseTiers(sel.tiers):[];
-  if(!(+gv.t>=1&&+gv.t<=tn.length))gv.t="1";
-  const cur=bawards.filter(a=>a.user_id===pid).map(a=>({a,b:defs.find(x=>x.id===a.badge_id)})).filter(x=>x.b),ti=sel?tn[+gv.t-1]:null;
-  openModal(`<h3>Give a badge</h3><div class="sub" style="margin-top:4px">to ${esc(p.name)}</div>
-  ${gv.msg?`<div class="${/^Given|^Removed/.test(gv.msg)?"fmsg":"fmsg bad"}" style="margin:12px 0 0">${esc(gv.msg)}</div>`:""}
-  ${defs.length?`<label style="margin-top:14px">Badge</label><select data-gv="b" data-gvp="${esc(pid)}"><option value="">\u2014 Pick a badge \u2014</option>${defs.map(b=>`<option value="${esc(b.id)}" ${b.id===gv.b?"selected":""}>${esc(b.icon)} ${esc(b.name)}</option>`).join("")}</select>
-  <label style="margin-top:10px">Tier</label><select data-gv="t" data-gvp="${esc(pid)}" ${sel?"":"disabled"}>${tn.map((t,i)=>`<option value="${i+1}" ${String(i+1)===String(gv.t)?"selected":""}>${i+1} \u00b7 ${esc(t.n)}</option>`).join("")||`<option>\u2014</option>`}</select>
-  ${ti?`<div style="display:flex;justify-content:center;margin:14px 0 2px">${hex(ti.g||sel.icon,ti.m,72)}</div>`:""}
-  <div class="sub" style="margin-top:8px">Giving a higher tier to someone who already has the badge upgrades it.</div>
-  <div class="acts"><button class="solid" data-gvgo="${esc(pid)}">Give badge</button></div>`:`<div class="sub" style="margin-top:14px">No badges exist yet. Create one in the Panel \u2192 Badge workshop first.</div>`}
-  <div class="sl" style="margin-top:20px">Their badges \u00b7 ${cur.length}</div>
-  ${cur.map(x=>{const t=parseTiers(x.b.tiers)[Math.max(1,+x.a.tier||1)-1]||{n:""};return `<div class="mini" style="display:flex;justify-content:space-between;align-items:center;gap:10px"><span><b>${esc(x.b.name)}</b><span>${esc(t.n)}</span></span><button class="ghost" style="padding:5px 10px" data-gvrev="${esc(x.b.id)}" data-gvu="${esc(pid)}">Remove</button></div>`}).join("")||`<div class="sub" style="margin-top:6px">No badges yet.</div>`}
-  <div class="acts"><button class="ghost" id="x">Close</button></div>`);
-}
-document.addEventListener("change",e=>{const t=e.target,k=t&&t.dataset&&t.dataset.gv;if(!k)return;gv[k]=t.value;if(k==="b")gv.t="1";gv.msg="";openGive(t.dataset.gvp)});
 document.addEventListener("click",async e=>{
   const t=e.target;if(!t.closest)return;
-  const g1=t.closest("[data-pfgive]");if(g1){gv={b:"",t:"1",msg:""};return openGive(g1.dataset.pfgive)}
-  const g2=t.closest("[data-gvgo]");if(g2){if(!can("badges"))return;const pid=g2.dataset.gvgo,q=profiles.find(x=>x.id===pid),b=bdefs.find(x=>x.id===gv.b);
-    if(!b){gv.msg="Pick a badge first.";return openGive(pid)}
-    const r=await sb.rpc("badge_award",{bid:gv.b,target:pid,tier:+gv.t||1});if(r.error){gv.msg=r.error.message;return openGive(pid)}
-    logEvent("badge awarded","general",pid,q?q.name:"",b.name);await loadProfiles();gv.msg="Given.";return openGive(pid)}
-  const g3=t.closest("[data-gvrev]");if(g3){if(!can("badges"))return;const pid=g3.dataset.gvu,q=profiles.find(x=>x.id===pid),b=bdefs.find(x=>x.id===g3.dataset.gvrev);
-    if(!confirm("Take \u201c"+(b?b.name:"this badge")+"\u201d from "+(q?q.name:"this player")+"?"))return;
-    const r=await sb.rpc("badge_revoke",{bid:g3.dataset.gvrev,target:pid});if(r.error){gv.msg=r.error.message;return openGive(pid)}
-    logEvent("badge revoked","general",pid,q?q.name:"",b?b.name:"");await loadProfiles();gv.msg="Removed.";return openGive(pid)}
-});
-
-/* ---- badge workshop (Panel > Badge workshop, needs "Manage badges") ---- */
-const wblank=()=>({id:"",name:"",ds:"",ic:"🏅",tiers:[{m:0,n:"Bronze",d:"",g:""}],ap:"",ab:"",at:"1",vb:""});
-let wk=wblank(),wmsg="";
-function wprev(){
-  return `<div class="btiers" style="justify-content:flex-start;margin-top:0;padding-top:0;border:0">${wk.tiers.map(t=>`<div class="btier" style="cursor:default">${hex(t.g||wk.ic||"🏅",t.m,60)}<span>${esc(t.n||METAL[t.m])}</span></div>`).join("")}</div>`}
-function wtiers(){
-  return wk.tiers.map((t,i)=>`<div style="border:1px solid #2a2a33;border-radius:12px;padding:12px;margin-top:10px">
-   <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px"><b style="font-size:12px;letter-spacing:.08em">TIER ${i+1}</b>${wk.tiers.length>1?`<button type="button" class="ghost danger" style="padding:4px 10px" data-wtdel="${i}">Remove</button>`:""}</div>
-   <div style="display:grid;grid-template-columns:1fr 1.4fr .7fr;gap:8px">
-    <div><label>Metal</label><select data-wt="${i}:m">${MORDER.map(j=>`<option value="${j}" ${j===t.m?"selected":""}>${METAL[j]}</option>`).join("")}</select></div>
-    <div><label>Name</label><input data-wt="${i}:n" maxlength="18" value="${esc(t.n)}" placeholder="${METAL[t.m]}" autocomplete="off"></div>
-    <div><label>Symbol</label><input data-wt="${i}:g" maxlength="4" value="${esc(t.g)}" placeholder="${esc(wk.ic||"🏅")}" autocomplete="off"></div></div>
-   <div style="margin-top:8px"><label>Description for this tier</label><input data-wt="${i}:d" maxlength="60" value="${esc(t.d)}" placeholder="How to reach this tier" autocomplete="off"></div></div>`).join("")}
-function renderWorkshop(){
-  const box=$("#bwbox");if(!box)return;const ae=document.activeElement;
-  if(ae&&box.contains(ae)&&/^(INPUT|TEXTAREA|SELECT)$/.test(ae.tagName))return;
-  if(!bgOk){box.innerHTML=`<div class="rbox"><div class="sl">Badge workshop</div><div class="sub" style="margin-top:8px">Badges aren’t set up yet. Run <b>badges_profiles.sql</b> in the Supabase SQL editor, then reload the page.</div></div>`;return}
-  const pl=profiles.slice().sort(byName),cnt=id=>bawards.filter(a=>a.badge_id===id).length;
-  const defs=bdefs.slice().sort((a,b)=>String(a.created_at).localeCompare(String(b.created_at)));
-  const ab=defs.find(b=>b.id===wk.ab),atn=ab?parseTiers(ab.tiers).map(t=>t.n):[];
-  const hb=defs.find(b=>b.id===wk.vb),htn=hb?parseTiers(hb.tiers).map(t=>t.n):[];
-  const holders=hb?bawards.filter(a=>a.badge_id===hb.id):[];
-  box.innerHTML=`${wmsg?`<div class="${/^(Saved|Awarded|Removed|Deleted)/.test(wmsg)?"fmsg":"fmsg bad"}" style="margin:0 0 12px">${esc(wmsg)}</div>`:""}
-  <div class="tgrid"><div class="col">
-   <div class="rbox"><div class="sl">${wk.id?"Edit badge":"Create a badge"}</div>
-    <div class="cform"><div><label>Name</label><input data-wk="name" maxlength="24" value="${esc(wk.name)}" placeholder="e.g. Tournament Winner" autocomplete="off"></div>
-    <div><label>Symbol (emoji or short text)</label><input data-wk="ic" maxlength="4" value="${esc(wk.ic)}" autocomplete="off"></div>
-    <div class="cwide"><label>Description (how to earn it)</label><input data-wk="ds" maxlength="120" value="${esc(wk.ds)}" placeholder="Shown when someone opens the badge" autocomplete="off"></div>
-    <div class="cwide"><label>Tiers (lowest to highest, up to 5 \u2014 each one is set on its own)</label><div id="wkTiers">${wtiers()}</div>${wk.tiers.length<5?`<div class="acts" style="margin-top:10px"><button type="button" class="ghost" data-wtadd="1">+ Add tier</button></div>`:""}</div>
-    <div class="cwide"><label>Preview</label><div id="wkPrev">${wprev()}</div></div></div>
-    <div class="acts"><button class="solid" id="wkSave">${wk.id?"Save changes":"Create badge"}</button>${wk.id?`<button class="ghost" id="wkCancel">Cancel</button>`:""}</div></div>
-   <div class="rbox"><div class="sl">Automatic badges</div><div class="sub" style="margin:8px 0 10px">Given and upgraded on their own from a player\u2019s leaderboard placement. They can\u2019t be edited or awarded by hand.</div>
-    ${AUTO.map(a=>`<div class="mini"><b>${esc(a.name)}</b><span>${esc(a.desc)}<br>${a.tiers.map(x=>esc(x.n+" = "+x.s)).join(" \u203a ")}</span></div>`).join("")}</div>
-  </div><div class="col">
-   <div class="rbox"><div class="sl">Award or upgrade a badge</div>
-    <div class="cform"><div><label>Player</label><select data-wk="ap"><option value="">— Pick a player —</option>${pl.map(p=>`<option value="${esc(p.id)}" ${p.id===wk.ap?"selected":""}>${esc(p.name)} (@${esc(p.roblox)})</option>`).join("")}</select></div>
-    <div><label>Badge</label><select data-wk="ab"><option value="">— Pick a badge —</option>${defs.map(b=>`<option value="${esc(b.id)}" ${b.id===wk.ab?"selected":""}>${esc(b.icon)} ${esc(b.name)}</option>`).join("")}</select></div>
-    <div class="cwide"><label>Tier</label><select data-wk="at" ${ab?"":"disabled"}>${atn.map((x,i)=>`<option value="${i+1}" ${String(i+1)===String(wk.at)?"selected":""}>${i+1} · ${esc(x)}</option>`).join("")||`<option value="1">—</option>`}</select></div></div>
-    <div class="sub" style="margin-top:8px">Awarding a higher tier to someone who already has the badge upgrades it.</div>
-    <div class="acts"><button class="solid" data-wkgive="1">Award</button></div></div>
-   <div class="rbox"><div class="sl">Who has it</div>
-    <div style="margin-top:8px"><select data-wk="vb"><option value="">— Pick a badge —</option>${defs.map(b=>`<option value="${esc(b.id)}" ${b.id===wk.vb?"selected":""}>${esc(b.icon)} ${esc(b.name)} · ${cnt(b.id)}</option>`).join("")}</select></div>
-    <div style="margin-top:8px">${hb?(holders.map(a=>{const q=profiles.find(x=>x.id===a.user_id);return `<div class="mini" style="display:flex;justify-content:space-between;align-items:center;gap:10px"><span><b>${q?esc(q.name):"Unknown"}</b><span>${esc(htn[Math.min(htn.length,Math.max(1,+a.tier||1))-1])}</span></span><button class="ghost" style="padding:5px 10px" data-wkrev="${esc(a.badge_id)}" data-wku="${esc(a.user_id)}">Revoke</button></div>`}).join("")||`<div class="sub">Nobody has this badge yet.</div>`):`<div class="sub">Pick a badge to see who holds it.</div>`}</div></div>
-  </div></div>
-  <div class="rbox" style="margin-top:14px"><div class="sl">Custom badges · ${defs.length}</div>
-   ${defs.map(b=>{const tn=parseTiers(b.tiers);return `<div class="rrow"><span style="display:flex;align-items:center;gap:12px">${hex(tn[tn.length-1].g||b.icon,tn[tn.length-1].m,44)}<span><b>${esc(b.name)}</b><div class="pt" style="white-space:normal">${esc(b.descr)}${tn.length>1?" · "+esc(tn.map(t=>t.n).join(" › ")):""}</div></span></span><span class="sub" style="margin:0;flex:1">${cnt(b.id)} holder(s)</span><div class="obtn"><button class="ghost" data-wkedit="${esc(b.id)}">Edit</button><button class="ghost danger" data-wkdel="${esc(b.id)}">Delete</button></div></div>`}).join("")||`<div class="sub">No custom badges yet — create the first one above.</div>`}</div>`;
-}
-async function bRpc(fn,args){
-  const r=await sb.rpc(fn,args);
-  if(r.error){wmsg=r.error.message;renderWorkshop();return false}
-  await loadProfiles();return true;
-}
-async function wkSave(){
-  if(!sb||!can("badges"))return;
-  const nm=(wk.name||"").trim(),ic=(wk.ic||"").trim()||"🏅",ed=!!wk.id;
-  if(!nm){wmsg="Give the badge a name.";return renderWorkshop()}
-  const tj=JSON.stringify(wk.tiers.map(t=>({m:t.m,n:(t.n||"").trim()||METAL[t.m],d:(t.d||"").trim(),g:(t.g||"").trim()})));
-  if(await bRpc("badge_save",{bid:wk.id||null,nm,ds:(wk.ds||"").trim(),ic,tr:tj,col:BCOL})){
-    logEvent(ed?"badge edited":"badge created","general",null,nm,"");
-    const sv=(wk.id&&bdefs.find(x=>x.id===wk.id))||bdefs.filter(x=>x.name===nm).pop(),cut=!!sv&&String(sv.tiers||"")!==tj;
-    wk=Object.assign(wblank(),{vb:wk.vb});wmsg=cut?"The server cut off the tier settings. Run badges_v2.sql in Supabase, then save the badge again.":"Saved.";renderWorkshop()}
-}
-document.addEventListener("input",e=>{const w=e.target&&e.target.dataset&&e.target.dataset.wt;if(w&&e.target.tagName!=="SELECT"){const[i,f]=w.split(":");if(wk.tiers[+i]){wk.tiers[+i][f]=e.target.value;const pv=$("#wkPrev");if(pv)pv.innerHTML=wprev()}return}
-  const k=e.target&&e.target.dataset&&e.target.dataset.wk;if(!k||e.target.tagName==="SELECT")return;wk[k]=e.target.value;const pv=$("#wkPrev");if(pv)pv.innerHTML=wprev()});
-document.addEventListener("change",e=>{const t=e.target,w=t&&t.dataset&&t.dataset.wt;if(w&&t.tagName==="SELECT"){const[i,f]=w.split(":"),tt=wk.tiers[+i];if(tt){const old=tt.n===METAL[tt.m]||!tt.n;tt[f]=+t.value;if(old)tt.n=METAL[tt.m]}t.blur();return renderWorkshop()}
-  const k=t&&t.dataset&&t.dataset.wk;if(!k||t.tagName!=="SELECT")return;wk[k]=t.value;if(k==="ab")wk.at="1";t.blur();renderWorkshop()});
-document.addEventListener("click",async e=>{
-  const t=e.target;if(!t.closest)return;
-  if(t.closest("[data-wtadd]")){if(wk.tiers.length<5){const l=wk.tiers[wk.tiers.length-1],m=Math.min(4,l.m+1);wk.tiers.push({m,n:METAL[m],d:"",g:""});renderWorkshop()}return}
-  const wtd=t.closest("[data-wtdel]");if(wtd){if(wk.tiers.length>1){wk.tiers.splice(+wtd.dataset.wtdel,1);renderWorkshop()}return}
-  const bt=t.closest("[data-bt]");if(bt)return openBadge(bt.dataset.bk2,bt.dataset.bp2,+bt.dataset.bt);
-  const bk=t.closest("[data-bk]");if(bk)return openBadge(bk.dataset.bk,bk.dataset.bp);
   if(t.closest("[data-swap]")){await clanRpc("side_swap",{});return}
   if(t.closest("[data-pfedit]")){const p=profiles.find(x=>x.id===profId);if(p){ranked();view(p)}return}
   if(t.closest("[data-pfcust]")){openCustomize(profiles.find(x=>x.id===profId));return}
-  if(t.closest("[data-pfwork]")){hostTab="badges";return go("host")}
   if(t.closest("#bnpick")){const f=$("#bnfile");if(f)f.click();return}
   if(t.closest("#bnreset"))return resetBanner();
   if(t.closest("#cuSave"))return saveBio();
-  if(t.closest("#wkSave"))return wkSave();
-  if(t.closest("#wkCancel")){wk=Object.assign(wblank(),{vb:wk.vb});wmsg="";return renderWorkshop()}
-  const wke=t.closest("[data-wkedit]");
-  if(wke){const b=bdefs.find(x=>x.id===wke.dataset.wkedit);if(b){wk=Object.assign(wblank(),{id:b.id,name:b.name,ds:b.descr,ic:b.icon,tiers:parseTiers(b.tiers),vb:wk.vb});wmsg="";renderWorkshop()}return}
-  const wkd=t.closest("[data-wkdel]");
-  if(wkd){if(!can("badges"))return;const b=bdefs.find(x=>x.id===wkd.dataset.wkdel);if(!confirm("Delete the badge “"+(b?b.name:"")+"” and take it from everyone?"))return;
-    if(await bRpc("badge_delete",{bid:wkd.dataset.wkdel})){logEvent("badge deleted","general",null,b?b.name:"","");if(wk.id===wkd.dataset.wkdel)wk=wblank();if(wk.vb===wkd.dataset.wkdel)wk.vb="";if(wk.ab===wkd.dataset.wkdel)wk.ab="";wmsg="Deleted.";renderWorkshop()}return}
-  if(t.closest("[data-wkgive]")){if(!can("badges"))return;
-    if(!wk.ap||!wk.ab){wmsg="Pick a player and a badge.";return renderWorkshop()}
-    const q=profiles.find(x=>x.id===wk.ap),b=bdefs.find(x=>x.id===wk.ab);
-    if(await bRpc("badge_award",{bid:wk.ab,target:wk.ap,tier:+wk.at||1})){logEvent("badge awarded","general",wk.ap,q?q.name:"",b?b.name:"");wmsg="Awarded.";renderWorkshop()}return}
-  const wkr=t.closest("[data-wkrev]");
-  if(wkr){if(!can("badges"))return;const q=profiles.find(x=>x.id===wkr.dataset.wku),b=bdefs.find(x=>x.id===wkr.dataset.wkrev);
-    if(!confirm("Take “"+(b?b.name:"this badge")+"” from "+(q?q.name:"this player")+"?"))return;
-    if(await bRpc("badge_revoke",{bid:wkr.dataset.wkrev,target:wkr.dataset.wku})){logEvent("badge revoked","general",wkr.dataset.wku,q?q.name:"",b?b.name:"");wmsg="Removed.";renderWorkshop()}return}
 });
 async function refreshAuth(){
   const {data:{session}}=await sb.auth.getSession();
@@ -2636,12 +2485,6 @@ document.addEventListener("click",async e=>{
   if(t.closest("[data-cmanage]")){manageOpen=!manageOpen;return render()}
   if(t.closest("[data-cavpick]")){const f=$("#cavfile");if(f)f.click();return}
   if(t.closest("[data-cavreset]"))return resetClanAvatar();
-  const bdr=t.closest("[data-bdrev]");
-  if(bdr){if(!canBadge())return;const r=await sb.from("s3_badge_grants").delete().eq("badge_id",bdr.dataset.bdrev).eq("user_id",bdr.dataset.bu);if(r.error)return alert(r.error.message);await loadProfiles();return}
-  const bdd=t.closest("[data-bddel]");
-  if(bdd){if(!canBadge()||!confirm("Delete this badge and remove it from everyone?"))return;const r=await sb.from("s3_badges").delete().eq("id",bdd.dataset.bddel);if(r.error)return alert(r.error.message);await loadProfiles();return}
-  if(t.closest("[data-bdnew]")){if(!canBadge())return;const n=(bd.name||"").trim().slice(0,20);if(!n)return alert("Enter a badge name.");const r=await sb.from("s3_badges").insert({name:n});if(r.error)return alert(r.error.message);bd.name="";await loadProfiles();return}
-  if(t.closest("[data-bdgive]")){if(!canBadge())return;if(!bd.pm||!bd.pb)return alert("Pick a member and a badge.");const r=await sb.from("s3_badge_grants").insert({badge_id:bd.pb,user_id:bd.pm});if(r.error&&r.error.code!=="23505")return alert(r.error.message);await loadProfiles();return}
   const cap=t.closest("[data-capply]");if(cap){await clanRpc(clanMem[uid]?"side_apply":"clan_apply",{cid:cap.dataset.capply});return}
   const ces=t.closest("[data-cesave]");
   if(ces){const d=cedraft,cn=clanById(ces.dataset.cesave);if(!cn||!canDecide(cn))return;
@@ -2711,6 +2554,10 @@ document.addEventListener("click",async e=>{
   const cp=t.closest("[data-copy]");if(cp){const v=cp.dataset.copy,o=cp.textContent;const ok=()=>{cp.textContent="✓";setTimeout(()=>cp.textContent=o,1200)};(navigator.clipboard?navigator.clipboard.writeText(v):Promise.reject()).then(ok).catch(()=>{const ta=document.createElement("textarea");ta.value=v;document.body.appendChild(ta);ta.select();try{document.execCommand("copy");ok()}catch(e){}ta.remove()});return}
   if(t.closest("#embSave")){const c=embRead();embMsg=["","",""];c.forEach((x,i)=>{if(x.u&&!embOk(x.u))embMsg[i]="That doesn’t look like a Discord webhook URL."});return render()}
   const eb=t.closest("[data-emb]");if(eb)return embSend(eb.dataset.emb);
+  if(t.closest("#cwhSave")){const h=cwhRead();cwhMsg=!h.u?"Cleared.":embOk(h.u)?"Saved.":"That doesn’t look like a Discord webhook URL.";return render()}
+  if(t.closest("#cwAuto")){cwhRead();return}
+  if(t.closest("#cwhFix"))return cwhSend("fix");
+  if(t.closest("#cwhRes"))return cwhSend("res");
   if(t.closest("#imgGo")){if(!can("export"))return;boardImg=await makeBoardImage(imgR);logEvent("generated leaderboard image","general",null,"",imgR);return render()}
   if(t.closest("#imgDl")&&boardImg){const a=document.createElement("a");a.href=boardImg;a.download="jjsgc-leaderboard-"+imgR.toLowerCase()+".png";document.body.appendChild(a);a.click();a.remove();return}
   if(t.closest("#acLock")){if(!await saveSetting("site_lock",{on:!lockOn,msg:lockMsg}))return;lockOn=!lockOn;logEvent(lockOn?"site locked":"site unlocked","general",null,"","");accMsg="";renderAccess();applyGate();return}
@@ -2759,7 +2606,7 @@ document.addEventListener("click",async e=>{
 });
 $("#q").addEventListener("input",render);$("#pq").addEventListener("input",render);$("#hq").addEventListener("input",render);$("#lq").addEventListener("input",render);$("#lf").addEventListener("change",render);$("#cq").addEventListener("input",render);$("#clq").addEventListener("input",render);
 document.addEventListener("keydown",e=>{if(e.key==="Escape")tryClose();if(e.key==="Enter"&&e.target.matches&&e.target.matches(".cont")){pf=e.target.dataset.pr;render()}});
-document.addEventListener("input",e=>{if(e.target&&e.target.id==="annTa")annDraft=e.target.value;const cf=e.target&&e.target.dataset&&e.target.dataset.cf;if(cf)cdraft[cf]=e.target.type==="checkbox"?e.target.checked:e.target.value;const ce=e.target&&e.target.dataset&&e.target.dataset.ce;if(ce)cedraft[ce]=e.target.value;const bk=e.target&&e.target.dataset&&e.target.dataset.bd;if(bk)bd[bk]=e.target.value;const hck=e.target&&e.target.dataset&&e.target.dataset.hc;if(hck)hcSet(hck,e.target.value)});
+document.addEventListener("input",e=>{if(e.target&&e.target.id==="annTa")annDraft=e.target.value;const cf=e.target&&e.target.dataset&&e.target.dataset.cf;if(cf)cdraft[cf]=e.target.type==="checkbox"?e.target.checked:e.target.value;const ce=e.target&&e.target.dataset&&e.target.dataset.ce;if(ce)cedraft[ce]=e.target.value;const hck=e.target&&e.target.dataset&&e.target.dataset.hc;if(hck)hcSet(hck,e.target.value)});
 document.addEventListener("change",e=>{const t=e.target;if(!t)return;
   if(t.id==="hsort")render();
   if(t.id==="evd"){evDays=t.value==="none"?0:(+t.value||30);saveEv();render()}
@@ -2789,7 +2636,7 @@ $("#cmd").addEventListener("click",e=>{const ci=e.target.closest("[data-ci]");if
     sb.auth.onAuthStateChange(()=>{setTimeout(refreshAuth,0)});
     await loadProfiles();await refreshAuth();await loadLog();
     sb.channel("site_content").on("postgres_changes",{event:"*",schema:"public",table:"site_content"},loadLog).subscribe();
-    ["clans","clan_members","clan_apps","clan_side","badge_defs","badge_awards","profile_extra","s3_badges","s3_badge_grants"].forEach(t=>sb.channel(t).on("postgres_changes",{event:"*",schema:"public",table:t},loadProfiles).subscribe());
+    ["clans","clan_members","clan_apps","clan_side","profile_extra"].forEach(t=>sb.channel(t).on("postgres_changes",{event:"*",schema:"public",table:t},loadProfiles).subscribe());
     sb.channel("roles").on("postgres_changes",{event:"*",schema:"public",table:"roles"},loadProfiles).subscribe();
     sb.channel("profiles").on("postgres_changes",{event:"*",schema:"public",table:"profiles"},loadProfiles).subscribe();
     sb.channel("audit_log").on("postgres_changes",{event:"INSERT",schema:"public",table:"audit_log"},()=>{if(pg==="host")loadAudit()}).subscribe();
@@ -3153,19 +3000,18 @@ document.addEventListener("input",e=>{const t=e.target;if(!t)return;
 });
 function renderWarnForce(){const b=$("#wbox");if(!b)return;const a=document.activeElement;if(a&&b.contains(a))a.blur();renderWarn()}
 
-/* ===== notification bell: role / badge / grade / placement / leaderboard + clan changes =====
+/* ===== notification bell: role / grade / placement / leaderboard + clan changes =====
    No new tables: each browser remembers what it last saw for the signed-in player and reports what changed since. */
 var nState={items:[],snap:null},nOpen=false,nFresh=new Set(),nUid=null,nRing=false;
-const NICON={role:"◆",badge:"★",grade:"▲",place:"#",lb:"≡",clan:"⚑",host:"!",warn:"!"};
+const NICON={role:"◆",grade:"▲",place:"#",lb:"≡",clan:"⚑",host:"!",warn:"!"};
 function nLoad(){if(nUid===uid)return;nUid=uid;nState={items:[],snap:null};try{const o=JSON.parse(localStorage.getItem("jj_notif_"+uid)||"null");if(o&&typeof o==="object"){nState.items=Array.isArray(o.items)?o.items:[];nState.snap=o.snap||null;if(Array.isArray(o.seenB))nState.seenB=o.seenB}}catch(e){}}
 function nSave(){try{localStorage.setItem("jj_notif_"+uid,JSON.stringify({items:nState.items.slice(0,60),snap:nState.snap,seenB:nState.seenB}))}catch(e){}}
 function nAdd(k,x,extra){nState.items.unshift(Object.assign({id:Date.now().toString(36)+Math.random().toString(36).slice(2,6),t:Date.now(),k,x,r:0},extra||{}))}
 function nSnapNow(){
   const L=ranked(),p=profiles.find(x=>x.id===uid);if(!p)return null;
   const idx=L.findIndex(x=>x.id===uid);
-  const bd=(bgOk&&!demo)?Object.fromEntries(allDefs().map(d=>[d.key,d.tier(p)])):null;
   return{grade:p.ranked?gtxt(p.grade,p.sub,p.subsub):"No grade",sc:p.ranked?score(p):-99,rank:idx>=0?idx+1:0,roles:p.roles.slice(),
-    top:L.slice(0,10).map(x=>[x.id,x.name]),badges:bd,
+    top:L.slice(0,10).map(x=>[x.id,x.name]),
     clan:clansOk?(clanMem[uid]||""):null,side:(clansOk&&sideOk)?(sideMem[uid]||""):null,
     cp:clansOk?Object.fromEntries(clans.map(c=>[String(c.id),c.place==null?0:(+c.place||0)])):null}}
 function notifyDiff(){
@@ -3173,12 +3019,11 @@ function notifyDiff(){
   const cur=nSnapNow();if(!cur)return;
   const prev=nState.snap;
   /* sections that failed to load keep their last known values so a hiccup never causes fake alerts */
-  if(prev){["badges","clan","side","cp"].forEach(k=>{if(cur[k]===null)cur[k]=prev[k]===undefined?null:prev[k]})}
+  if(prev){["clan","side","cp"].forEach(k=>{if(cur[k]===null)cur[k]=prev[k]===undefined?null:prev[k]})}
   let added=0;
   if(prev){
     const before=nState.items.length;
     (cur.roles||[]).filter(r=>!(prev.roles||[]).includes(r)&&!/^hosts?$/i.test(r)).forEach(r=>nAdd("role","You received the role “"+r+"”."));
-    if(cur.badges&&prev.badges){const defs=allDefs();Object.keys(cur.badges).forEach(k=>{const a=+prev.badges[k]||0,b=+cur.badges[k]||0;if(b>a){const d=defs.find(x=>x.key===k);if(!d)return;const tn=(d.tiers[b-1]||{}).n||("tier "+b);nAdd("badge",a?"Your “"+d.name+"” badge reached "+tn+".":"You earned the “"+d.name+"” badge ("+tn+").")}})}
     if(cur.grade!==prev.grade){nAdd("grade",cur.sc>prev.sc?"You were promoted to "+cur.grade+".":"Your grade changed to "+cur.grade+".")}
     if(cur.rank!==prev.rank){
       if(!prev.rank&&cur.rank)nAdd("place","You were placed on the leaderboard at #"+cur.rank+".");
