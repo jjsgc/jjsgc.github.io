@@ -1555,73 +1555,126 @@ async function embSend(which){
   for(const i of idx){await embSendOne(c[i],i);render()}
   embBusy=false;render();
 }
-/* ---- clan wars webhook (fixtures / results) ---- */
-const CWH_KEY="jj_cwhook";
-const cwhLoad=()=>{try{return Object.assign({u:"",auto:true},JSON.parse(localStorage.getItem(CWH_KEY)||"{}"))}catch(e){return{u:"",auto:true}}};
-function cwhRead(){const o=cwhLoad(),u=$("#cwU"),a=$("#cwAuto");if(u)o.u=(u.value||"").trim();if(a)o.auto=a.checked;try{localStorage.setItem(CWH_KEY,JSON.stringify(o))}catch(e){}return o}
-let cwhMsg="",cwhBusy=false;
+/* ---- clan wars webhooks (fixtures / results / top 10 clans) ---- */
+const CWH_KEY="jj_cwhook2",CWH_PREV="jj_cltop_prev",CWH_NAMES={fix:"Fixtures",res:"Results",top:"Top 10 clans"};
+const cwhLoad=()=>{try{return Object.assign({fix:"",res:"",top:"",auto:true},JSON.parse(localStorage.getItem(CWH_KEY)||"{}"))}catch(e){return{fix:"",res:"",top:"",auto:true}}};
+function cwhRead(){const o=cwhLoad();["fix","res","top"].forEach(k=>{const u=$("#cwU_"+k);if(u)o[k]=(u.value||"").trim()});const a=$("#cwAuto");if(a)o.auto=a.checked;try{localStorage.setItem(CWH_KEY,JSON.stringify(o))}catch(e){}return o}
+let cwhMsg={fix:"",res:"",top:""},cwhBusy=false;
+const CWH_WHITE=0xffffff;
 const dTrunc=(t,n)=>{t=String(t);return t.length>n?t.slice(0,n-1)+"…":t};
 const cwhNames=ids=>dTrunc((ids||[]).map(i=>dEsc(pName(i))).join(", ")||"—",1000);
 const cwhClan=id=>{const c=clanById(id);return c?dEsc(c.name):"TBD"};
 const cwhThumb=c=>c&&/^https:\/\//.test(c.avatar||"")?c.avatar:"";
-function cwhEmbeds(kind,wk){
+const cwhFin=(e,line)=>{if(line)e.image={url:"attachment://"+EMB_LINE};return e};
+function cwhEmbeds(kind,wk,line){
   return (wk.matches||[]).filter(m=>m.a||m.b).map(m=>{
     const ca=clanById(m.a),cb=clanById(m.b),vs=cwhClan(m.a)+" vs "+cwhClan(m.b);
     if(kind==="fix"){
       const t=m.at?Date.parse(m.at):NaN,u=Math.floor(t/1000);
-      const e={title:dTrunc(vs,250),color:0x2b2d31,description:isNaN(t)?"Time TBD":"<t:"+u+":F> · <t:"+u+":R>",fields:[]};
+      const e={title:dTrunc(vs,250),color:CWH_WHITE,description:isNaN(t)?"Time TBD":"<t:"+u+":F> · <t:"+u+":R>",fields:[]};
       [["A",ca],["B",cb]].forEach(([sd,c])=>{
         const mn=m["main"+sd]||[],sb2=m["sub"+sd]||[];
         if(mn.length||sb2.length)e.fields.push({name:dTrunc(c?c.name:"TBD",200),value:"**Main:** "+cwhNames(mn)+"\n**Sub:** "+cwhNames(sb2),inline:true});
       });
       if(!e.fields.length)delete e.fields;
       const th=cwhThumb(ca)||cwhThumb(cb);if(th)e.thumbnail={url:th};
-      return e;
+      return cwhFin(e,line);
     }
     const s=rScore(m),win=s.a>s.b?ca:s.b>s.a?cb:null;
-    const col=win?parseInt(clanCol(win).slice(1),16):0x2b2d31;
     const lines=(m.rounds||[]).map((r,i)=>{
       const f=(r.fights||[]).filter(x=>x.w).map(x=>"> "+dEsc(pName(x.w==="A"?x.pa:x.pb))+" → "+dEsc(pName(x.w==="A"?x.pb:x.pa))).join("\n");
       return "**Round "+(i+1)+"** · "+rCount(r,"A")+"–"+rCount(r,"B")+(f?"\n"+f:"");
     }).join("\n\n");
-    const e={title:dTrunc(cwhClan(m.a)+"  "+s.a+" – "+s.b+"  "+cwhClan(m.b),250),color:col,description:dTrunc(lines||"No fights yet.",4000),footer:{text:"Fights "+s.fa+" – "+s.fb+(win?" · Winner: "+win.name:s.a===s.b&&(s.a||s.b)?" · Draw":"")}};
+    const e={title:dTrunc(cwhClan(m.a)+"  "+s.a+" – "+s.b+"  "+cwhClan(m.b),250),color:CWH_WHITE,description:dTrunc(lines||"No fights yet.",4000),footer:{text:"Fights "+s.fa+" – "+s.fb+(win?" · Winner: "+win.name:s.a===s.b&&(s.a||s.b)?" · Draw":"")}};
     const th=cwhThumb(win)||cwhThumb(ca)||cwhThumb(cb);if(th)e.thumbnail={url:th};
-    return e;
+    return cwhFin(e,line);
   });
 }
-async function cwhPost(u,kind,wk){
-  const embeds=cwhEmbeds(kind,wk);
-  if(!embeds.length)return "Nothing to send.";
-  const head="**Clan wars · "+(kind==="fix"?"Fixtures":"Results")+" — "+dEsc(wk.title||"Week")+"**";
+function cwhRecords(){
+  const rec={};
+  cwRs.weeks.forEach(w=>(w.matches||[]).forEach(m=>{
+    const s=rScore(m);if(s.a===s.b)return;
+    const win=s.a>s.b?m.a:m.b,lose=s.a>s.b?m.b:m.a;
+    if(win)(rec[win]=rec[win]||{w:0,l:0}).w++;
+    if(lose)(rec[lose]=rec[lose]||{w:0,l:0}).l++;
+  }));
+  return rec;
+}
+const cwhPrev=()=>{try{return JSON.parse(localStorage.getItem(CWH_PREV)||"null")}catch(e){return null}};
+const CWH_MEDAL=["🥇","🥈","🥉","4️⃣","5️⃣","6️⃣","7️⃣","8️⃣","9️⃣","🔟"];
+function cwhTop(){return clans.filter(c=>c.place).sort((a,b)=>(a.place-b.place)||byName(a,b)).slice(0,10)}
+function cwhTopEmbeds(list,line){
+  const rec=cwhRecords(),prev=cwhPrev();
+  return list.map((c,i)=>{
+    const mem=clanMembers(c).sort((a,b)=>(b.id===c.owner)-(a.id===c.owner)||byName(a,b));
+    const names=mem.map(p=>dEsc(p.name)+(p.id===c.owner?" 👑":"")).join(" • ")||"No members";
+    const r=rec[c.id]||{w:0,l:0};
+    let st="→ Stable";
+    if(prev){const o=prev[c.id];if(o==null)st="🆕 New";else if(+c.place<o)st="▲ Up "+(o-c.place);else if(+c.place>o)st="▼ Down "+(c.place-o)}
+    const e={title:dTrunc(CWH_MEDAL[i]+" | "+dEsc(c.name),250),color:CWH_WHITE,description:dTrunc("**"+names+"**",4000),
+      fields:[{name:"Record",value:"`W: "+r.w+" | L: "+r.l+"`",inline:true},{name:"Status",value:"`"+st+"`",inline:true}]};
+    const th=cwhThumb(c);if(th)e.thumbnail={url:th};
+    return cwhFin(e,line);
+  });
+}
+async function cwhSendPayload(u,payload,gif){
+  let r;
+  if(gif){
+    payload.attachments=[{id:0,filename:EMB_LINE}];
+    const fd=new FormData();fd.append("payload_json",JSON.stringify(payload));fd.append("files[0]",gif,EMB_LINE);
+    r=await fetch(u+"?wait=true",{method:"POST",body:fd});
+  }else r=await fetch(u+"?wait=true",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(payload)});
+  if(!r.ok){let d="";try{d=(await r.json()).message||""}catch(e){}throw new Error(r.status+(d?" "+d:""))}
+}
+async function cwhPostEmbeds(u,embeds,head,uname){
   for(let i=0;i<embeds.length;i+=10){
-    const payload={username:"Clan Wars",embeds:embeds.slice(i,i+10),allowed_mentions:{parse:[]}};
-    if(!i)payload.content=head;
-    const r=await fetch(u+"?wait=true",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(payload)});
-    if(!r.ok){let d="";try{d=(await r.json()).message||""}catch(e){}throw new Error(r.status+(d?" "+d:""))}
+    const payload={username:uname,embeds:embeds.slice(i,i+10),allowed_mentions:{parse:[]}};
+    if(!i&&head)payload.content=head;
+    await cwhSendPayload(u,payload,embeds.some(e=>e.image)?await embLineGet():null);
   }
+}
+async function cwhPost(u,kind,wk){
+  const gif=await embLineGet(),embeds=cwhEmbeds(kind,wk,!!gif);
+  if(!embeds.length)return "Nothing to send.";
+  await cwhPostEmbeds(u,embeds,"**Clan wars · "+CWH_NAMES[kind]+" — "+dEsc(wk.title||"Week")+"**","Clan Wars");
+  return "";
+}
+async function cwhPostTop(u){
+  const list=cwhTop();
+  if(!list.length)return "No placed clans yet.";
+  const gif=await embLineGet();
+  await cwhPostEmbeds(u,cwhTopEmbeds(list,!!gif),"","Clan Rankings");
+  const m={};list.forEach(c=>m[c.id]=+c.place);
+  try{localStorage.setItem(CWH_PREV,JSON.stringify(m))}catch(e){}
   return "";
 }
 async function cwhAuto(kind,old,nw){
-  const h=cwhLoad();if(!h.auto||!embOk(h.u))return "";
+  const h=cwhLoad();if(!h.auto||!embOk(h[kind]))return "";
   const ow=(old&&old.weeks)||[];
   const ch=nw.weeks.map((w,i)=>({w,i})).filter(x=>JSON.stringify(x.w)!==JSON.stringify(ow[x.i])).slice(-3);
   if(!ch.length)return "";
   try{
-    for(const x of ch)await cwhPost(h.u,kind,Object.assign({},x.w,{title:x.w.title||"Week "+(x.i+1)}));
-    logEvent("posted clan wars "+(kind==="fix"?"fixtures":"results"),"general",null,"",ch.map(x=>x.w.title||"Week "+(x.i+1)).join(", "));
+    for(const x of ch)await cwhPost(h[kind],kind,Object.assign({},x.w,{title:x.w.title||"Week "+(x.i+1)}));
+    logEvent("posted clan wars "+CWH_NAMES[kind].toLowerCase(),"general",null,"",ch.map(x=>x.w.title||"Week "+(x.i+1)).join(", "));
     return " Posted to Discord ✓";
   }catch(e){return " Discord post failed: "+e.message}
 }
 async function cwhSend(kind){
   if(cwhBusy)return;
   const h=cwhRead();
-  if(!embOk(h.u)){cwhMsg="Add a valid webhook URL.";return render()}
-  const L=kind==="fix"?cwFx:cwRs;
-  if(!L.weeks.length){cwhMsg="Nothing posted yet.";return render()}
-  const i=kind==="fix"?cwFutureWeek():L.weeks.length-1;
-  cwhBusy=true;cwhMsg="Sending…";render();
-  try{const m=await cwhPost(h.u,kind,Object.assign({},L.weeks[i],{title:L.weeks[i].title||"Week "+(i+1)}));cwhMsg=m||"Sent ✓"}
-  catch(e){cwhMsg="Couldn’t send: "+e.message}
+  if(!embOk(h[kind])){cwhMsg[kind]="Add a valid webhook URL.";return render()}
+  cwhBusy=true;cwhMsg[kind]="Sending…";render();
+  try{
+    let m;
+    if(kind==="top")m=await cwhPostTop(h.top);
+    else{
+      const L=kind==="fix"?cwFx:cwRs;
+      if(!L.weeks.length)m="Nothing posted yet.";
+      else{const i=kind==="fix"?cwFutureWeek():L.weeks.length-1;m=await cwhPost(h[kind],kind,Object.assign({},L.weeks[i],{title:L.weeks[i].title||"Week "+(i+1)}))}
+    }
+    cwhMsg[kind]=m||"Sent ✓";
+    if(!m)logEvent("sent clan wars "+CWH_NAMES[kind].toLowerCase(),"general",null,"","");
+  }catch(e){cwhMsg[kind]="Couldn’t send: "+e.message}
   cwhBusy=false;render();
 }
 async function saveAnn(clear){
@@ -1672,12 +1725,11 @@ function renderTools(board){
       <div class="sub" style="margin:4px 0 0">${esc(embMsg[i])}</div></div>`).join("")}
       <div class="trow" style="margin-top:14px"><button id="embSave">Save</button><button class="solid" data-emb="all" ${can("export")&&!embBusy?"":"disabled"}>Send to all</button></div>
     </div>
-    <div class="rbox"><div class="sl">Clan wars webhook</div>
-      <div class="sub">Posts clan wars fixtures or results to a Discord channel. The URL is saved only in this browser, so auto-posting works when you save from this browser.</div>
-      ${(()=>{const h=cwhLoad(),ok=(can("export")||can("cw"))&&!cwhBusy?"":"disabled";return `<div class="trow" style="margin-top:14px"><input id="cwU" type="password" autocomplete="off" placeholder="https://discord.com/api/webhooks/…" value="${esc(h.u)}" style="flex:1;min-width:0;background:#000;border:1px solid var(--line);color:var(--fg);padding:11px 14px;font:400 14px var(--sans);border-radius:8px;outline:none"><button id="cwhSave">Save</button></div>
-      <label class="trow" style="margin-top:10px;gap:8px;align-items:center;cursor:pointer"><input type="checkbox" id="cwAuto" ${h.auto?"checked":""}><span class="sub" style="margin:0">Post automatically when fixtures or results are saved (changed weeks only)</span></label>
-      <div class="trow" style="margin-top:10px"><button id="cwhFix" ${ok}>Send fixtures now</button><button id="cwhRes" ${ok}>Send results now</button></div>
-      <div class="sub" style="margin:4px 0 0">${esc(cwhMsg)}</div>`})()}
+    <div class="rbox"><div class="sl">Clan wars webhooks</div>
+      <div class="sub">Three separate Discord channels: fixtures, results and the top 10 clans. URLs are saved only in this browser, so auto-posting works when you save from this browser.</div>
+      ${(()=>{const h=cwhLoad(),ok=(can("export")||can("cw"))&&!cwhBusy?"":"disabled";
+        const row=(k,note)=>`<div style="margin-top:14px"><div class="sl" style="margin:0 0 6px">${CWH_NAMES[k]}</div><div class="trow"><input id="cwU_${k}" type="password" autocomplete="off" placeholder="https://discord.com/api/webhooks/…" value="${esc(h[k])}" style="flex:1;min-width:0;background:#000;border:1px solid var(--line);color:var(--fg);padding:11px 14px;font:400 14px var(--sans);border-radius:8px;outline:none"><button data-cwh="${k}" ${ok}>Send</button></div><div class="sub" style="margin:4px 0 0">${esc(cwhMsg[k]||note)}</div></div>`;
+        return row("fix","Sends the next upcoming week.")+row("res","Sends the latest week.")+row("top","Top 10 placed clans with record and status (up or down since the last post).")+`<label class="trow" style="margin-top:14px;gap:8px;align-items:center;cursor:pointer"><input type="checkbox" id="cwAuto" ${h.auto?"checked":""}><span class="sub" style="margin:0">Post fixtures and results automatically when saved (changed weeks only)</span></label><div class="trow" style="margin-top:10px"><button id="cwhSave">Save</button></div>`})()}
     </div>
     <div class="rbox"><div class="sl">Copy for Discord</div>
       <div class="sub">Top 25 overall, top 10 per region, as formatted text.</div>
@@ -2554,10 +2606,9 @@ document.addEventListener("click",async e=>{
   const cp=t.closest("[data-copy]");if(cp){const v=cp.dataset.copy,o=cp.textContent;const ok=()=>{cp.textContent="✓";setTimeout(()=>cp.textContent=o,1200)};(navigator.clipboard?navigator.clipboard.writeText(v):Promise.reject()).then(ok).catch(()=>{const ta=document.createElement("textarea");ta.value=v;document.body.appendChild(ta);ta.select();try{document.execCommand("copy");ok()}catch(e){}ta.remove()});return}
   if(t.closest("#embSave")){const c=embRead();embMsg=["","",""];c.forEach((x,i)=>{if(x.u&&!embOk(x.u))embMsg[i]="That doesn’t look like a Discord webhook URL."});return render()}
   const eb=t.closest("[data-emb]");if(eb)return embSend(eb.dataset.emb);
-  if(t.closest("#cwhSave")){const h=cwhRead();cwhMsg=!h.u?"Cleared.":embOk(h.u)?"Saved.":"That doesn’t look like a Discord webhook URL.";return render()}
+  if(t.closest("#cwhSave")){const h=cwhRead();cwhMsg={fix:"",res:"",top:""};["fix","res","top"].forEach(k=>{if(h[k]&&!embOk(h[k]))cwhMsg[k]="That doesn’t look like a Discord webhook URL."});return render()}
   if(t.closest("#cwAuto")){cwhRead();return}
-  if(t.closest("#cwhFix"))return cwhSend("fix");
-  if(t.closest("#cwhRes"))return cwhSend("res");
+  const cwb=t.closest("[data-cwh]");if(cwb)return cwhSend(cwb.dataset.cwh);
   if(t.closest("#imgGo")){if(!can("export"))return;boardImg=await makeBoardImage(imgR);logEvent("generated leaderboard image","general",null,"",imgR);return render()}
   if(t.closest("#imgDl")&&boardImg){const a=document.createElement("a");a.href=boardImg;a.download="jjsgc-leaderboard-"+imgR.toLowerCase()+".png";document.body.appendChild(a);a.click();a.remove();return}
   if(t.closest("#acLock")){if(!await saveSetting("site_lock",{on:!lockOn,msg:lockMsg}))return;lockOn=!lockOn;logEvent(lockOn?"site locked":"site unlocked","general",null,"","");accMsg="";renderAccess();applyGate();return}
