@@ -1556,10 +1556,10 @@ async function embSend(which){
   embBusy=false;render();
 }
 /* ---- clan wars webhooks (fixtures / results / top 10 clans) ---- */
-const CWH_KEY="jj_cwhook2",CWH_PREV="jj_cltop_prev",CWH_NAMES={fix:"Fixtures",res:"Results",top:"Top 10 clans"};
-const cwhLoad=()=>{try{return Object.assign({fix:"",res:"",top:"",auto:true},JSON.parse(localStorage.getItem(CWH_KEY)||"{}"))}catch(e){return{fix:"",res:"",top:"",auto:true}}};
-function cwhRead(){const o=cwhLoad();["fix","res","top"].forEach(k=>{const u=$("#cwU_"+k);if(u)o[k]=(u.value||"").trim()});const a=$("#cwAuto");if(a)o.auto=a.checked;try{localStorage.setItem(CWH_KEY,JSON.stringify(o))}catch(e){}return o}
-let cwhMsg={fix:"",res:"",top:""},cwhBusy=false;
+const CWH_KEY="jj_cwhook2",CWH_PREV="jj_cltop_prev",CWH_NAMES={fix:"Fixtures",res:"Results",top:"Top 10 clans",show:"Clan showcase"};
+const cwhLoad=()=>{try{return Object.assign({fix:"",res:"",top:"",show:"",auto:true},JSON.parse(localStorage.getItem(CWH_KEY)||"{}"))}catch(e){return{fix:"",res:"",top:"",show:"",auto:true}}};
+function cwhRead(){const o=cwhLoad();["fix","res","top","show"].forEach(k=>{const u=$("#cwU_"+k);if(u)o[k]=(u.value||"").trim()});const a=$("#cwAuto");if(a)o.auto=a.checked;try{localStorage.setItem(CWH_KEY,JSON.stringify(o))}catch(e){}return o}
+let cwhMsg={fix:"",res:"",top:"",show:""},cwhBusy=false;
 const CWH_WHITE=0xffffff;
 const dTrunc=(t,n)=>{t=String(t);return t.length>n?t.slice(0,n-1)+"…":t};
 const cwhNames=ids=>dTrunc((ids||[]).map(i=>dEsc(pName(i))).join(", ")||"—",1000);
@@ -1614,6 +1614,26 @@ function cwhTopEmbeds(list,line){
     return cwhFin(e,line);
   });
 }
+/* clan showcase: one embed per clan (picture, name, description, leader, member count) */
+function cwhShowList(){return clans.slice().sort((a,b)=>(a.place?0:1)-(b.place?0:1)||((a.place||0)-(b.place||0))||(clanMembers(b).length-clanMembers(a).length)||byName(a,b))}
+function cwhShowEmbeds(list,line){
+  return list.map(c=>{
+    const own=c.owner?profiles.find(p=>p.id===c.owner):null,n=clanMembers(c).length;
+    const e={title:dTrunc("["+dEsc(c.tag)+"] "+dEsc(c.name),250),color:0x2b2d31,
+      fields:[{name:"Leader",value:own?dTrunc(dEsc(own.name),200):"—",inline:true},{name:"Members",value:String(n),inline:true}]};
+    if(c.place)e.fields.push({name:"Placement",value:"#"+c.place,inline:true});
+    if((c.descr||"").trim())e.description=dTrunc(dEsc(c.descr.trim()),1000);
+    const th=cwhThumb(c);if(th)e.thumbnail={url:th};
+    return cwhFin(e,line);
+  });
+}
+async function cwhPostShow(u){
+  const list=cwhShowList();
+  if(!list.length)return "No clans yet.";
+  const gif=await embLineGet();
+  await cwhPostEmbeds(u,cwhShowEmbeds(list,!!gif),"","Clan Showcase");
+  return "";
+}
 async function cwhSendPayload(u,payload,gif){
   let r;
   if(gif){
@@ -1664,6 +1684,7 @@ async function cwhSend(kind){
   try{
     let m;
     if(kind==="top")m=await cwhPostTop(h.top);
+    else if(kind==="show")m=await cwhPostShow(h.show);
     else{
       const L=kind==="fix"?cwFx:cwRs;
       if(!L.weeks.length)m="Nothing posted yet.";
@@ -1723,10 +1744,10 @@ function renderTools(board){
       <div class="trow" style="margin-top:14px"><button id="embSave">Save</button><button class="solid" data-emb="all" ${can("export")&&!embBusy?"":"disabled"}>Send to all</button></div>
     </div>
     <div class="rbox"><div class="sl">Clan wars webhooks</div>
-      <div class="sub">Three separate Discord channels: fixtures, results and the top 10 clans. URLs are saved only in this browser, so auto-posting works when you save from this browser.</div>
+      <div class="sub">Separate Discord channels for fixtures, results, the top 10 clans and the clan showcase. URLs are saved only in this browser, so auto-posting works when you save from this browser.</div>
       ${(()=>{const h=cwhLoad(),ok=(can("export")||can("cw"))&&!cwhBusy?"":"disabled";
         const row=(k,note)=>`<div style="margin-top:14px"><div class="sl" style="margin:0 0 6px">${CWH_NAMES[k]}</div><div class="trow"><input id="cwU_${k}" type="password" autocomplete="off" placeholder="https://discord.com/api/webhooks/…" value="${esc(h[k])}" style="flex:1;min-width:0;background:#000;border:1px solid var(--line);color:var(--fg);padding:11px 14px;font:400 14px var(--sans);border-radius:8px;outline:none"><button data-cwh="${k}" ${ok}>Send</button></div><div class="sub" style="margin:4px 0 0">${esc(cwhMsg[k]||note)}</div></div>`;
-        return row("fix","Sends the next upcoming week.")+row("res","Sends the latest week.")+row("top","Top 10 placed clans with record and status (up or down since the last post).")+`<label class="trow" style="margin-top:14px;gap:8px;align-items:center;cursor:pointer"><input type="checkbox" id="cwAuto" ${h.auto?"checked":""}><span class="sub" style="margin:0">Post fixtures and results automatically when saved (changed weeks only)</span></label><div class="trow" style="margin-top:10px"><button id="cwhSave">Save</button></div>`})()}
+        return row("fix","Sends the next upcoming week.")+row("res","Sends the latest week.")+row("top","Top 10 placed clans with record and status (up or down since the last post).")+row("show","Posts every registered clan: picture, name, description, leader and member count.")+`<label class="trow" style="margin-top:14px;gap:8px;align-items:center;cursor:pointer"><input type="checkbox" id="cwAuto" ${h.auto?"checked":""}><span class="sub" style="margin:0">Post fixtures and results automatically when saved (changed weeks only)</span></label><div class="trow" style="margin-top:10px"><button id="cwhSave">Save</button></div>`})()}
     </div>
     <div class="rbox"><div class="sl">Copy for Discord</div>
       <div class="sub">Top 25 overall, top 10 per region, as formatted text.</div>
@@ -2603,7 +2624,7 @@ document.addEventListener("click",async e=>{
   const cp=t.closest("[data-copy]");if(cp){const v=cp.dataset.copy,o=cp.textContent;const ok=()=>{cp.textContent="✓";setTimeout(()=>cp.textContent=o,1200)};(navigator.clipboard?navigator.clipboard.writeText(v):Promise.reject()).then(ok).catch(()=>{const ta=document.createElement("textarea");ta.value=v;document.body.appendChild(ta);ta.select();try{document.execCommand("copy");ok()}catch(e){}ta.remove()});return}
   if(t.closest("#embSave")){const c=embRead();embMsg=["","",""];c.forEach((x,i)=>{if(x.u&&!embOk(x.u))embMsg[i]="That doesn’t look like a Discord webhook URL."});return render()}
   const eb=t.closest("[data-emb]");if(eb)return embSend(eb.dataset.emb);
-  if(t.closest("#cwhSave")){const h=cwhRead();cwhMsg={fix:"",res:"",top:""};["fix","res","top"].forEach(k=>{if(h[k]&&!embOk(h[k]))cwhMsg[k]="That doesn’t look like a Discord webhook URL."});return render()}
+  if(t.closest("#cwhSave")){const h=cwhRead();cwhMsg={fix:"",res:"",top:"",show:""};["fix","res","top","show"].forEach(k=>{if(h[k]&&!embOk(h[k]))cwhMsg[k]="That doesn’t look like a Discord webhook URL."});return render()}
   if(t.closest("#cwAuto")){cwhRead();return}
   const cwb=t.closest("[data-cwh]");if(cwb)return cwhSend(cwb.dataset.cwh);
   if(t.closest("#imgGo")){if(!can("export"))return;boardImg=await makeBoardImage(imgR);logEvent("generated leaderboard image","general",null,"",imgR);return render()}
