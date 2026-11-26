@@ -772,9 +772,11 @@ const banTag=p=>p.banned?'<span class="host bn">Banned</span>':"";
 /* Role hierarchy: top = highest. Add more with hostRoleOrder in config.js, e.g. roleOrder:["Moderator"] (placed after Assistant). */
 const ROLE_ORDER=["Host","Site Manager","Leaderboard Manager","Assistant",...((window.JJSGC_CONFIG||{}).roleOrder||[])];
 const ROLE_LC=ROLE_ORDER.map(r=>r.toLowerCase());
-const roleIdx=r=>{const k=String(r).toLowerCase().replace(/^hosts$/,"host"),i=ROLE_LC.indexOf(k);return i<0?ROLE_ORDER.length:i};
+const roleList=()=>{const base=ROLE_ORDER.slice(),lc=new Set(base.map(x=>x.toLowerCase()));Object.keys(roleDefs).sort((a,b)=>a.localeCompare(b)).forEach(r=>{if(!lc.has(r.toLowerCase())&&!/^hosts?$/i.test(r)){base.push(r);lc.add(r.toLowerCase())}});return base};
+const roleIdx=r=>{const k=String(r).toLowerCase().replace(/^hosts$/,"host"),L=roleList().map(x=>x.toLowerCase()),i=L.indexOf(k);return i<0?L.length:i};
+const plur=s=>/s$/i.test(s)?s:s+"s";
 const roleRank=p=>{let m=isHost(p)?0:99;(p.roles||[]).forEach(r=>{m=Math.min(m,roleIdx(r))});return m};
-const roleGroup=p=>{const k=roleRank(p);return k>=99?"Players":k>=ROLE_ORDER.length?"Staff":ROLE_ORDER[k]+"s"};
+const roleGroup=p=>{const k=roleRank(p);if(k>=99)return"Players";const L=roleList();if(k<L.length)return plur(L[k]);const r=(p.roles||[]).find(x=>roleIdx(x)===k);return r?plur(r):"Staff"};
 const tags=p=>(p.banned?'<span class="host bn">Banned</span>':"")+(isHost(p)?'<span class="host hostflash">Host</span>':"")+p.roles.filter(r=>!/^hosts?$/i.test(r)).sort((x,y)=>roleIdx(x)-roleIdx(y)).map(badge).join("");
 /* rank badge: #1 yellow, #2 white, fading to pure black at #20+ */
 const rkStyle=r=>{
@@ -1048,7 +1050,7 @@ let pf="ALL";
 const onB=p=>p.ranked&&!p.banned;
 function pcard(p,i){
   const on=onB(p);
-  return `<div class="lrow np" data-id="${esc(p.id)}"><div class="l">${av(p)}<div style="min-width:0"><div class="nm">${nmx(p)}${tags(p)}</div><div class="pt">${on?esc(gl(p))+" · #"+p.rank:p.banned?"Banned":"Not registered in"} · ${rbA(p)}</div></div></div>${rbPic(p)}<span class="lrg">${p.region}</span></div>`;
+  return `<div class="lrow np" data-id="${esc(p.id)}"><div class="l">${av(p)}<div style="min-width:0"><div class="nm">${nmx(p)}${banTag(p)}</div><div class="pt">${on?esc(gl(p))+" · #"+p.rank:p.banned?"Banned":"Not registered in"} · ${rbA(p)}</div></div></div>${rbPic(p)}<span class="lrg">${p.region}</span></div>`;
 }
 function renderPlayers(board){
   const t=$("#pq").value.trim().toLowerCase();
@@ -1062,7 +1064,7 @@ function renderPlayers(board){
   <div class="tiles"><div class="tile"><span>Players</span><b>${L.length}</b></div><div class="tile"><span>On the board</span><b>${b.length}</b></div>
   <div class="tile"><span>Top player</span><b class="sm">${top?esc(top.name):"—"}</b><em>${top?esc(gl(top)):"Nobody ranked yet"}</em></div>
   </div>`;
-  const pl=L.filter(p=>!t||(p.name+" "+p.roblox).toLowerCase().includes(t)).sort((a,b)=>(roleRank(a)-roleRank(b))||(a.banned-b.banned)||(onB(b)-onB(a))||score(b)-score(a));
+  const pl=L.filter(p=>!t||(p.name+" "+p.roblox).toLowerCase().includes(t)).sort((a,b)=>(roleRank(a)-roleRank(b))||roleGroup(a).localeCompare(roleGroup(b))||(a.banned-b.banned)||(onB(b)-onB(a))||score(b)-score(a));
   $("#plabel").textContent=`${pl.length} player${pl.length===1?"":"s"}${pf==="ALL"?"":" · "+REG[pf]}`;
   $("#pgrid").innerHTML=pl.length?(()=>{let last="",hasStaff=pl.some(p=>roleRank(p)<99);return pl.map((p,i)=>{const g=roleGroup(p),hd=hasStaff&&g!==last?`<div class="rgh" style="grid-column:1/-1"><b>${esc(g)}</b><i></i><span>${pl.filter(x=>roleGroup(x)===g).length}</span></div>`:"";last=g;return hd+pcard(p,i)}).join("")})():`<div class="empty" style="grid-column:1/-1">${t?"No players found.":"Nobody has registered in this region yet."}</div>`;
 }
@@ -2162,7 +2164,7 @@ document.addEventListener("change",e=>{if(e.target&&e.target.id==="cavfile"){con
 function renderRoles(){
   $("#rbox").hidden=!isOwner;if(!isOwner)return;
   const names=[...new Set([...Object.keys(roleDefs),...profiles.flatMap(p=>p.roles)])].sort();
-  $("#rlist").innerHTML=names.length?names.map(n=>`<div class="rrow">${badge(n)}<input type="color" class="rcol" data-rcol="${esc(n)}" value="${roleCol(n)||"#8f86d6"}" title="Role colour">${roleCol(n)?`<button class="ghost" data-rcreset="${esc(n)}">Reset colour</button>`:""}<span class="sub" style="margin:0;flex:none">${profiles.filter(p=>p.roles.includes(n)).length} member(s)</span><div class="perms">${Object.entries(PERMS).map(([k,l])=>`<label><input type="checkbox" data-rp="${esc(n)}" data-k="${k}" ${(roleDefs[n]||[]).includes(k)?"checked":""}>${l}</label>`).join("")}</div>${n in roleDefs?`<button class="ghost" data-rdel="${esc(n)}">Remove</button>`:""}</div>`).join(""):`<div class="sub">No roles yet. Add one below.</div>`;
+  $("#rlist").innerHTML=names.length?names.map(n=>`<div class="rrow">${badge(n)}<input type="color" class="rcol" data-rcol="${esc(n)}" value="${roleCol(n)||"#8f86d6"}" title="Role colour">${roleCol(n)?`<button class="ghost" data-rcreset="${esc(n)}">Reset colour</button>`:""}<span class="sub" style="margin:0;flex:none">${profiles.filter(p=>p.roles.includes(n)).length} member(s)</span><div class="perms"><label title="Grants both Clans and Clan wars"><input type="checkbox" data-rpair="${esc(n)}" ${["clans","cw"].every(k=>(roleDefs[n]||[]).includes(k))?"checked":""}><b>Clans + Clan wars</b></label>${Object.entries(PERMS).map(([k,l])=>`<label><input type="checkbox" data-rp="${esc(n)}" data-k="${k}" ${(roleDefs[n]||[]).includes(k)?"checked":""}>${l}</label>`).join("")}</div>${n in roleDefs?`<button class="ghost" data-rdel="${esc(n)}">Remove</button>`:""}</div>`).join(""):`<div class="sub">No roles yet. Add one below.</div>`;
 }
 async function saveRole(name,perms,color){
   if(color===undefined)color=roleColors[name]||"";
@@ -2175,10 +2177,14 @@ document.addEventListener("change",async e=>{
   if(ci&&isOwner){const n=ci.dataset.rcol;if(await saveRole(n,roleDefs[n]||[],ci.value))logEvent("role colour","general",null,n,ci.value);renderAuth();render();return}
 });
 document.addEventListener("change",async e=>{
+  const pr=e.target.closest&&e.target.closest("[data-rpair]");
+  if(pr&&isOwner){const n=pr.dataset.rpair,s=new Set(roleDefs[n]||[]);["clans","cw"].forEach(k=>pr.checked?s.add(k):s.delete(k));if(!await saveRole(n,[...s]))pr.checked=!pr.checked;renderRoles();renderAuth();render();return}
+});
+document.addEventListener("change",async e=>{
   const c=e.target.closest&&e.target.closest("[data-rp]");if(!c||!isOwner)return;
   const n=c.dataset.rp,s=new Set(roleDefs[n]||[]);c.checked?s.add(c.dataset.k):s.delete(c.dataset.k);
   if(!await saveRole(n,[...s]))c.checked=!c.checked;
-  renderAuth();render();
+  renderRoles();renderAuth();render();
 });
 /* ---- clans ---- */
 const cblank=()=>({id:"",name:"",tag:"",color:CLAN_C,descr:"",owner:"",place:"",closed:false,ap:"",ac:""});
