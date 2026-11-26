@@ -1733,11 +1733,6 @@ function renderTools(board){
     </div>
   </div>
   <div class="col">
-    <div class="rbox"><div class="sl">Leaderboard image</div>
-      <div class="sub">A ready-to-post PNG of the top 10 for Discord.</div>
-      <div class="trow"><select id="imgR">${regOpts}</select><button class="solid" id="imgGo" ${ex?"":"disabled"}>Generate</button>${boardImg?`<button id="imgDl">Download</button>`:""}</div>
-      ${boardImg?`<img class="imgprev" alt="Leaderboard preview" src="${boardImg}">`:""}
-    </div>
     <div class="rbox"><div class="sl">Send to Discord (embeds)</div>
       <div class="sub">One webhook per region (NA, EU, AS). Each posts that region’s top 10 under its own title, one embed per player. URLs are saved only in this browser.</div>
       ${embLoad().map((c,i)=>`<div style="margin-top:14px"><div class="sl" style="margin:0 0 6px">${esc(REG[c.r])} (${c.r})</div>
